@@ -1,0 +1,8 @@
+"VertexLitGeneric" 
+{ 
+"$basetexture" "models/pumpkin/plastic_orange"
+//"$envmap" "env_cubemap" 
+//"$envmaptint" "{220 109 0}"
+//"$envmapsaturation" .2
+//"$envmapcontrast" .2
+}

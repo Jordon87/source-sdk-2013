@@ -1,0 +1,7 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_decals/key_sign01"
+	"$decalscale" .50
+	"$decal" 1
+	"$translucent" 1
+}

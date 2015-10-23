@@ -1,0 +1,9 @@
+// Valve Game Info file
+//  These are key/value pairs.  Certain mods will use different settings.
+//
+GameInfo
+{
+	game 		"Halloween HL2: Pumpkin Night"
+	title 		"Halloween HL2: Pumpkin Night"
+	type		singleplayer_only
+}

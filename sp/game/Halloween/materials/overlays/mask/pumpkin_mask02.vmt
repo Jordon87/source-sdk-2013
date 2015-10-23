@@ -1,0 +1,8 @@
+"UnLitGeneric" 
+{ 
+
+"$translucent" 1
+"$basetexture" "overlays/mask/pumpkin_mask02"
+//"$nocull" 1
+
+}

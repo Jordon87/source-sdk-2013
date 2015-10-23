@@ -1,0 +1,8 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_windows/hall_windowhalf01b"
+	"$surfaceprop" "glass"
+	"$envmap" "env_cubemap"
+	"$envmapmask" "hall_windows/hall_windowhalf01_mask"
+	"$envmapsaturation" "[.2 .1 1]" 
+}

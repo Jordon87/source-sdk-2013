@@ -1,0 +1,6 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_farm/barbedwire_01"
+	"$surfaceprop" "chainlink"
+	"$translucent" 1
+}

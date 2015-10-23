@@ -1,0 +1,24 @@
+// Choreo version 1
+actor "toby"
+{
+  channel "toby_shutupass"
+  {
+    event speak "toby_shutupass"
+    {
+      time 0.266667 1.366667
+      param "hall_dialogue\toby\trick\toby_shutupass.wav"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "RampTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off

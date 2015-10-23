@@ -1,0 +1,24 @@
+// Choreo version 1
+actor "toby"
+{
+  channel "toby_whenpumpkins"
+  {
+    event speak "toby_whenpumpkins"
+    {
+      time 0.106667 4.506667
+      param "hall_dialogue\toby\prefarm\toby_whenpumpkins.wav"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "RampTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off

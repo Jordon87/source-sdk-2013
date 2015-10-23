@@ -1,0 +1,5 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "hall_windows/hall_window04"
+	"$surfaceprop" "glass"
+}

@@ -1,0 +1,26 @@
+
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\rocker\rocker"
+	//"$translucent" "1"
+	//"$alphatest" 1
+	//"$nocull" "1"
+	//"$nodecal" 1
+
+"$bumpmap" "models/player/rocker/rocker_normal" 
+
+"$envmap" "env_cubemap" 
+
+//"$basealphaenvmapmask" 1
+
+//"$normalmapalphaenvmapmask" "1"  
+//"$envmapcontrast" 1 
+//"$envmapsaturation" .2 
+//"$envmaptint" "[ .25 .25 .25 ]" 
+
+	//"$basealphaenvmapmask" 1
+	"$envmaptint" "[0.3 0.3 0.3]"
+	//"$nodecal" "1"
+
+
+}

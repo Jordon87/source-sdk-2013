@@ -1,0 +1,7 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_decals/magic_circle_noskull"
+	"$decalscale" "0.50"
+	"$decal" 1
+	"$translucent" 1
+}

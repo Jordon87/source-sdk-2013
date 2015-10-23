@@ -1,0 +1,10 @@
+"worldvertextransition"
+{
+	"$basetexture" "hall_ground/hall_grass11a_leaves_blend01"
+	"$basetexture2" "hall_ground/dirt_blend01"
+	"$surfaceprop" "grass"
+	"$surfaceprop2" "dirt"
+	"%tooltexture" "hall_ground/hall_blend_dirtgrass_01"
+	"$basetexturetransform" "center .5 .5 scale 2 2 rotate 0  translate 0 0"
+	"$basetexturetransform2" "center .5 .5 scale 4 4 rotate 0 translate 0 0"
+}

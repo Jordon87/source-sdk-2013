@@ -1,0 +1,7 @@
+"VertexLitGeneric" { 
+
+"$translucent" 1
+"$basetexture" "models/hall_trees/hall_maple_leaves_red"
+"$nocull" 1
+
+ }

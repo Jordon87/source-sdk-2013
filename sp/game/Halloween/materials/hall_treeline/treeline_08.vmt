@@ -1,0 +1,6 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_treeline/treeline_08"
+	"$surfaceprop" "foliage"
+	"$translucent" 1
+}

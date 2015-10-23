@@ -1,0 +1,5 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_concrete/hall_concrete11_wet"
+	"$surfaceprop" "concrete"
+}

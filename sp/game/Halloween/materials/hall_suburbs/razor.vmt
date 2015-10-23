@@ -1,0 +1,6 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_suburbs/razor"
+	"$nocull" 1
+	"$translucent" 1
+}

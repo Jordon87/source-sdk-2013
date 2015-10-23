@@ -1,0 +1,24 @@
+// Choreo version 1
+actor "toby"
+{
+  channel "toby_bookdidtome"
+  {
+    event speak "toby_bookdidtome"
+    {
+      time 0.280000 3.909569
+      param "hall_dialogue\toby\postfarm\toby_bookdidtome.wav"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "RampTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off

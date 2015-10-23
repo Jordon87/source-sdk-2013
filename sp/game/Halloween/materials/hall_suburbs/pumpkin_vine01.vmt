@@ -1,0 +1,6 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_suburbs/pumpkin_vine01"
+	"$surfaceprop" "Wood_Solid"
+	"$bumpmap" "hall_suburbs/pumpkin_vine01_normal"
+}

@@ -1,0 +1,8 @@
+"cable"
+{
+	"$basetexture" "cable/crime_scene_cable"
+	"$MinLight" 0
+	"$MaxLight" 0
+	"$nocull" 1
+	"$vertexcolor" 1
+}

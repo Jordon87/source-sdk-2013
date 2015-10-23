@@ -1,0 +1,5 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_farm/crime_scene_tape"
+	"$nocull" 1
+}

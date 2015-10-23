@@ -1,0 +1,7 @@
+"vertexlitgeneric"
+{
+	"$basetexture" "models/hall_book/ostium_page_single"
+	"$model" 1
+	"$nocull" 1
+	"$translucent" 1
+}

@@ -1,0 +1,6 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_brick/house_base01b"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "hall_brick/house_base01_normal"
+}

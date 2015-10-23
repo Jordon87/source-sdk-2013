@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\veteran/pupil_r"
+	"$nodecal" "1"
+}

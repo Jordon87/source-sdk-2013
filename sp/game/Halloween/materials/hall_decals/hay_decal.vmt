@@ -1,0 +1,8 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_decals/hay_decal"
+	"$surfaceprop" "grass"
+	"$decalscale" "0.25"
+	"$decal" 1
+	"$translucent" 1
+}

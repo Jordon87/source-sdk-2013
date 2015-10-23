@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\player\veteran/Veteran_Diffuse"
+	"$bumpmap" "models\player\veteran/Veteran_Normals"
+}

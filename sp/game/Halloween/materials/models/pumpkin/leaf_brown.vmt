@@ -1,0 +1,7 @@
+"VertexLitGeneric" { 
+
+"$translucent" 1
+"$basetexture" "models/pumpkin/leaf_brown"
+"$nocull" 1
+
+ }

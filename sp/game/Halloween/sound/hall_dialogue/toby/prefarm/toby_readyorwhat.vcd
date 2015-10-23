@@ -1,0 +1,24 @@
+// Choreo version 1
+actor "toby"
+{
+  channel "toby_readyorwhat"
+  {
+    event speak "toby_readyorwhat"
+    {
+      time 0.106667 1.319411
+      param "hall_dialogue\toby\prefarm\toby_readyorwhat.wav"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "RampTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off

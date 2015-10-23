@@ -1,0 +1,6 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_suburbs/plaster01a"
+	"$surfaceprop" "plaster"
+	"$bumpmap" "hall_suburbs/plaster01_normal"
+}

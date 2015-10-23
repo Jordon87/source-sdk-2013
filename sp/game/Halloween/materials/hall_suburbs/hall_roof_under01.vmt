@@ -1,0 +1,6 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_suburbs/hall_roof_under01"
+	"$surfaceprop" "metalpanel"
+	"$bumpmap" "hall_suburbs/hall_roof_under01_normal"
+}

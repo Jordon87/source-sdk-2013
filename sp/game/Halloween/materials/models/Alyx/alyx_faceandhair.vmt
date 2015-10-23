@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	// Original shader: VertexLitMaskedEnvMappedTexture
+	"$basetexture" "models/Alyx/alyx_faceandhair"
+	"$bumpmap" "models/alyx/alyx_head_normal"
+	"$halflambert" 1
+//	"$envmapmask" "models/Alyx/alyx_faceandhair_m"
+	"$nodecal" "1"
+}

@@ -1,0 +1,6 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_farm/wheat_01"
+	"$surfaceprop" "foliage"
+	"$translucent" 1
+}

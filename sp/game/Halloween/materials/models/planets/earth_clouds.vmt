@@ -1,0 +1,7 @@
+"VertexLitGeneric" { 
+
+"$translucent" 1
+"$basetexture" "models/planets/earth_clouds"
+"$nocull" 0
+"$bumpmap" "models/planets/earth_clouds_normal"
+ }

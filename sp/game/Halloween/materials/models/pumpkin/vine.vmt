@@ -1,0 +1,7 @@
+"vertexlitgeneric"
+{
+	"$basetexture" "models/pumpkin/vine"
+	"$surfaceprop" "watermelon"
+	"$bumpmap" "models/pumpkin/vine_normal"
+	"$model" 1
+}

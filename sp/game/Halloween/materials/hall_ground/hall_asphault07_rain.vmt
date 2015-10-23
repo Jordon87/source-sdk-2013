@@ -1,0 +1,10 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "hall_ground/hall_asphault07_rain"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "hall_ground/hall_asphault07_rain_normal"
+	"$envmap" "env_cubemap"
+	"$envmapmask" "hall_ground/hall_asphault07_rain_mask"
+	"$envmapcontrast" 0.9
+	"$envmapsaturation" "[.2 .1 1]" 
+}

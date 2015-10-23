@@ -1,0 +1,7 @@
+"vertexlitgeneric"
+{
+	"$basetexture" "models/tot/tot_mask08"
+	"$model" 1
+	"$nocull" 1
+	"$translucent" 1
+}

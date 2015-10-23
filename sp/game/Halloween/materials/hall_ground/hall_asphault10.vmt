@@ -1,0 +1,5 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "hall_ground/hall_asphault10"
+	"$surfaceprop" "concrete"
+}

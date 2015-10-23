@@ -1,0 +1,6 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "planets/moon_ground"
+	"$surfaceprop" "dirt"
+	"$bumpmap" "planets/moon_ground_normal"
+}
