@@ -47,6 +47,11 @@ public:
 protected:
 	virtual	void	ImpactEffect( trace_t &trace );
 
+#if defined ( COMBINEDESTINY_DLL )
+	virtual void	MeleeHit(trace_t &trace) {}
+	virtual void	MeleeHitWorld(trace_t &trace) {}
+#endif
+
 private:
 	bool			ImpactWater( const Vector &start, const Vector &end );
 	void			Swing( int bIsSecondary );

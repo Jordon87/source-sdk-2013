@@ -27,6 +27,11 @@
 #define SF_COMBINE_NO_GRENADEDROP ( 1 << 17 )
 #define SF_COMBINE_NO_AR2DROP ( 1 << 18 )
 
+
+#if defined ( COMBINEDESTINY_DLL )
+class CNPC_CombineS_Ally;
+#endif
+
 //=========================================================
 //	>> CNPC_Combine
 //=========================================================
@@ -255,7 +260,11 @@ private:
 	virtual bool IsWaitingToRappel( void ) { return m_RappelBehavior.IsWaitingToRappel(); }
 	void BeginRappel() { m_RappelBehavior.BeginRappel(); }
 
+#if defined ( COMBINEDESTINY_DLL )
+	friend class CNPC_CombineS_Ally;
+#endif
 private:
+
 	int				m_nKickDamage;
 	Vector			m_vecTossVelocity;
 	EHANDLE			m_hForcedGrenadeTarget;

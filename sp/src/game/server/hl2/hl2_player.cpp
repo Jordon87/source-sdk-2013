@@ -160,22 +160,26 @@ bool g_bCacheLegacyFlashlightStatus = true;
 bool g_bUseLegacyFlashlight;
 bool Flashlight_UseLegacyVersion( void )
 {
+#if defined ( COMBINEDESTINY_DLL )
+	return true;
+#else
 	// If this is the first run through, cache off what the answer should be (cannot change during a session)
-	if ( g_bCacheLegacyFlashlightStatus )
+	if (g_bCacheLegacyFlashlightStatus)
 	{
 		char modDir[MAX_PATH];
-		if ( UTIL_GetModDir( modDir, sizeof(modDir) ) == false )
+		if (UTIL_GetModDir(modDir, sizeof(modDir)) == false)
 			return false;
 
-		g_bUseLegacyFlashlight = ( !Q_strcmp( modDir, "hl2" ) ||
-					   !Q_strcmp( modDir, "episodic" ) ||
-					   !Q_strcmp( modDir, "lostcoast" ) || !Q_strcmp( modDir, "hl1" ));
+		g_bUseLegacyFlashlight = (!Q_strcmp(modDir, "hl2") ||
+			!Q_strcmp(modDir, "episodic") ||
+			!Q_strcmp(modDir, "lostcoast") || !Q_strcmp(modDir, "hl1"));
 
 		g_bCacheLegacyFlashlightStatus = false;
 	}
 
 	// Return the results
 	return g_bUseLegacyFlashlight;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -425,6 +429,11 @@ END_SEND_TABLE()
 void CHL2_Player::Precache( void )
 {
 	BaseClass::Precache();
+
+
+#if defined ( COMBINEDESTINY_DLL )
+	PrecacheModel("sprites/glow01.vmt");
+#endif
 
 	PrecacheScriptSound( "HL2Player.SprintNoPower" );
 	PrecacheScriptSound( "HL2Player.SprintStart" );
@@ -2629,7 +2638,7 @@ int CHL2_Player::GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound)
 //-----------------------------------------------------------------------------
 bool CHL2_Player::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 {
-#ifndef HL2MP	
+#if defined ( HL2MP ) && !defined ( COMBINEDESTINY_DLL )	
 	if ( pWeapon->ClassMatches( "weapon_stunstick" ) )
 	{
 		if ( ApplyBattery( 0.5 ) )

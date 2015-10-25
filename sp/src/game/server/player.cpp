@@ -6162,7 +6162,13 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem( "weapon_rpg" );
 		GiveNamedItem( "weapon_357" );
 		GiveNamedItem( "weapon_crossbow" );
+
+#if defined ( COMBINEDESTINY_DLL )
+		GiveNamedItem("weapon_stunstick");
+#endif
+
 #ifdef HL2_EPISODIC
+
 		// GiveNamedItem( "weapon_magnade" );
 #endif
 		if ( GetHealth() < 100 )
