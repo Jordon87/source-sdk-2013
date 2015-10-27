@@ -273,7 +273,11 @@ void CZombie::Spawn( void )
 		m_fIsTorso = true;
 	}
 
+#if defined ( HALLOWEEN2005_DLL )
+	m_fIsHeadless = true;
+#else
 	m_fIsHeadless = false;
+#endif
 
 #ifdef HL2_EPISODIC
 	SetBloodColor( BLOOD_COLOR_ZOMBIE );

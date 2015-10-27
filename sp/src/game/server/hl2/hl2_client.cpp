@@ -120,6 +120,50 @@ void ClientGamePrecache( void )
 	
 	CBaseEntity::PrecacheScriptSound( "Geiger.BeepHigh" );
 	CBaseEntity::PrecacheScriptSound( "Geiger.BeepLow" );
+
+#if defined ( HALLOWEEN2005_DLL )
+	static const char* pszHalloween2005ScriptSounds[] = 
+	{
+		/*
+		 * Farm
+		 */
+
+		"Toby_Farm_OhShit",
+
+		/*
+		 * PostFarm
+		 */
+
+		"Toby_PostFarm_BookDidToMe",
+		"Toby_PostFarm_SprayingLead",
+		"Toby_PostFarm_SprayingLead2",
+		"Toby_PostFarm_StepInsideCircle",
+		"Toby_PostFarm_TellAnyone",
+
+		/*
+		 * PreFarm
+		 */
+
+		"Toby_PreFarm_CandyBuffet",
+		"Toby_PreFarm_GoToMyHouse",
+		"Toby_PreFarm_ILookGoodbitch",
+		"Toby_PreFarm_OkFine",
+		"Toby_PreFarm_ReadyOrWhat",
+		"Toby_PreFarm_StillGotCandy",
+		"Toby_PreFarm_StillInTreeHouse",
+		"Toby_PreFarm_WhenPumpkins",
+
+		/*
+		 * Trick
+		 */
+
+		"Toby_Trick_ShutupAss",
+		"Toby_Trick_TrickorTreat",
+	};
+
+	for (size_t i = 0; i < ARRAYSIZE(pszHalloween2005ScriptSounds); ++i)
+		CBaseEntity::PrecacheScriptSound(pszHalloween2005ScriptSounds[i]);
+#endif
 }
 
 
