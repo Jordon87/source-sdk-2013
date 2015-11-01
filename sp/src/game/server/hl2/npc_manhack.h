@@ -250,8 +250,10 @@ private:
 
 	float			m_flBladeSpeed;
 
+#if !defined  ( KORSAKOVIA_DLL ) 
 	CSprite			*m_pEyeGlow;
 	CSprite			*m_pLightGlow;
+#endif
 	
 	CHandle<SmokeTrail>	m_hSmokeTrail;
 

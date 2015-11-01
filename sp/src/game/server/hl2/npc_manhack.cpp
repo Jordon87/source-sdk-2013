@@ -226,6 +226,10 @@ CNPC_Manhack::CNPC_Manhack()
 	m_flEnginePitch1Time = 0;
 	m_bDoSwarmBehavior = true;
 	m_flBumpSuppressTime = 0;
+
+#if defined ( KORSAKOVIA_DLL )
+	m_hSmokeTrail = NULL;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -625,14 +629,41 @@ void CNPC_Manhack::CrashTouch( CBaseEntity *pOther )
 //-----------------------------------------------------------------------------
 void CNPC_Manhack::CreateSmokeTrail()
 {
+#if defined ( KORSAKOVIA_DLL )
+
+	if (m_hSmokeTrail != NULL)
+		return;
+
+	SmokeTrail *pSmokeTrail = SmokeTrail::CreateSmokeTrail();
+	if (!pSmokeTrail)
+		return;
+
+	pSmokeTrail->m_SpawnRate = 48;
+	pSmokeTrail->m_ParticleLifetime = 2;
+	pSmokeTrail->m_StartColor.Init(0, 0, 0);
+	pSmokeTrail->m_EndColor.Init(0, 0, 0);
+	pSmokeTrail->m_StartSize = 24;
+	pSmokeTrail->m_EndSize = 24;
+	pSmokeTrail->m_SpawnRadius = 4;
+	pSmokeTrail->m_MinSpeed = 4;
+	pSmokeTrail->m_MaxSpeed = 24;
+	pSmokeTrail->m_Opacity = 1.0f;
+
+	pSmokeTrail->SetLifetime(-1);
+	pSmokeTrail->FollowEntity(this, "Light");
+
+	m_hSmokeTrail = pSmokeTrail;
+
+#else
+
 	if ( HasSpawnFlags( SF_MANHACK_NO_DAMAGE_EFFECTS ) )
 		return;
 
 	if ( m_hSmokeTrail != NULL )
 		return;
 
-	SmokeTrail *pSmokeTrail =  SmokeTrail::CreateSmokeTrail();
-	if( !pSmokeTrail )
+	SmokeTrail *pSmokeTrail = SmokeTrail::CreateSmokeTrail();
+	if (!pSmokeTrail)
 		return;
 
 	pSmokeTrail->m_SpawnRate = 20;
@@ -650,6 +681,8 @@ void CNPC_Manhack::CreateSmokeTrail()
 	pSmokeTrail->FollowEntity(this);
 
 	m_hSmokeTrail = pSmokeTrail;
+
+#endif
 }
 
 void CNPC_Manhack::DestroySmokeTrail()
@@ -816,6 +849,8 @@ int	CNPC_Manhack::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 //------------------------------------------------------------------------------
 bool CNPC_Manhack::CorpseGib( const CTakeDamageInfo &info )
 {
+#if !defined ( KORSAKOVIA_DLL )
+
 	Vector			vecGibVelocity;
 	AngularImpulse	vecGibAVelocity;
 
@@ -839,6 +874,8 @@ bool CNPC_Manhack::CorpseGib( const CTakeDamageInfo &info )
 	}
 
 	PropBreakableCreateAll( GetModelIndex(), NULL, GetAbsOrigin(), GetAbsAngles(), vecGibVelocity, vecGibAVelocity, 1.0, 60, COLLISION_GROUP_DEBRIS );
+
+#endif
 
 	RemoveDeferred();
 
@@ -1612,11 +1649,13 @@ void CNPC_Manhack::Bump( CBaseEntity *pHitEntity, float flInterval, trace_t &tr 
 			
 			data.m_vNormal = ( tr.plane.normal + velocity ) * 0.5;;
 
+#if !defined ( KORSAKOVIA_DLL )
 			DispatchEffect( "ManhackSparks", data );
 
 			CBroadcastRecipientFilter filter;
 
 			te->DynamicLight( filter, 0.0, &GetAbsOrigin(), 255, 180, 100, 0, 50, 0.3, 150 );
+#endif
 			
 			// add some spin, but only if we're not already going fast..
 			Vector vecVelocity;
@@ -2455,6 +2494,10 @@ void CNPC_Manhack::Spawn(void)
 	m_bHeld = false;
 	m_bHackedByAlyx = false;
 	StopLoitering();
+
+#if defined ( KORSAKOVIA_DLL )
+	CreateSmokeTrail();
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2462,6 +2505,7 @@ void CNPC_Manhack::Spawn(void)
 //-----------------------------------------------------------------------------
 void CNPC_Manhack::StartEye( void )
 {
+#if !defined  ( KORSAKOVIA_DLL ) 
 	//Create our Eye sprite
 	if ( m_pEyeGlow == NULL )
 	{
@@ -2505,6 +2549,7 @@ void CNPC_Manhack::StartEye( void )
 		m_pLightGlow->SetScale( 0.25f, 0.1f );
 		m_pLightGlow->SetAsTemporary();
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2875,6 +2920,7 @@ void CNPC_Manhack::ClampMotorForces( Vector &linear, AngularImpulse &angular )
 //-----------------------------------------------------------------------------
 void CNPC_Manhack::KillSprites( float flDelay )
 {
+#if !defined  ( KORSAKOVIA_DLL ) 
 	if( m_pEyeGlow )
 	{
 		m_pEyeGlow->FadeAndDie( flDelay );
@@ -2886,6 +2932,7 @@ void CNPC_Manhack::KillSprites( float flDelay )
 		m_pLightGlow->FadeAndDie( flDelay );
 		m_pLightGlow = NULL;
 	}
+#endif
 
 	// Re-enable for light trails
 	/*
@@ -3196,6 +3243,7 @@ void CNPC_Manhack::SetEyeState( int state )
 	{
 	case MANHACK_EYE_STATE_STUNNED:
 		{
+#if !defined  ( KORSAKOVIA_DLL ) 
 			if ( m_pEyeGlow )
 			{
 				//Toggle our state
@@ -3212,6 +3260,7 @@ void CNPC_Manhack::SetEyeState( int state )
 				m_pLightGlow->SetBrightness( 164, 0.1f );
 				m_pLightGlow->m_nRenderFX = kRenderFxStrobeFast;
 			}
+#endif
 
 			EmitSound("NPC_Manhack.Stunned");
 
@@ -3220,6 +3269,7 @@ void CNPC_Manhack::SetEyeState( int state )
 
 	case MANHACK_EYE_STATE_CHARGE:
 		{
+#if !defined  ( KORSAKOVIA_DLL ) 
 			if ( m_pEyeGlow )
 			{
 				//Toggle our state
@@ -3252,13 +3302,16 @@ void CNPC_Manhack::SetEyeState( int state )
 				m_pLightGlow->SetBrightness( 164, 0.1f );
 				m_pLightGlow->m_nRenderFX = kRenderFxNone;
 			}
+#endif
 
 			break;
 		}
 	
 	default:
+#if !defined  ( KORSAKOVIA_DLL ) 
 		if ( m_pEyeGlow )
 			m_pEyeGlow->m_nRenderFX = kRenderFxNone;
+#endif
 		break;
 	}
 }

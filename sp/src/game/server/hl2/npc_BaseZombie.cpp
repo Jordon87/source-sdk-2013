@@ -761,6 +761,9 @@ bool CNPC_BaseZombie::ShouldBecomeTorso( const CTakeDamageInfo &info, float flDa
 //-----------------------------------------------------------------------------
 HeadcrabRelease_t CNPC_BaseZombie::ShouldReleaseHeadcrab( const CTakeDamageInfo &info, float flDamageThreshold )
 {
+#if defined ( KORSAKOVIA_DLL )
+	return RELEASE_NO;
+#else
 	if ( m_iHealth <= 0 )
 	{
 		if ( info.GetDamageType() & DMG_REMOVENORAGDOLL )
@@ -800,6 +803,7 @@ HeadcrabRelease_t CNPC_BaseZombie::ShouldReleaseHeadcrab( const CTakeDamageInfo 
 	}
 
 	return RELEASE_NO;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1176,6 +1180,10 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 bool CNPC_BaseZombie::ShouldIgnite( const CTakeDamageInfo &info )
 {
+#if defined ( KORSAKOVIA_DLL )
+	return false;
+#endif
+
  	if ( IsOnFire() )
 	{
 		// Already burning!
@@ -1205,6 +1213,10 @@ bool CNPC_BaseZombie::ShouldIgnite( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CNPC_BaseZombie::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )
 {
+#if defined ( KORSAKOVIA_DLL )
+	return;
+#endif
+
 	BaseClass::Ignite( flFlameLifetime, bNPCOnly, flSize, bCalledByLevelDesigner );
 
 #ifdef HL2_EPISODIC

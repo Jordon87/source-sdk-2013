@@ -27,6 +27,10 @@
 #include "physics_npc_solver.h"
 #include "physics_prop_ragdoll.h"
 
+#if defined ( KORSAKOVIA_DLL )
+#include "smoke_trail.h"
+#endif
+
 #ifdef HL2_EPISODIC
 #include "episodic/ai_behavior_passenger_zombie.h"
 #endif	// HL2_EPISODIC
@@ -207,6 +211,10 @@ class CFastZombie : public CNPC_BaseZombie
 	DECLARE_CLASS( CFastZombie, CNPC_BaseZombie );
 
 public:
+#if defined ( KORSAKOVIA_DLL )
+	CFastZombie();
+#endif
+
 	void Spawn( void );
 	void Precache( void );
 
@@ -337,6 +345,13 @@ private:
 public:
 	DEFINE_CUSTOM_AI;
 	DECLARE_DATADESC();
+
+#if defined ( KORSAKOVIA_DLL )
+	void CreateSmokeTrail(void);
+
+	CHandle<SmokeTrail>	m_hSmokeTrail;
+
+#endif
 };
 
 LINK_ENTITY_TO_CLASS( npc_fastzombie, CFastZombie );
@@ -367,8 +382,59 @@ BEGIN_DATADESC( CFastZombie )
 	DEFINE_INPUTFUNC( FIELD_STRING, "AttachToVehicle", InputAttachToVehicle ),
 #endif	// HL2_EPISODIC
 
+#if defined ( KORSAKOVIA_DLL )
+	DEFINE_FIELD(m_hSmokeTrail, FIELD_EHANDLE),
+#endif
+
 END_DATADESC()
 
+#if defined ( KORSAKOVIA_DLL )
+CFastZombie::CFastZombie()
+{
+	m_hSmokeTrail = NULL;
+}
+
+#if 0
+static ConVar korsakovia_zombie_smoke_spawnrate("korsakovia_zombie_smoke_spawnrate", "48", FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY);
+static ConVar korsakovia_zombie_smoke_lifetime("korsakovia_zombie_smoke_lifetime", "1", FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY);
+static ConVar korsakovia_zombie_smoke_startsize("korsakovia_zombie_smoke_startsize", "36", FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY);
+static ConVar korsakovia_zombie_smoke_endsize("korsakovia_zombie_smoke_endsize", "36", FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY);
+static ConVar korsakovia_zombie_smoke_spawnradius("korsakovia_zombie_smoke_spawnradius", "4", FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY);
+static ConVar korsakovia_zombie_smoke_minspeed("korsakovia_zombie_smoke_minspeed", "4", FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY);
+static ConVar korsakovia_zombie_smoke_maxspeed("korsakovia_zombie_smoke_maxspeed", "24", FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY);
+#endif
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CFastZombie::CreateSmokeTrail(void)
+{
+	if (m_hSmokeTrail)
+		return;
+
+	m_hSmokeTrail = SmokeTrail::CreateSmokeTrail();
+
+	// Smoke trail.
+	if (m_hSmokeTrail)
+	{
+		m_hSmokeTrail->m_SpawnRate = 48;		 // 48
+		m_hSmokeTrail->m_ParticleLifetime = 2; // 1
+		m_hSmokeTrail->m_StartColor.Init(0, 0, 0);	// 0.1f, 0.1f, 0.1f
+		m_hSmokeTrail->m_EndColor.Init(0, 0, 0); // (0,0,0)
+		m_hSmokeTrail->m_StartSize = 36;		// 12
+		m_hSmokeTrail->m_EndSize = 36;			// 48 ( m_hSmokeTrail->m_StartSize * 4 )
+		m_hSmokeTrail->m_SpawnRadius = 4;	// 4
+		m_hSmokeTrail->m_MinSpeed = 4;		// 4
+		m_hSmokeTrail->m_MaxSpeed = 24;		// 24
+		m_hSmokeTrail->m_Opacity = 1.0f;
+
+		m_hSmokeTrail->SetLifetime(-1);
+		m_hSmokeTrail->FollowEntity(this, "chest");
+	}
+}
+
+
+#endif
 
 const char *CFastZombie::pMoanSounds[] =
 {
@@ -652,7 +718,12 @@ void CFastZombie::Spawn( void )
 
 	m_fJustJumped = false;
 
+#if defined ( KORSAKOVIA_DLL )
+	m_fIsTorso = false;
+	m_fIsHeadless = true;
+#else
 	m_fIsTorso = m_fIsHeadless = false;
+#endif
 
 	if( FClassnameIs( this, "npc_fastzombie" ) )
 	{
@@ -691,6 +762,10 @@ void CFastZombie::Spawn( void )
 	m_flDistFactor = 1.0;
 
 	BaseClass::Spawn();
+
+#if defined ( KORSAKOVIA_DLL )
+	CreateSmokeTrail();
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1842,6 +1917,14 @@ void CFastZombie::Event_Killed( const CTakeDamageInfo &info )
 																nRightHandBone,	
 																vec3_origin );*/
 
+	}
+#endif
+
+#if defined ( KORSAKOVIA_DLL )
+	if(m_hSmokeTrail)
+	{
+		UTIL_Remove(m_hSmokeTrail);
+		m_hSmokeTrail = NULL;
 	}
 #endif
 
