@@ -248,7 +248,11 @@ void CHudCredits::ReadParams( KeyValues *pKeyValue )
 	m_cColor = pKeyValue->GetColor( "color" );
 
 	Q_strncpy( m_szLogo, pKeyValue->GetString( "logo", "HALF-LIFE'" ), sizeof( m_szLogo ) );
+#if defined ( RIOTACT_CLIENT_DLL )
+	Q_strncpy( m_szLogo2, pKeyValue->GetString( "logo2", "riot act" ), sizeof( m_szLogo2 ) );
+#else
 	Q_strncpy( m_szLogo2, pKeyValue->GetString( "logo2", "" ), sizeof( m_szLogo2 ) );
+#endif
 }
 
 int CHudCredits::GetStringPixelWidth( wchar_t *pString, vgui::HFont hFont )
