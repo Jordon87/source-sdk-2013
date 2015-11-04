@@ -804,7 +804,7 @@ CChoreoStringPool g_ChoreoStringPool;
 
 CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 {
-#if defined ( MOP_CLIENT_DLL )
+#if defined ( COASTLINE_CLIENT_DLL )
 
 	char loadfile[MAX_PATH];
 	Q_strncpy( loadfile, filename, sizeof( loadfile ) );
@@ -855,6 +855,7 @@ CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 
 	delete[] pBuffer;
 	return pScene;
+
 #else
 
 	char loadfile[ 512 ];
@@ -899,6 +900,7 @@ CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 
 	delete[] pBuffer;
 	return pScene;
+
 #endif
 }
 
