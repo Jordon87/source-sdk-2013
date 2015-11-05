@@ -804,53 +804,52 @@ CChoreoStringPool g_ChoreoStringPool;
 
 CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 {
-#if defined ( MOP_CLIENT_DLL )
-
+#if defined ( STRIDERMOUNTAIN_CLIENT_DLL )
 	char loadfile[MAX_PATH];
-	Q_strncpy( loadfile, filename, sizeof( loadfile ) );
-	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
-	Q_FixSlashes( loadfile );
+	Q_strncpy(loadfile, filename, sizeof(loadfile));
+	Q_SetExtension(loadfile, ".vcd", sizeof(loadfile));
+	Q_FixSlashes(loadfile);
 
 	void *pBuffer = 0;
 	CChoreoScene *pScene = NULL;
 
-	int fileSize = filesystem->ReadFileEx( loadfile, "MOD", &pBuffer, true );
+	int fileSize = filesystem->ReadFileEx(loadfile, "MOD", &pBuffer, true);
 	if (fileSize)
 	{
 		g_TokenProcessor.SetBuffer((char*)pBuffer);
-		pScene = ChoreoLoadScene( loadfile, this, &g_TokenProcessor, Scene_Printf );
+		pScene = ChoreoLoadScene(loadfile, this, &g_TokenProcessor, Scene_Printf);
 	}
 	else
 	{
-		fileSize = scenefilecache->GetSceneBufferSize( loadfile );
-		if ( fileSize <= 0 )
+		fileSize = scenefilecache->GetSceneBufferSize(loadfile);
+		if (fileSize <= 0)
 			return NULL;
 
-		pBuffer = new char[ fileSize ];
-		if ( !scenefilecache->GetSceneData( filename, (byte *)pBuffer, fileSize ) )
+		pBuffer = new char[fileSize];
+		if (!scenefilecache->GetSceneData(filename, (byte *)pBuffer, fileSize))
 		{
 			delete[] pBuffer;
 			return NULL;
 		}
 
 
-		if ( IsBufferBinaryVCD( (char*)pBuffer, fileSize ) )
+		if (IsBufferBinaryVCD((char*)pBuffer, fileSize))
 		{
-			pScene = new CChoreoScene( this );
-			CUtlBuffer buf( pBuffer, fileSize, CUtlBuffer::READ_ONLY );
-			if ( !pScene->RestoreFromBinaryBuffer( buf, loadfile, &g_ChoreoStringPool ) )
+			pScene = new CChoreoScene(this);
+			CUtlBuffer buf(pBuffer, fileSize, CUtlBuffer::READ_ONLY);
+			if (!pScene->RestoreFromBinaryBuffer(buf, loadfile, &g_ChoreoStringPool))
 			{
-				Warning( "Unable to restore scene '%s'\n", loadfile );
+				Warning("Unable to restore scene '%s'\n", loadfile);
 				delete pScene;
 				pScene = NULL;
 			}
 		}
 	}
 
-	if(pScene)
+	if (pScene)
 	{
-		pScene->SetPrintFunc( Scene_Printf );
-		pScene->SetEventCallbackInterface( this );
+		pScene->SetPrintFunc(Scene_Printf);
+		pScene->SetEventCallbackInterface(this);
 	}
 
 	delete[] pBuffer;
