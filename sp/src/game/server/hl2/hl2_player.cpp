@@ -160,10 +160,16 @@ bool g_bCacheLegacyFlashlightStatus = true;
 bool g_bUseLegacyFlashlight;
 bool Flashlight_UseLegacyVersion( void )
 {
+<<<<<<< HEAD
 #if defined ( WIVENHOE_DLL )
 	return true;
 #else
 
+=======
+#if defined ( MOP_DLL )
+	return true;
+#else
+>>>>>>> refs/remotes/origin/master
 	// If this is the first run through, cache off what the answer should be (cannot change during a session)
 	if ( g_bCacheLegacyFlashlightStatus )
 	{

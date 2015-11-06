@@ -804,7 +804,11 @@ CChoreoStringPool g_ChoreoStringPool;
 
 CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 {
+<<<<<<< HEAD
 #if defined ( WIVENHOE_CLIENT_DLL )
+=======
+#if defined ( MOP_CLIENT_DLL )
+>>>>>>> refs/remotes/origin/master
 
 	char loadfile[MAX_PATH];
 	Q_strncpy( loadfile, filename, sizeof( loadfile ) );
@@ -850,12 +854,20 @@ CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 	if(pScene)
 	{
 		pScene->SetPrintFunc( Scene_Printf );
+<<<<<<< HEAD
 		pScene->SetEventCallbackInterface(this);
+=======
+		pScene->SetEventCallbackInterface( this );
+>>>>>>> refs/remotes/origin/master
 	}
 
 	delete[] pBuffer;
 	return pScene;
 #else
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/master
 	char loadfile[ 512 ];
 	Q_strncpy( loadfile, filename, sizeof( loadfile ) );
 	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );

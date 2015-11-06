@@ -3345,8 +3345,13 @@ bool CSceneEntity::ShouldNetwork() const
 
 CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallback *pCallback )
 {
+<<<<<<< HEAD
 #if defined ( WIVENHOE_DLL )
 	DevMsg( 2, "Blocking load of scene from '%s'\n", filename );
+=======
+#if defined ( MOP_DLL )
+	DevMsg(2, "Blocking load of scene from '%s'\n", filename);
+>>>>>>> refs/remotes/origin/master
 
 	char loadfile[MAX_PATH];
 	Q_strncpy( loadfile, filename, sizeof( loadfile ) );
@@ -3388,8 +3393,11 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 
 	FreeSceneFileMemory(pBuffer);
 	return pScene;
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> refs/remotes/origin/master
 #else
 	DevMsg( 2, "Blocking load of scene from '%s'\n", filename );
 
