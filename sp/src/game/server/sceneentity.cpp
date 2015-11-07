@@ -3345,7 +3345,7 @@ bool CSceneEntity::ShouldNetwork() const
 
 CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallback *pCallback )
 {
-#if defined ( MOP_DLL )
+#if defined ( THECITIZEN_DLL )
 	DevMsg(2, "Blocking load of scene from '%s'\n", filename);
 
 	char loadfile[MAX_PATH];
@@ -3380,7 +3380,7 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 		}
 	}
 
-	if (pScene)
+	if(pScene)
 	{
 		pScene->SetPrintFunc(LocalScene_Printf);
 		pScene->SetEventCallbackInterface(pCallback);
@@ -3388,6 +3388,7 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 
 	FreeSceneFileMemory(pBuffer);
 	return pScene;
+
 #else
 	DevMsg( 2, "Blocking load of scene from '%s'\n", filename );
 
