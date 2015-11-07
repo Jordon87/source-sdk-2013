@@ -804,7 +804,7 @@ CChoreoStringPool g_ChoreoStringPool;
 
 CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 {
-#if defined ( MOP_CLIENT_DLL )
+#if defined ( CITY7_CLIENT_DLL )
 
 	char loadfile[MAX_PATH];
 	Q_strncpy( loadfile, filename, sizeof( loadfile ) );

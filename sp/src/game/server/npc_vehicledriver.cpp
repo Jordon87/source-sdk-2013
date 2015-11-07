@@ -307,6 +307,11 @@ int CNPC_VehicleDriver::SelectSchedule( void )
 //-----------------------------------------------------------------------------
 int	CNPC_VehicleDriver::RangeAttack1Conditions( float flDot, float flDist )
 {
+#if defined ( CITY7_DLL )
+	if (!m_pVehicleInterface || !m_pVehicleInterface->GetVehicleEnt())
+		return 0;
+#endif
+
 	// Vehicle not ready to fire again yet?
 	if ( m_pVehicleInterface->Weapon_PrimaryCanFireAt() > gpGlobals->curtime )
 		return 0;
