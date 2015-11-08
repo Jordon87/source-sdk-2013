@@ -1350,6 +1350,20 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 void CRotDoor::Spawn( void )
 {
+#if defined ( AWAKENING_DLL )
+	// 11/08/15
+	//
+	// Map aw_map3
+	//
+	// Allow every unnamed doors to open. This is used to prevent players from
+	// not being able to continue throughout the level.
+
+	if (V_strcmp(STRING(gpGlobals->mapname), "aw_map3") == 0 && GetEntityName() == NULL_STRING)
+	{
+		m_flWait = 1;
+	}
+#endif
+
 	BaseClass::Spawn();
 
 	// set the axis of rotation
