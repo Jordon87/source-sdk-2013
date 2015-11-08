@@ -19,12 +19,17 @@
 #include "vstdlib/random.h"
 #include "gamestats.h"
 
+#if defined ( DANGEROUSWORLD2_DLL )
+#include "weapon_shotgun.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 extern ConVar sk_auto_reload_time;
 extern ConVar sk_plr_num_shotgun_pellets;
 
+#if !defined ( DANGEROUSWORLD2_DLL )
 class CWeaponShotgun : public CBaseHLCombatWeapon
 {
 	DECLARE_DATADESC();
@@ -87,6 +92,7 @@ public:
 
 	CWeaponShotgun(void);
 };
+#endif
 
 IMPLEMENT_SERVERCLASS_ST(CWeaponShotgun, DT_WeaponShotgun)
 END_SEND_TABLE()
