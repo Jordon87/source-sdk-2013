@@ -17,6 +17,14 @@ static ConVar sv_ladderautomountdot( "sv_ladderautomountdot", "0.4", FCVAR_REPLI
 
 static ConVar sv_ladder_useonly( "sv_ladder_useonly", "0", FCVAR_REPLICATED, "If set, ladders can only be mounted by pressing +USE" );
 
+static ConVar cl_viewbob_enabled("cl_viewbob_enabled", "1", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+static ConVar cl_viewbob_amplitude_min("cl_viewbob_amplitude_min", "0.02", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+static ConVar cl_viewbob_amplitude_max("cl_viewbob_amplitude_max", "0.03", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+static ConVar cl_viewbob_frequency_min("cl_viewbob_frequency_min", "2.0", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+static ConVar cl_viewbob_frequency_max("cl_viewbob_frequency_max", "2.5", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+static ConVar cl_viewbob_roll_min("cl_viewbob_roll_min", "0.15", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+static ConVar cl_viewbob_roll_max("cl_viewbob_roll_max", "0.16", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+
 #define USE_DISMOUNT_SPEED 100
 
 //-----------------------------------------------------------------------------
@@ -1141,6 +1149,129 @@ bool CHL2GameMovement::CanAccelerate()
 
 	return true;
 }
+
+#if defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+//-----------------------------------------------------------------------------
+// Purpose: Only used by players.  Moves along the ground when player is a MOVETYPE_WALK.
+//-----------------------------------------------------------------------------
+void CHL2GameMovement::WalkMove(void)
+{
+	if (ShouldUpdateViewbob())
+	{
+		UpdateViewbob();
+	}
+
+	BaseClass::WalkMove();
+}
+
+void CHL2GameMovement::OnJump(float fImpulse)
+{
+#if !defined ( CLIENT_DLL )
+	CHL2_Player *p = GetHL2Player();
+	if (p)
+	{
+		p->OnJump(fImpulse);
+	}
+#endif
+}
+
+void CHL2GameMovement::OnLand(float fVelocity)
+{
+#if !defined ( CLIENT_DLL )
+	CHL2_Player *p = GetHL2Player();
+
+	if (p)
+	{
+		p->OnLand(fVelocity);
+	}
+#endif
+}
+
+bool CHL2GameMovement::ShouldUpdateViewbob(void) const
+{
+	CBasePlayer* localplayer = player;
+	if (!localplayer)
+		return false;
+
+	bool playerOnGround, 
+		 playerMoving;
+
+	playerMoving = false;
+	playerOnGround	= (localplayer->GetFlags() & FL_ONGROUND);
+
+	if (playerOnGround)
+	{
+		float speed = localplayer->GetAbsVelocity().Length2D();
+		playerMoving = (speed > 0);
+	}
+
+	return cl_viewbob_enabled.GetBool() && !engine->IsPaused() && playerOnGround && playerMoving;
+}
+
+void CHL2GameMovement::UpdateViewbob()
+{
+	CBasePlayer* localplayer = player;
+	if (!localplayer)
+		return;
+
+	const float maxspeed = mv->m_flClientMaxSpeed;
+	float speed			 = mv->m_vecVelocity.Length2D();
+	float speedprop		 = speed / maxspeed;
+
+#ifdef _DEBUG
+	DevMsg("Speed: %f\nMaxSpeed: %f\nSpeedProp: %f\n", speed, maxspeed, speedprop);
+#endif
+
+	QAngle qAngles;
+	qAngles.Init();
+
+	bool bForward	= (mv->m_nButtons & IN_FORWARD)		? true : false;
+	bool bLeft		= (mv->m_nButtons & IN_MOVELEFT)	? true : false;
+	bool bRight		= (mv->m_nButtons & IN_MOVERIGHT)	? true : false;
+	bool bBack		= (mv->m_nButtons & IN_BACK)		? true : false;
+	
+	float pitch, yaw, roll;
+	pitch = 
+	yaw   = 
+	roll  = 0.0f;
+
+	qAngles.x = pitch;
+	qAngles.y = yaw;
+	qAngles.z = roll;
+
+	if (bLeft || bRight)
+	{
+		roll = RemapValClamped(speedprop, 0, 1, cl_viewbob_roll_min.GetFloat(), cl_viewbob_roll_max.GetFloat());
+
+		qAngles.z = (bRight) ? roll : -roll;
+	}
+
+	if (bForward || bBack)
+	{
+		float angles, radian; 
+		float frequency, amplitude;
+
+		angles = AngleNormalize(gpGlobals->curtime);
+
+		if (angles > 180)
+			angles -= 360;
+		else if (angles < -180)
+			angles += 360;
+
+		radian = DEG2RAD(gpGlobals->curtime);
+
+		frequency = RemapValClamped(speedprop, 0, 1, cl_viewbob_frequency_min.GetFloat(), cl_viewbob_frequency_max.GetFloat());
+		amplitude = RemapValClamped(speedprop, 0, 1, cl_viewbob_amplitude_min.GetFloat(), cl_viewbob_amplitude_max.GetFloat());
+		
+		roll = sin(radian * frequency) * amplitude;
+
+		qAngles.z = roll;
+	}
+
+	localplayer->ViewPunch(qAngles);
+}
+
+#endif // #if defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLEINT_DLL )
 
 
 #ifndef PORTAL	// Portal inherits from this but needs to declare it's own global interface

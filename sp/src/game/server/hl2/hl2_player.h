@@ -15,6 +15,11 @@
 #include "simtimer.h"
 #include "soundenvelope.h"
 
+#if defined ( ELEVENEIGHTYSEVEN_DLL )
+class CHL2_Player;
+#include "1187_playeranimstate.h"
+#endif
+
 class CAI_Squad;
 class CPropCombineBall;
 
@@ -284,6 +289,29 @@ public:
 	CSoundPatch *m_sndLeeches;
 	CSoundPatch *m_sndWaterSplashes;
 
+#if defined ( ELEVENEIGHTYSEVEN_DLL )
+	virtual void SetAnimation(PLAYER_ANIM playerAnim);
+	QAngle GetAnimEyeAngles(void) { return m_angEyeAngles.Get(); }
+
+	void OnJump(float fImpulse);
+	void OnLand(float fVelocity);
+
+	bool InHaulBack(void) const;
+	void CheckHaulBack(void);
+
+	void HandleHaulBackAnimation(void);
+	void StartHaulBackAnimation(void);
+
+	void UpdateWeaponOnSprint(void);
+
+	bool ShouldCheckWallProximity(void) const;
+	bool CheckWallProximity(void);
+	void UpdateWallProximity(void);
+
+	void ThrowGrenade(void);
+
+#endif
+
 protected:
 	virtual void		PreThink( void );
 	virtual	void		PostThink( void );
@@ -362,6 +390,13 @@ private:
 	float				m_flTimeNextLadderHint;	// Next time we're eligible to display a HUD hint about a ladder.
 	
 	friend class CHL2GameMovement;
+
+#if defined ( ELEVENEIGHTYSEVEN_DLL )
+	float				m_flHaulBackAnimTime;
+
+	CNetworkQAngle(m_angEyeAngles);
+	C1187PlayerAnimState   m_PlayerAnimState;
+#endif
 };
 
 

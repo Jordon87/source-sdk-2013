@@ -1390,14 +1390,18 @@ bool C_BasePlayer::ShouldDraw()
 
 int C_BasePlayer::DrawModel( int flags )
 {
+#if !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 #ifndef PORTAL
+#endif // !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 	// In Portal this check is already performed as part of
 	// C_Portal_Player::DrawModel()
 	if ( !ShouldDrawThisPlayer() )
 	{
 		return 0;
 	}
+#if !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 #endif
+#endif // !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 	return BaseClass::DrawModel( flags );
 }
 

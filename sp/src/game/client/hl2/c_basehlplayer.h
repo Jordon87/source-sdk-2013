@@ -16,6 +16,11 @@
 #include "c_baseplayer.h"
 #include "c_hl2_playerlocaldata.h"
 
+#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+class C_BaseHLPlayer;
+#include "1187_playeranimstate.h"
+#endif
+
 class C_BaseHLPlayer : public C_BasePlayer
 {
 public:
@@ -52,12 +57,34 @@ public:
 
 	bool				IsWeaponLowered( void ) { return m_HL2Local.m_bWeaponLowered; }
 
+
+#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+	bool		ShouldDraw();
+
+	virtual void AddEntity(void);
+
+	QAngle GetAnimEyeAngles(void) { return m_angEyeAngles; }
+
+	virtual const QAngle& GetRenderAngles();
+
+	virtual void	PreThink(void);
+	const QAngle&	EyeAngles();
+	virtual void	PostThink(void);
+
+#endif
+
 public:
 
 	C_HL2PlayerLocalData		m_HL2Local;
 	EHANDLE				m_hClosestNPC;
 	float				m_flSpeedModTime;
 	bool				m_fIsSprinting;
+
+#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+	C1187PlayerAnimState m_PlayerAnimState;
+	QAngle	m_angEyeAngles;
+	CInterpolatedVar< QAngle >	m_iv_angEyeAngles;
+#endif
 
 private:
 	C_BaseHLPlayer( const C_BaseHLPlayer & ); // not defined, not accessible

@@ -5970,6 +5970,45 @@ void CBasePlayer::ImpulseCommands( )
 	m_nImpulse = 0;
 }
 
+#if defined ( ELEVENEIGHTYSEVEN_DLL )
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+static void CreateMustang(CBasePlayer *pPlayer)
+{
+	// Cheat to create a jeep in front of the player
+	Vector vecForward;
+	AngleVectors(pPlayer->EyeAngles(), &vecForward);
+	CBaseEntity *pMustang = (CBaseEntity *)CreateEntityByName("prop_vehicle_car");
+	if (pMustang)
+	{
+		Vector vecOrigin = pPlayer->GetAbsOrigin() + vecForward * 256 + Vector(0, 0, 64);
+		QAngle vecAngles(0, pPlayer->GetAbsAngles().y - 90, 0);
+		pMustang->SetAbsOrigin(vecOrigin);
+		pMustang->SetAbsAngles(vecAngles);
+		pMustang->KeyValue("model", "models/mustang.mdl");
+		pMustang->KeyValue("solid", "6");
+		pMustang->KeyValue("targetname", "mustang");
+		pMustang->KeyValue("vehiclescript", "scripts/vehicles/mustang.txt");
+		DispatchSpawn(pMustang);
+		pMustang->Activate();
+		pMustang->Teleport(&vecOrigin, &vecAngles, NULL);
+	}
+}
+
+void CC_CH_CreateMustang(void)
+{
+	CBasePlayer *pPlayer = UTIL_GetCommandClient();
+	if (!pPlayer)
+		return;
+	CreateMustang(pPlayer);
+}
+
+static ConCommand ch_createmustang("ch_createmustang", CC_CH_CreateMustang, "Spawn mustang in front of the player.", FCVAR_CHEAT);
+
+#endif
+
 #ifdef HL2_EPISODIC
 
 //-----------------------------------------------------------------------------
@@ -6544,6 +6583,16 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
+#if defined ( ELEVENEIGHTYSEVEN_DLL )
+	else if (stricmp(cmd, "toggle_ironsight") == 0)
+	{
+		CBaseCombatWeapon *pWeapon = GetActiveWeapon();
+		if (pWeapon != NULL)
+			pWeapon->ToggleIronsights();
+
+		return true;
+	}
+#endif
 
 	return false;
 }

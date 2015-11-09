@@ -15,6 +15,10 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifdef CHL2_Player
+#undef CHL2_Player
+#endif
+
 // How fast to avoid collisions with center of other object, in units per second
 #define AVOID_SPEED 2000.0f
 extern ConVar cl_forwardspeed;
@@ -31,6 +35,10 @@ ConVar cl_npc_speedmod_outtime( "cl_npc_speedmod_outtime", "1.5", FCVAR_CLIENTDL
 IMPLEMENT_CLIENTCLASS_DT(C_BaseHLPlayer, DT_HL2_Player, CHL2_Player)
 	RecvPropDataTable( RECVINFO_DT(m_HL2Local),0, &REFERENCE_RECV_TABLE(DT_HL2Local) ),
 	RecvPropBool( RECVINFO( m_fIsSprinting ) ),
+#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+	RecvPropFloat(RECVINFO(m_angEyeAngles[0])),
+	RecvPropFloat(RECVINFO(m_angEyeAngles[1])),
+#endif
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_BaseHLPlayer )
@@ -56,7 +64,11 @@ static ConCommand dropprimary("dropprimary", CC_DropPrimary, "dropprimary: Drops
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
+#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+C_BaseHLPlayer::C_BaseHLPlayer() : m_PlayerAnimState(this), m_iv_angEyeAngles("C_BaseHLPlayer::m_iv_angEyeAngles")
+#else
 C_BaseHLPlayer::C_BaseHLPlayer()
+#endif
 {
 	AddVar( &m_Local.m_vecPunchAngle, &m_Local.m_iv_vecPunchAngle, LATCH_SIMULATION_VAR );
 	AddVar( &m_Local.m_vecPunchAngleVel, &m_Local.m_iv_vecPunchAngleVel, LATCH_SIMULATION_VAR );
@@ -66,6 +78,12 @@ C_BaseHLPlayer::C_BaseHLPlayer()
 	m_flZoomRate		= 0.0f;
 	m_flZoomStartTime	= 0.0f;
 	m_flSpeedMod		= cl_forwardspeed.GetFloat();
+
+#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+	m_angEyeAngles.Init();
+
+	AddVar(&m_angEyeAngles, &m_iv_angEyeAngles, LATCH_SIMULATION_VAR);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -144,7 +162,6 @@ void C_BaseHLPlayer::Zoom( float FOVOffset, float time )
 	m_flZoomRate		= time;
 	m_flZoomStartTime	= gpGlobals->curtime;
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Hack to zero out player's pitch, use value from poseparameter instead
@@ -644,6 +661,165 @@ bool C_BaseHLPlayer::CreateMove( float flInputSampleTime, CUserCmd *pCmd )
 void C_BaseHLPlayer::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed )
 {
 	BaseClass::BuildTransformations( hdr, pos, q, cameraTransform, boneMask, boneComputed );
+#if !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 	BuildFirstPersonMeathookTransformations( hdr, pos, q, cameraTransform, boneMask, boneComputed, "ValveBiped.Bip01_Head1" );
+#else
+	if (InFirstPersonView() && !IsInAVehicle())
+	{
+		Vector forward, delta;
+		QAngle angles = LocalEyeAngles();
+
+		angles.x = 0;
+		AngleVectors(angles, &forward);
+
+		delta = forward * -16;
+
+		m_BoneAccessor.SetWritableBones(BONE_USED_BY_ANYTHING);
+
+		int i;
+
+		// Now add this offset to the entire skeleton.
+		for (i = 0; i < hdr->numbones(); i++)
+		{
+			// Only update bones reference by the bone mask.
+			if (!(hdr->boneFlags(i) & boneMask))
+			{
+				continue;
+			}
+			matrix3x4_t& bone = GetBoneForWrite(i);
+			Vector vBonePos;
+			MatrixGetTranslation(bone, vBonePos);
+			vBonePos += delta;
+			MatrixSetTranslation(vBonePos, bone);
+		}
+
+		int iBoneStart = LookupBone("ValveBiped.Bip01_Spine4");
+		int iBoneEnd = LookupBone("ValveBiped.Bip01_R_Thigh");
+
+		if (iBoneStart == -1 || iBoneEnd == -1)
+		{
+			return;
+		}
+
+		for (i = iBoneStart; i < iBoneEnd; i++)
+		{
+			// Only update bones reference by the bone mask.
+			if (!(hdr->boneFlags(i) & boneMask))
+			{
+				continue;
+			}
+
+			matrix3x4_t& bone = GetBoneForWrite(i);
+			Vector vBonePos;
+			MatrixGetTranslation(bone, vBonePos);
+			vBonePos += delta * 16;
+			MatrixSetTranslation(vBonePos, bone);
+			MatrixScaleByZero(bone);
+		}
+
+		iBoneStart = LookupBone("ValveBiped.Bip01_L_Finger4");
+		iBoneEnd = hdr->numbones();
+
+		if (iBoneStart == -1 || iBoneEnd == -1)
+		{
+			return;
+		}
+
+		for (i = iBoneStart; i < iBoneEnd; i++)
+		{
+			// Only update bones reference by the bone mask.
+			if (!(hdr->boneFlags(i) & boneMask))
+			{
+				continue;
+			}
+
+			matrix3x4_t& bone = GetBoneForWrite(i);
+			Vector vBonePos;
+			MatrixGetTranslation(bone, vBonePos);
+			vBonePos += delta * 16;
+			MatrixSetTranslation(vBonePos, bone);
+			MatrixScaleByZero(bone);
+		}
+	}
+
+#endif
 }
 
+#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+
+bool C_BaseHLPlayer::ShouldDraw()
+{
+	return !IsInAVehicle();
+}
+
+void C_BaseHLPlayer::AddEntity(void)
+{
+	BaseClass::AddEntity();
+
+	QAngle vTempAngles = GetLocalAngles();
+	vTempAngles[PITCH] = m_angEyeAngles[PITCH];
+
+	SetLocalAngles(vTempAngles);
+
+	m_PlayerAnimState.Update();
+
+	// Zero out model pitch, blending takes care of all of it.
+	SetLocalAnglesDim(X_INDEX, 0);
+}
+
+const QAngle& C_BaseHLPlayer::GetRenderAngles()
+{
+	if (IsRagdoll())
+	{
+		return vec3_angle;
+	}
+	else
+	{
+		return m_PlayerAnimState.GetRenderAngles();
+	}
+}
+
+void C_BaseHLPlayer::PreThink(void)
+{
+	QAngle vTempAngles = GetLocalAngles();
+
+	if (GetLocalPlayer() == this)
+	{
+		vTempAngles[PITCH] = EyeAngles()[PITCH];
+	}
+	else
+	{
+		vTempAngles[PITCH] = m_angEyeAngles[PITCH];
+	}
+
+	if (vTempAngles[YAW] < 0.0f)
+	{
+		vTempAngles[YAW] += 360.0f;
+	}
+
+	SetLocalAngles(vTempAngles);
+
+	BaseClass::PreThink();
+}
+
+const QAngle &C_BaseHLPlayer::EyeAngles()
+{
+	if (IsLocalPlayer())
+	{
+		return BaseClass::EyeAngles();
+	}
+	else
+	{
+		return m_angEyeAngles;
+	}
+}
+
+void C_BaseHLPlayer::PostThink(void)
+{
+	BaseClass::PostThink();
+
+	// Store the eye angles pitch so the client can compute its animation state correctly.
+	m_angEyeAngles = EyeAngles();
+}
+
+#endif
