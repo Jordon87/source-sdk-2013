@@ -77,20 +77,6 @@ private:
 
 	void		SetLadder( CFuncLadder *ladder );
 	CFuncLadder *GetLadder();
-
-
-#if defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-public:
-	// Only used by players.  Moves along the ground when player is a MOVETYPE_WALK.
-	virtual void	WalkMove(void);
-
-	virtual void	OnJump(float fImpulse);
-	virtual void	OnLand(float fVelocity);
-
-protected:
-	virtual bool	ShouldUpdateViewbob(void) const;
-	virtual void	UpdateViewbob(void);
-#endif
 };
 
 

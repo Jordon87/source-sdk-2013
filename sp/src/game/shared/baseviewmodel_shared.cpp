@@ -382,41 +382,6 @@ void CBaseViewModel::SendViewModelMatchingSequence( int sequence )
 #include "ivieweffects.h"
 #endif
 
-#if defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-void CBaseViewModel::CalcIronsights(Vector &pos, QAngle &ang)
-{
-	CBaseCombatWeapon *pWeapon = GetOwningWeapon();
-
-	if ( !pWeapon )
-		return;
-
-	//get delta time for interpolation
-	float delta = ( gpGlobals->curtime - pWeapon->m_flIronsightedTime ) * 2.5f; //modify this value to adjust how fast the interpolation is
-	float exp = ( pWeapon->IsIronsighted() ) ? 
-		( delta > 1.0f ) ? 1.0f : delta : //normal blending
-		( delta > 1.0f ) ? 0.0f : 1.0f - delta; //reverse interpolation
-
-	if( exp <= 0.001f ) //fully not ironsighted; save performance
-		return;
-
-	Vector newPos = pos;
-	QAngle newAng = ang;
-
-	Vector vForward, vRight, vUp, vOffset;
-	AngleVectors( newAng, &vForward, &vRight, &vUp );
-	vOffset = pWeapon->GetIronsightPositionOffset();
-
-	newPos += vForward * vOffset.x;
-	newPos += vRight * vOffset.y;
-	newPos += vUp * vOffset.z;
-	newAng += pWeapon->GetIronsightAngleOffset();
-	//fov is handled by CBaseCombatWeapon
-
-	pos += ( newPos - pos ) * exp;
-	ang += ( newAng - ang ) * exp;
-}
-#endif
-
 void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePosition, const QAngle& eyeAngles )
 {
 	// UNDONE: Calc this on the server?  Disabled for now as it seems unnecessary to have this info on the server
@@ -445,13 +410,7 @@ void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePos
 #if !defined ( CSTRIKE_DLL )
 	// This was causing weapon jitter when rotating in updated CS:S; original Source had this in above InPrediction block  07/14/10
 	// Add lag
-
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-	if( pWeapon && !pWeapon->IsIronsighted() )
-		CalcViewModelLag( vmorigin, vmangles, vmangoriginal );
-#else
 	CalcViewModelLag( vmorigin, vmangles, vmangoriginal );
-#endif
 #endif
 
 #if defined( CLIENT_DLL )
@@ -466,10 +425,6 @@ void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePos
 	{
 		g_ClientVirtualReality.OverrideViewModelTransform( vmorigin, vmangles, pWeapon && pWeapon->ShouldUseLargeViewModelVROverride() );
 	}
-
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-	CalcIronsights( vmorigin, vmangles );
-#endif
 
 	SetLocalOrigin( vmorigin );
 	SetLocalAngles( vmangles );
@@ -595,8 +550,9 @@ static void RecvProxy_Weapon( const CRecvProxyData *pData, void *pStruct, void *
 }
 #endif
 
-
+#if !defined ( ELEVENEIGHTYSEVEN_DLL ) && !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 LINK_ENTITY_TO_CLASS( viewmodel, CBaseViewModel );
+#endif // !defined ( ELEVENEIGHTYSEVEN_DLL ) && !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseViewModel, DT_BaseViewModel )
 

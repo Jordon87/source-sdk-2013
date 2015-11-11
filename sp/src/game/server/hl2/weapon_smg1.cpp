@@ -18,16 +18,11 @@
 #include "rumble_shared.h"
 #include "gamestats.h"
 
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-#include "weapon_smg1.h"
-#endif
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 extern ConVar    sk_plr_dmg_smg1_grenade;	
 
-#if !defined ( ELEVENEIGHTYSEVEN_DLL )
 class CWeaponSMG1 : public CHLSelectFireMachineGun
 {
 	DECLARE_DATADESC();
@@ -77,8 +72,6 @@ IMPLEMENT_SERVERCLASS_ST(CWeaponSMG1, DT_WeaponSMG1)
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_smg1, CWeaponSMG1 );
-#endif // ! defined ( ELEVENEIGHTYSEVEN_DLL )
-
 PRECACHE_WEAPON_REGISTER(weapon_smg1);
 
 BEGIN_DATADESC( CWeaponSMG1 )

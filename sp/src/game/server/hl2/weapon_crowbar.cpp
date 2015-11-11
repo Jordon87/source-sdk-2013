@@ -29,6 +29,7 @@ ConVar    sk_npc_dmg_crowbar		( "sk_npc_dmg_crowbar","0");
 // CWeaponCrowbar
 //-----------------------------------------------------------------------------
 
+#if !defined ( ELEVENEIGHTYSEVEN_DLL )
 IMPLEMENT_SERVERCLASS_ST(CWeaponCrowbar, DT_WeaponCrowbar)
 END_SEND_TABLE()
 
@@ -36,6 +37,7 @@ END_SEND_TABLE()
 LINK_ENTITY_TO_CLASS( weapon_crowbar, CWeaponCrowbar );
 PRECACHE_WEAPON_REGISTER( weapon_crowbar );
 #endif
+#endif // !defined ( ELEVENEIGHTYSEVEN_DLL )
 
 acttable_t CWeaponCrowbar::m_acttable[] = 
 {

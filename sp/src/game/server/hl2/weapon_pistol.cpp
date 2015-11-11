@@ -18,11 +18,6 @@
 #include "vstdlib/random.h"
 #include "gamestats.h"
 
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-#include "weapon_pistol.h"
-#endif
-
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -38,7 +33,6 @@ ConVar	pistol_use_new_accuracy( "pistol_use_new_accuracy", "1" );
 // CWeaponPistol
 //-----------------------------------------------------------------------------
 
-#if !defined ( ELEVENEIGHTYSEVEN_DLL )
 class CWeaponPistol : public CBaseHLCombatWeapon
 {
 	DECLARE_DATADESC();
@@ -119,12 +113,11 @@ private:
 	int		m_nNumShotsFired;
 };
 
+
 IMPLEMENT_SERVERCLASS_ST(CWeaponPistol, DT_WeaponPistol)
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_pistol, CWeaponPistol );
-#endif // ! defined ( ELEVENEIGHTYSEVEN_DLL )
-
 PRECACHE_WEAPON_REGISTER( weapon_pistol );
 
 BEGIN_DATADESC( CWeaponPistol )
@@ -378,36 +371,3 @@ void CWeaponPistol::AddViewKick( void )
 	//Add it to the view punch
 	pPlayer->ViewPunch( viewPunch );
 }
-
-
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-const Vector& CWeaponPistol::GetBulletSpread(void)
-{
-	// Handle NPCs first
-	static Vector npcCone = VECTOR_CONE_5DEGREES;
-	if (GetOwner() && GetOwner()->IsNPC())
-		return npcCone;
-
-	static Vector cone;
-
-	if (pistol_use_new_accuracy.GetBool())
-	{
-		float ramp = RemapValClamped(m_flAccuracyPenalty,
-			0.0f,
-			PISTOL_ACCURACY_MAXIMUM_PENALTY_TIME,
-			0.0f,
-			1.0f);
-
-		// We lerp from very accurate to inaccurate over time
-		VectorLerp(VECTOR_CONE_1DEGREES, VECTOR_CONE_6DEGREES, ramp, cone);
-	}
-	else
-	{
-		// Old value
-		cone = VECTOR_CONE_4DEGREES;
-	}
-
-	return cone;
-}
-
-#endif

@@ -146,8 +146,8 @@ static	kbutton_t	in_attack3;
 kbutton_t	in_ducktoggle;
 
 #if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-kbutton_t			in_frag;
-static	kbutton_t	in_melee;
+static  kbutton_t   in_frag;
+static  kbutton_t   in_melee;
 #endif
 
 /*

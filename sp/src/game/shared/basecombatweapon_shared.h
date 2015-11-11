@@ -334,18 +334,6 @@ public:
 
 	virtual int				GetSkinOverride() const { return -1; }
 
-#if defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-	virtual bool			HasIronsights(void) { return true; } //default yes; override and return false for weapons with no ironsights (like weapon_crowbar)
-	bool					IsIronsighted(void);
-	void					ToggleIronsights(void);
-	void					EnableIronsights(void);
-	void					DisableIronsights(void);
-	void					SetIronsightTime(void);
-
-	virtual Activity		GetIronsightsPrimaryAttackActivity(void);
-	virtual Activity		GetIronsightsSecondaryAttackActivity(void);
-#endif
-
 public:
 
 	// Weapon info accessors for data in the weapon's data file
@@ -370,12 +358,6 @@ public:
 	virtual bool			UsesClipsForAmmo1( void ) const;
 	virtual bool			UsesClipsForAmmo2( void ) const;
 	bool					IsMeleeWeapon() const;
-
-#if defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL ) 
-	Vector					GetIronsightPositionOffset(void) const;
-	QAngle					GetIronsightAngleOffset(void) const;
-	float					GetIronsightFOVOffset(void) const;
-#endif
 
 	// derive this function if you mod uses encrypted weapon info files
 	virtual const unsigned char *GetEncryptionKey( void );
@@ -617,11 +599,6 @@ public:
 	EHANDLE					m_hLocker;				// Who locked this weapon.
 
 	CNetworkVar( bool, m_bFlipViewModel );
-
-#if defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-	CNetworkVar(bool, m_bIsIronsighted);
-	CNetworkVar(float, m_flIronsightedTime);
-#endif
 
 	IPhysicsConstraint		*GetConstraint() { return m_pConstraint; }
 

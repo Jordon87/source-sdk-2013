@@ -80,6 +80,20 @@ ITexture *GetCameraTexture( void )
 	return s_pCameraTexture;
 }
 
+#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+static CTextureReference s_pScopeTexture;
+ITexture *GetScopeTexture(void)
+{
+	if (!s_pScopeTexture)
+	{
+		s_pScopeTexture.Init(materials->FindTexture("_rt_Scope", TEXTURE_GROUP_RENDER_TARGET));
+		Assert(!IsErrorTexture(s_pScopeTexture));
+		AddReleaseFunc();
+	}
+	return s_pScopeTexture;
+}
+#endif
+
 //=============================================================================
 // Full Frame Depth Texture
 //=============================================================================
@@ -247,6 +261,9 @@ void ReleaseRenderTargets( void )
 {
 	s_pPowerOfTwoFrameBufferTexture.Shutdown();
 	s_pCameraTexture.Shutdown();
+#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+	s_pScopeTexture.Shutdown();
+#endif
 	s_pWaterReflectionTexture.Shutdown();
 	s_pWaterRefractionTexture.Shutdown();
 	s_pQuarterSizedFB0.Shutdown();

@@ -8,11 +8,11 @@
 #include "cbase.h"
 
 #ifdef CLIENT_DLL
-#include "c_basehlplayer.h"
+#include "c_1187_player.h"
 #include "prediction.h"
 #define CRecipientFilter C_RecipientFilter
 #else
-#include "hl2_player.h"
+#include "1187_player.h"
 #endif
 
 #include "1187_playeranimstate.h"
@@ -34,7 +34,7 @@ extern ConVar mp_feetyawrate;
 extern ConVar mp_facefronttime;
 extern ConVar mp_ik;
 
-C1187PlayerAnimState::C1187PlayerAnimState(CHL2_Player *outer)
+C1187PlayerAnimState::C1187PlayerAnimState(C1187_Player *outer)
 	: m_pOuter(outer)
 {
 	m_flGaitYaw = 0.0f;
@@ -101,7 +101,7 @@ void C1187PlayerAnimState::ComputePlaybackRate()
 // Purpose: 
 // Output : CBasePlayer
 //-----------------------------------------------------------------------------
-CHL2_Player *C1187PlayerAnimState::GetOuter()
+C1187_Player *C1187PlayerAnimState::GetOuter()
 {
 	return m_pOuter;
 }

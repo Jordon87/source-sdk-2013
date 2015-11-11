@@ -75,10 +75,6 @@ extern ConVar autoaim_max_dist;
 
 #define TIME_IGNORE_FALL_DAMAGE 10.0
 
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-#define ELEVENEIGHTYSEVEN_PLAYER_MODEL		"models/humans/group02/male_09.mdl"
-#endif
-
 extern int gEvilImpulse101;
 
 ConVar sv_autojump( "sv_autojump", "0" );
@@ -295,9 +291,11 @@ void CC_ToggleDuck( void )
 
 static ConCommand toggle_duck("toggle_duck", CC_ToggleDuck, "Toggles duck" );
 
+#if !defined  ( ELEVENEIGHTYSEVEN_DLL ) && !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 #ifndef HL2MP
 #ifndef PORTAL
 LINK_ENTITY_TO_CLASS( player, CHL2_Player );
+#endif
 #endif
 #endif
 
@@ -389,17 +387,9 @@ BEGIN_DATADESC( CHL2_Player )
 
 	//DEFINE_FIELD( m_hPlayerProxy, FIELD_EHANDLE ), //Shut up class check!
 
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-	DEFINE_FIELD(m_flHaulBackAnimTime, FIELD_TIME),
-#endif
-
 END_DATADESC()
 
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-CHL2_Player::CHL2_Player() : m_PlayerAnimState(this)
-#else
 CHL2_Player::CHL2_Player()
-#endif
 {
 	m_nNumMissPositions	= 0;
 	m_pPlayerAISquad = 0;
@@ -407,14 +397,6 @@ CHL2_Player::CHL2_Player()
 
 	m_flArmorReductionTime = 0.0f;
 	m_iArmorReductionFrom = 0;
-
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-	m_flHaulBackAnimTime = 0.0f;
-
-	m_angEyeAngles.Init();
-
-	//	UseClientSideAnimation();
-#endif
 }
 
 //
@@ -439,11 +421,6 @@ CSuitPowerDevice SuitDeviceBreather( bits_SUIT_DEVICE_BREATHER, 6.7f );		// 100 
 IMPLEMENT_SERVERCLASS_ST(CHL2_Player, DT_HL2_Player)
 	SendPropDataTable(SENDINFO_DT(m_HL2Local), &REFERENCE_SEND_TABLE(DT_HL2Local), SendProxy_SendLocalDataTable),
 	SendPropBool( SENDINFO(m_fIsSprinting) ),
-
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-	SendPropAngle(SENDINFO_VECTORELEM(m_angEyeAngles, 0), 11, SPROP_CHANGES_OFTEN),
-	SendPropAngle(SENDINFO_VECTORELEM(m_angEyeAngles, 1), 11, SPROP_CHANGES_OFTEN),
-#endif
 END_SEND_TABLE()
 
 
@@ -460,10 +437,6 @@ void CHL2_Player::Precache( void )
 	PrecacheScriptSound( "HL2Player.TrainUse" );
 	PrecacheScriptSound( "HL2Player.Use" );
 	PrecacheScriptSound( "HL2Player.BurnPain" );
-
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-	PrecacheModel(ELEVENEIGHTYSEVEN_PLAYER_MODEL);
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -496,9 +469,7 @@ void CHL2_Player::EquipSuit( bool bPlayEffects )
 
 	if ( bPlayEffects == true )
 	{
-#if !defined ( ELEVENEIGHTYSEVEN_DLL )
 		StartAdmireGlovesAnimation();
-#endif
 	}
 }
 
@@ -895,17 +866,6 @@ void CHL2_Player::PreThink(void)
 	}
 	// StudioFrameAdvance( );//!!!HACKHACK!!! Can't be hit by traceline when not animating?
 
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-	// Check haul back.
-	CheckHaulBack();
-
-	// Update weapon on sprint.
-	UpdateWeaponOnSprint();
-
-	// Update wall proximity.
-	UpdateWallProximity();
-#endif
-
 	// Update weapon's ready status
 	UpdateWeaponPosture();
 
@@ -943,22 +903,7 @@ void CHL2_Player::PostThink( void )
 	if ( !g_fGameOver && !IsPlayerLockedInPlace() && IsAlive() )
 	{
 		 HandleAdmireGlovesAnimation();
-
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-		 HandleHaulBackAnimation();
-#endif
 	}
-
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-	m_PlayerAnimState.Update();
-
-	// Store the eye angles pitch so the client can compute its animation state correctly.
-	m_angEyeAngles = EyeAngles();
-
-	QAngle angles = GetLocalAngles();
-	angles[PITCH] = 0;
-	SetLocalAngles(angles);
-#endif
 }
 
 void CHL2_Player::StartAdmireGlovesAnimation( void )
@@ -1166,15 +1111,11 @@ void CHL2_Player::PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper)
 void CHL2_Player::Spawn(void)
 {
 
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-	SetModel(ELEVENEIGHTYSEVEN_PLAYER_MODEL);
-#else
 #ifndef HL2MP
 #ifndef PORTAL
 	SetModel( "models/player.mdl" );
 #endif
 #endif
-#endif // defined ( ELEVENEIGHTYSEVEN_DLL )
 
 	BaseClass::Spawn();
 
@@ -3824,357 +3765,6 @@ void CHL2_Player::FirePlayerProxyOutput( const char *pszOutputName, variant_t va
 
 	GetPlayerProxy()->FireNamedOutput( pszOutputName, variant, pActivator, pCaller );
 }
-
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-
-
-// Set the activity based on an event or current state
-void CHL2_Player::SetAnimation(PLAYER_ANIM playerAnim)
-{
-	int animDesired;
-
-	float speed;
-
-	speed = GetAbsVelocity().Length2D();
-
-
-	// bool bRunning = true;
-
-	//Revisit!
-	/*	if ( ( m_nButtons & ( IN_FORWARD | IN_BACK | IN_MOVELEFT | IN_MOVERIGHT ) ) )
-	{
-	if ( speed > 1.0f && speed < hl2_normspeed.GetFloat() - 20.0f )
-	{
-	bRunning = false;
-	}
-	}*/
-
-	if (GetFlags() & (FL_FROZEN | FL_ATCONTROLS))
-	{
-		speed = 0;
-		playerAnim = PLAYER_IDLE;
-	}
-
-	Activity idealActivity = ACT_RUN; // ACT_HL2MP_RUN
-
-	// This could stand to be redone. Why is playerAnim abstracted from activity? (sjb)
-	if (playerAnim == PLAYER_JUMP)
-	{
-		idealActivity = ACT_JUMP; // ACT_HL2MP_JUMP
-	}
-	else if (playerAnim == PLAYER_DIE)
-	{
-		if (m_lifeState == LIFE_ALIVE)
-		{
-			return;
-		}
-	}
-	else if (playerAnim == PLAYER_ATTACK1)
-	{
-		if (GetActivity() == ACT_HOVER ||
-			GetActivity() == ACT_SWIM ||
-			GetActivity() == ACT_HOP ||
-			GetActivity() == ACT_LEAP ||
-			GetActivity() == ACT_DIESIMPLE)
-		{
-			idealActivity = GetActivity();
-		}
-		else
-		{
-			idealActivity = ACT_GESTURE_RANGE_ATTACK1; // ACT_HL2MP_GESTURE_RANGE_ATTACK
-		}
-	}
-	else if (playerAnim == PLAYER_RELOAD)
-	{
-		idealActivity = ACT_GESTURE_RELOAD; // ACT_HL2MP_GESTURE_RELOAD
-	}
-	else if (playerAnim == PLAYER_IDLE || playerAnim == PLAYER_WALK)
-	{
-		if (!(GetFlags() & FL_ONGROUND) && GetActivity() == ACT_JUMP)	// Still jumping // ACT_HL2MP_JUMP
-		{
-			idealActivity = GetActivity();
-		}
-		/*
-		else if ( GetWaterLevel() > 1 )
-		{
-		if ( speed == 0 )
-		idealActivity = ACT_HOVER;
-		else
-		idealActivity = ACT_SWIM;
-		}
-		*/
-		else
-		{
-			if (GetFlags() & FL_DUCKING)
-			{
-				if (speed > 0)
-				{
-					idealActivity = ACT_WALK_CROUCH; // ACT_HL2MP_WALK_CROUCH
-				}
-				else
-				{
-					idealActivity = ACT_CROUCHIDLE; // ACT_HL2MP_IDLE_CROUCH
-				}
-			}
-			else
-			{
-				if (speed > 0)
-				{
-					/*
-					if ( bRunning == false )
-					{
-					idealActivity = ACT_WALK;
-					}
-					else
-					*/
-					{
-						idealActivity = ACT_RUN; // ACT_HL2MP_RUN
-					}
-				}
-				else
-				{
-					idealActivity = ACT_IDLE; // ACT_HL2MP_IDLE
-				}
-			}
-		}
-
-		// idealActivity = TranslateTeamActivity(idealActivity);
-	}
-
-	if (idealActivity == ACT_GESTURE_RANGE_ATTACK1) // ACT_HL2MP_GESTURE_RANGE_ATTACK
-	{
-		RestartGesture(Weapon_TranslateActivity(idealActivity));
-
-		// FIXME: this seems a bit wacked
-		Weapon_SetActivity(Weapon_TranslateActivity(ACT_RANGE_ATTACK1), 0);
-
-		return;
-	}
-	else if (idealActivity == ACT_GESTURE_RELOAD) // ACT_HL2MP_GESTURE_RELOAD
-	{
-		RestartGesture(Weapon_TranslateActivity(idealActivity));
-		return;
-	}
-	else
-	{
-		SetActivity(idealActivity);
-
-		animDesired = SelectWeightedSequence(Weapon_TranslateActivity(idealActivity));
-
-		if (animDesired == -1)
-		{
-			animDesired = SelectWeightedSequence(idealActivity);
-
-			if (animDesired == -1)
-			{
-				animDesired = 0;
-			}
-		}
-
-		// Already using the desired animation?
-		if (GetSequence() == animDesired)
-			return;
-
-		m_flPlaybackRate = 1.0;
-		ResetSequence(animDesired);
-		SetCycle(0);
-		return;
-	}
-
-	// Already using the desired animation?
-	if (GetSequence() == animDesired)
-		return;
-
-	//Msg( "Set animation to %d\n", animDesired );
-	// Reset to first frame of desired animation
-	ResetSequence(animDesired);
-	SetCycle(0);
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CHL2_Player::OnJump(float fImpulse)
-{
-	CBaseCombatWeapon* pWeapon = GetActiveWeapon();
-	if (pWeapon)
-	{
-		pWeapon->SendWeaponAnim( ACT_JUMP );
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CHL2_Player::OnLand(float fVelocity)
-{
-	CBaseCombatWeapon* pWeapon = GetActiveWeapon();
-	if (pWeapon)
-	{
-		// pWeapon->SendWeaponAnim(ACT_LAND);
-	}
-}
-
-bool CHL2_Player::InHaulBack(void) const
-{
-	return m_flHaulBackAnimTime != 0.0f;
-}
-
-void CHL2_Player::CheckHaulBack(void)
-{
-	int buttonsChanged = m_afButtonPressed | m_afButtonReleased;
-	bool bInHaulBack = InHaulBack();
-	bool bWantHaulBack = (m_nButtons & IN_FRAG) ? true : false;
-	if (bInHaulBack != bWantHaulBack && (buttonsChanged & IN_FRAG))
-	{
-		// If someone wants to sprint, make sure they've pressed the button to do so. We want to prevent the
-		// case where a player can hold down the sprint key and burn tiny bursts of sprint as the suit recharges
-		// We want a full debounce of the key to resume sprinting after the suit is completely drained
-		if (bWantHaulBack)
-		{
-			StartHaulBackAnimation();
-		}
-		else
-		{
-			// Reset key, so it will be activated post whatever is suppressing it.
-			m_nButtons &= ~IN_FRAG;
-		}
-	}
-}
-
-void CHL2_Player::HandleHaulBackAnimation(void)
-{
-	CBaseViewModel *pVM = GetViewModel();
-
-	if (pVM && pVM->GetOwningWeapon())
-	{
-		if (m_flHaulBackAnimTime != 0.0)
-		{
-			if (m_flHaulBackAnimTime > gpGlobals->curtime)
-			{
-				pVM->m_flPlaybackRate = 1.0f;
-				pVM->StudioFrameAdvance();
-			}
-			else if (m_flHaulBackAnimTime < gpGlobals->curtime)
-			{
-				m_flHaulBackAnimTime = 0.0f;
-				// pVM->SetWeaponModel(NULL, NULL);
-			}
-		}
-	}
-	else
-		m_flHaulBackAnimTime = 0.0f;
-}
-
-void CHL2_Player::StartHaulBackAnimation(void)
-{
-	MDLCACHE_CRITICAL_SECTION();
-	CBaseViewModel *vm = GetViewModel(0);
-
-	if (vm && GetActiveWeapon())
-	{
-		// vm->SetWeaponModel("models/weapons/v_hands.mdl", NULL);
-		// ShowViewModel(true);
-
-		int	idealSequence = vm->SelectWeightedSequence(ACT_VM_HAULBACK);
-
-		if (idealSequence >= 0)
-		{
-			vm->SendViewModelMatchingSequence(idealSequence);
-			m_flHaulBackAnimTime = gpGlobals->curtime + vm->SequenceDuration(idealSequence);
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CHL2_Player::UpdateWeaponOnSprint(void)
-{
-	CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon *>(GetActiveWeapon());
-
-	if (pWeapon)
-	{
-		if ((m_nButtons & IN_SPEED) && pWeapon->CanLower() && !m_HL2Local.m_bWeaponLowered)
-		{
-			if (Weapon_Lower())
-			{
-				DevMsg("Successfully lowered weapon!\n");
-			}
-		}
-		else if (m_HL2Local.m_bWeaponLowered)
-		{
-			if (Weapon_Ready())
-			{
-				DevMsg("Successfully ready weapon!\n");
-			}
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-bool CHL2_Player::ShouldCheckWallProximity(void) const
-{
-	return GetActiveWeapon() != NULL;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-bool CHL2_Player::CheckWallProximity(void)
-{
-	Vector origin, forward;
-	origin = Weapon_ShootPosition();
-
-	AngleVectors( EyeAngles(), &forward );
-
-	float radius2D = 0.0f;
-	
-	if (CollisionProp())
-	{
-		radius2D = CollisionProp()->BoundingRadius2D();
-	}
-	else
-	{
-		float hullWidth, hullLength;
-		hullWidth  = GetPlayerMaxs().x - GetPlayerMins().x;
-		hullLength = GetPlayerMaxs().y - GetPlayerMins().y;
-
-		radius2D = sqrt(hullWidth*hullWidth + hullLength*hullLength) * 0.5f;
-	}
-
-	trace_t tr;
-	UTIL_TraceLine(origin, origin + (forward * (radius2D + 1)), MASK_SOLID, this, COLLISION_GROUP_NONE, &tr);
-
-	if (tr.m_pEnt && tr.m_pEnt->IsWorld())
-	{
-		return true;
-	}
-
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CHL2_Player::UpdateWallProximity(void)
-{
-	if (!ShouldCheckWallProximity())
-		return;
-
-	if (CheckWallProximity())
-	{
-		Weapon_Lower();
-	}
-	else
-	{
-		Weapon_Ready();
-	}
-}
-
-#endif // defined ( ELEVENEIGHTYSEVEN_DLL )
 
 LINK_ENTITY_TO_CLASS( logic_playerproxy, CLogicPlayerProxy);
 

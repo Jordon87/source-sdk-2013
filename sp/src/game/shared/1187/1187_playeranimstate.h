@@ -12,7 +12,7 @@
 #endif
 
 #if defined( CLIENT_DLL )
-#define CHL2_Player C_BaseHLPlayer
+#define C1187_Player C_1187_Player
 #endif
 
 class C1187PlayerAnimState
@@ -25,7 +25,7 @@ public:
 		TURN_RIGHT
 	};
 
-	C1187PlayerAnimState(CHL2_Player *outer);
+	C1187PlayerAnimState(C1187_Player *outer);
 
 	Activity			BodyYawTranslateActivity(Activity activity);
 
@@ -35,7 +35,7 @@ public:
 
 	void				GetPoseParameters(CStudioHdr *pStudioHdr, float poseParameter[MAXSTUDIOPOSEPARAM]);
 
-	CHL2_Player*		GetOuter();
+	C1187_Player*		GetOuter();
 
 private:
 	void				GetOuterAbsVelocity(Vector& vel);
@@ -49,7 +49,7 @@ private:
 
 	void				ComputePlaybackRate();
 
-	CHL2_Player*		m_pOuter;
+	C1187_Player*		m_pOuter;
 
 	float				m_flGaitYaw;
 	float				m_flStoredCycle;

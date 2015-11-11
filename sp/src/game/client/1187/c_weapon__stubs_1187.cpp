@@ -6,16 +6,20 @@
 
 #include "cbase.h"
 #include "c_weapon__stubs.h"
-#include "basehlcombatweapon_shared.h"
-#include "c_basehlcombatweapon.h"
+#include "1187_basecombatweapon_shared.h"
+#include "c_1187_basecombatweapon.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-STUB_WEAPON_CLASS(weapon_healthpack, WeaponHealthPack, C_BaseHLCombatWeapon);
-STUB_WEAPON_CLASS(weapon_kar98, WeaponKar98, C_BaseHLCombatWeapon);
-STUB_WEAPON_CLASS(weapon_knife, WeaponKnife, C_BaseHLBludgeonWeapon);
-STUB_WEAPON_CLASS(weapon_m4, WeaponM4, C_HLSelectFireMachineGun);
-STUB_WEAPON_CLASS(weapon_m16, WeaponM16, C_HLSelectFireMachineGun);
-STUB_WEAPON_CLASS(weapon_pistol, WeaponBeretta, C_BaseHLCombatWeapon);
-STUB_WEAPON_CLASS(weapon_smg1, WeaponMP5K, C_HLSelectFireMachineGun);
+STUB_WEAPON_CLASS(weapon_357, 1187WeaponPPC, C_Base1187CombatWeapon);
+STUB_WEAPON_CLASS(weapon_crowbar, 1187WeaponCrowbar, C_Base1187BludgeonWeapon);
+STUB_WEAPON_CLASS(weapon_healthpack, 1187WeaponHealthPack, C_Base1187CombatWeapon);
+STUB_WEAPON_CLASS(weapon_kar98, 1187WeaponKar98, C_Base1187CombatWeapon);
+STUB_WEAPON_CLASS(weapon_knife, 1187WeaponKnife, C_Base1187BludgeonWeapon);
+STUB_WEAPON_CLASS(weapon_m4, 1187WeaponM4, C_1187SelectFireMachineGun);
+STUB_WEAPON_CLASS(weapon_m16, 1187WeaponM16, C_1187SelectFireMachineGun);
+STUB_WEAPON_CLASS(weapon_pistol, 1187WeaponBeretta, C_Base1187CombatWeapon);
+STUB_WEAPON_CLASS(weapon_rpg, 1187WeaponLAW, C_Base1187CombatWeapon);
+STUB_WEAPON_CLASS(weapon_shotgun, 1187WeaponShotgun, C_Base1187CombatWeapon);
+STUB_WEAPON_CLASS(weapon_smg1, 1187WeaponMP5K, C_1187SelectFireMachineGun);

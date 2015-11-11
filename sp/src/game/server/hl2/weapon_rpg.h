@@ -177,7 +177,9 @@ public:
 	CWeaponRPG();
 	~CWeaponRPG();
 
+#if !defined ( ELEVENEIGHTYSEVEN_DLL )
 	DECLARE_SERVERCLASS();
+#endif
 
 	void	Precache( void );
 

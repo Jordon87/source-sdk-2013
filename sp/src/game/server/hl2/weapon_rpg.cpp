@@ -1386,11 +1386,13 @@ BEGIN_DATADESC( CWeaponRPG )
 
 END_DATADESC()
 
+#if !defined ( ELEVENEIGHTYSEVEN_DLL )
 IMPLEMENT_SERVERCLASS_ST(CWeaponRPG, DT_WeaponRPG)
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_rpg, CWeaponRPG );
 PRECACHE_WEAPON_REGISTER(weapon_rpg);
+#endif
 
 acttable_t	CWeaponRPG::m_acttable[] = 
 {
