@@ -14,6 +14,8 @@
 
 STUB_WEAPON_CLASS(weapon_357, 1187WeaponPPC, C_Base1187CombatWeapon);
 STUB_WEAPON_CLASS(weapon_crowbar, 1187WeaponCrowbar, C_Base1187BludgeonWeapon);
+STUB_WEAPON_CLASS(weapon_dualpistol, 1187WeaponDualBeretta, C_Base1187CombatWeapon);
+STUB_WEAPON_CLASS(weapon_dualmp5k, 1187WeaponDualMP5K, C_1187SelectFireMachineGun);
 STUB_WEAPON_CLASS(weapon_healthpack, 1187WeaponHealthPack, C_Base1187CombatWeapon);
 STUB_WEAPON_CLASS(weapon_kar98, 1187WeaponKar98, C_Base1187CombatWeapon);
 STUB_WEAPON_CLASS(weapon_knife, 1187WeaponKnife, C_Base1187BludgeonWeapon);

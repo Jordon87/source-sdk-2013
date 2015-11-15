@@ -26,6 +26,9 @@ public:
 	DECLARE_EMBEDDED_NETWORKVAR();
 
 	C_1187PlayerLocalData();
+
+	bool	m_bWeaponLoweredOnSprint;
+	bool	m_bAdjacentToWall;
 };
 
 

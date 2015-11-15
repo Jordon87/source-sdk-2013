@@ -3218,7 +3218,7 @@ void CViewRender::DrawScope(const CViewSetup &viewSet)
 	scopeView.height = pRenderTarget->GetActualHeight();
 	scopeView.x = 0;
 	scopeView.y = 0;
-	scopeView.fov = 45;
+	scopeView.fov = 35;
 	scopeView.m_bOrtho = false;
 
 	scopeView.m_flAspectRatio = 1.0f;

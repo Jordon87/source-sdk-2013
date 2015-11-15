@@ -93,11 +93,11 @@ void CBase1187BludgeonWeapon::ItemPostFrame( void )
 	if ( pOwner == NULL )
 		return;
 
-	if ( (pOwner->m_nButtons & IN_ATTACK) && (m_flNextPrimaryAttack <= gpGlobals->curtime) )
+	if ((pOwner->m_nButtons & IN_ATTACK) && IsPrimaryAttackAllowed() && (m_flNextPrimaryAttack <= gpGlobals->curtime))
 	{
 		PrimaryAttack();
 	} 
-	else if ( (pOwner->m_nButtons & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->curtime) )
+	else if ((pOwner->m_nButtons & IN_ATTACK2) && IsSecondaryAttackAllowed() && (m_flNextSecondaryAttack <= gpGlobals->curtime))
 	{
 		SecondaryAttack();
 	}
@@ -150,6 +150,17 @@ void CBase1187BludgeonWeapon::Hit( trace_t &traceHit, Activity nHitActivity, boo
 	//Apply damage to a hit target
 	if ( pHitEntity != NULL )
 	{
+		if (pHitEntity->IsWorld())
+		{
+			//Play hit world sound
+			WeaponSound(MELEE_HIT_WORLD);
+		}
+		else
+		{
+			//Play regular hit sound
+			WeaponSound(MELEE_HIT);
+		}
+
 		Vector hitDirection;
 		pPlayer->EyeVectors( &hitDirection, NULL, NULL );
 		VectorNormalize( hitDirection );

@@ -131,7 +131,7 @@ void C1187_BaseWeapon_Pistol::DryFire(void)
 	SendWeaponAnim( ACT_VM_DRYFIRE );
 	
 	m_flSoonestPrimaryAttack	= gpGlobals->curtime + BASEWEAPON_PISTOL_FASTEST_DRY_REFIRE_TIME;
-	m_flNextPrimaryAttack		= gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack		= gpGlobals->curtime + GetViewModelSequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -226,11 +226,11 @@ void C1187_BaseWeapon_Pistol::ItemPostFrame(void)
 		return;
 
 	//Allow a refire as fast as the player can click
-	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )
+	if (((pOwner->m_nButtons & IN_ATTACK) == false) && (m_flSoonestPrimaryAttack < gpGlobals->curtime))
 	{
 		m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
 	}
-	else if ( ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack < gpGlobals->curtime ) && ( m_iClip1 <= 0 ) )
+	else if ((pOwner->m_nButtons & IN_ATTACK) && IsPrimaryAttackAllowed() && (m_flNextPrimaryAttack < gpGlobals->curtime) && (m_iClip1 <= 0))
 	{
 		DryFire();
 	}

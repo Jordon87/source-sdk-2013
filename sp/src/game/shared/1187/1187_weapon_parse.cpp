@@ -15,9 +15,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-
-
-
 //-----------------------------------------------------------------------------
 // FileWeaponInfo_t implementation.
 //-----------------------------------------------------------------------------
@@ -27,6 +24,8 @@ C1187FileWeaponInfo_t::C1187FileWeaponInfo_t() : FileWeaponInfo_t()
 	vecIronsightPosOffset.Init();
 	angIronsightAngOffset.Init();
 	flIronsightFOVOffset = 0.0f;
+
+	vecFragPosOffset.Init();
 }
 
 #ifdef CLIENT_DLL
@@ -56,6 +55,18 @@ void C1187FileWeaponInfo_t::Parse(KeyValues *pKeyValuesData, const char *szWeapo
 		vecIronsightPosOffset = vec3_origin;
 		angIronsightAngOffset.Init();
 		flIronsightFOVOffset = 0.0f;
+	}
+
+	KeyValues *pFrag = pKeyValuesData->FindKey("Frag");
+	if (pFrag)
+	{
+		vecFragPosOffset.x = pFrag->GetFloat("forward", 22.5f);
+		vecFragPosOffset.y = pFrag->GetFloat("right", -13.3f);
+		vecFragPosOffset.z = pFrag->GetFloat("up", 3.5f);
+	}
+	else
+	{
+		vecFragPosOffset = vec3_origin;
 	}
 }
 

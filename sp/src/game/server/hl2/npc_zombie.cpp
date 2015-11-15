@@ -166,8 +166,10 @@ private:
 	Vector				 m_vPositionCharged;
 };
 
+#if !defined ( ELEVENEIGHTYSEVEN_DLL )
 LINK_ENTITY_TO_CLASS( npc_zombie, CZombie );
 LINK_ENTITY_TO_CLASS( npc_zombie_torso, CZombie );
+#endif
 
 //---------------------------------------------------------
 //---------------------------------------------------------

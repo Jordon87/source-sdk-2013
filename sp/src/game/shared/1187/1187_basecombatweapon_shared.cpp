@@ -5,6 +5,9 @@
 //=============================================================================//
 
 #include "cbase.h"
+#include "in_buttons.h"
+#include "gamestats.h"
+#include "rumble_shared.h"
 #include "1187_basecombatweapon_shared.h"
 
 #include "1187_player_shared.h"
@@ -93,6 +96,7 @@ END_NETWORK_TABLE()
 BEGIN_DATADESC( CBase1187CombatWeapon )
 	DEFINE_FIELD(m_bIsIronsighted, FIELD_BOOLEAN),
 	DEFINE_FIELD(m_flIronsightedTime, FIELD_FLOAT),
+	DEFINE_FIELD(m_bLoweredOnSprint, FIELD_BOOLEAN),
 END_DATADESC()
 
 #else
@@ -111,6 +115,7 @@ CBase1187CombatWeapon::CBase1187CombatWeapon()
 {
 	m_bIsIronsighted = false;
 	m_flIronsightedTime = 0.0f;
+	m_bLoweredOnSprint = false;
 }
 
 //----------------------------------------------------------------------------
@@ -118,6 +123,62 @@ CBase1187CombatWeapon::CBase1187CombatWeapon()
 //----------------------------------------------------------------------------
 CBase1187CombatWeapon::~CBase1187CombatWeapon()
 {
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+bool CBase1187CombatWeapon::IsAllowedToFire(void)
+{
+	if (Sprint_IsWeaponLowered())
+		return false;
+
+#if defined ( CLIENT_DLL )
+	C_1187_Player* pPlayer = To1187Player(GetOwner());
+#else
+	C1187_Player* pPlayer = To1187Player(GetOwner());
+#endif
+
+	if (pPlayer)
+	{
+		if (pPlayer->IsSprinting())
+			return false;
+
+		if (pPlayer->WallProximity_IsAdjacentToWall())
+			return false;
+	}
+
+	return true;
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+bool CBase1187CombatWeapon::IsPrimaryAttackAllowed(void)
+{
+	bool bRet = IsAllowedToFire();
+
+	if (bRet)
+	{
+		// Add custom primary attack blocking conditions.
+	}
+
+	return bRet;
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+bool CBase1187CombatWeapon::IsSecondaryAttackAllowed(void)
+{
+	bool bRet = IsAllowedToFire();
+
+	if (bRet)
+	{
+		// Add custom secondary attack blocking conditions.
+	}
+
+	return bRet;
 }
 
 //----------------------------------------------------------------------------
@@ -160,6 +221,248 @@ bool CBase1187CombatWeapon::DefaultReload(int iClipSize1, int iClipSize2, int iA
 	return bRet;
 }
 
+
+//====================================================================================
+// WEAPON BEHAVIOUR
+//====================================================================================
+void CBase1187CombatWeapon::ItemPostFrame(void)
+{
+	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
+	UpdateAutoFire();
+
+	//Track the duration of the fire
+	//FIXME: Check for IN_ATTACK2 as well?
+	//FIXME: What if we're calling ItemBusyFrame?
+	m_fFireDuration = (pOwner->m_nButtons & IN_ATTACK) ? (m_fFireDuration + gpGlobals->frametime) : 0.0f;
+
+	if (UsesClipsForAmmo1())
+	{
+		CheckReload();
+	}
+
+	bool bFired = false;
+
+	// Secondary attack has priority
+	if ((pOwner->m_nButtons & IN_ATTACK2) && IsSecondaryAttackAllowed() && (m_flNextSecondaryAttack <= gpGlobals->curtime))
+	{
+		if (UsesSecondaryAmmo() && pOwner->GetAmmoCount(m_iSecondaryAmmoType) <= 0)
+		{
+			if (m_flNextEmptySoundTime < gpGlobals->curtime)
+			{
+				WeaponSound(EMPTY);
+				m_flNextSecondaryAttack = m_flNextEmptySoundTime = gpGlobals->curtime + 0.5;
+			}
+		}
+		else if (pOwner->GetWaterLevel() == 3 && m_bAltFiresUnderwater == false)
+		{
+			// This weapon doesn't fire underwater
+			WeaponSound(EMPTY);
+			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+			return;
+		}
+		else
+		{
+			// FIXME: This isn't necessarily true if the weapon doesn't have a secondary fire!
+			// For instance, the crossbow doesn't have a 'real' secondary fire, but it still 
+			// stops the crossbow from firing on the 360 if the player chooses to hold down their
+			// zoom button. (sjb) Orange Box 7/25/2007
+#if !defined(CLIENT_DLL)
+			if (!IsX360() || !ClassMatches("weapon_crossbow"))
+#endif
+			{
+				bFired = ShouldBlockPrimaryFire();
+			}
+
+			SecondaryAttack();
+
+			// Secondary ammo doesn't have a reload animation
+			if (UsesClipsForAmmo2())
+			{
+				// reload clip2 if empty
+				if (m_iClip2 < 1)
+				{
+					pOwner->RemoveAmmo(1, m_iSecondaryAmmoType);
+					m_iClip2 = m_iClip2 + 1;
+				}
+			}
+		}
+	}
+
+	if (!bFired && (pOwner->m_nButtons & IN_ATTACK) && IsPrimaryAttackAllowed() && (m_flNextPrimaryAttack <= gpGlobals->curtime))
+	{
+		// Clip empty? Or out of ammo on a no-clip weapon?
+		if (!IsMeleeWeapon() &&
+			((UsesClipsForAmmo1() && m_iClip1 <= 0) || (!UsesClipsForAmmo1() && pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)))
+		{
+			HandleFireOnEmpty();
+		}
+		else if (pOwner->GetWaterLevel() == 3 && m_bFiresUnderwater == false)
+		{
+			// This weapon doesn't fire underwater
+			WeaponSound(EMPTY);
+			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+			return;
+		}
+		else
+		{
+			//NOTENOTE: There is a bug with this code with regards to the way machine guns catch the leading edge trigger
+			//			on the player hitting the attack key.  It relies on the gun catching that case in the same frame.
+			//			However, because the player can also be doing a secondary attack, the edge trigger may be missed.
+			//			We really need to hold onto the edge trigger and only clear the condition when the gun has fired its
+			//			first shot.  Right now that's too much of an architecture change -- jdw
+
+			// If the firing button was just pressed, or the alt-fire just released, reset the firing time
+			if ((pOwner->m_afButtonPressed & IN_ATTACK) || (pOwner->m_afButtonReleased & IN_ATTACK2))
+			{
+				m_flNextPrimaryAttack = gpGlobals->curtime;
+			}
+
+			PrimaryAttack();
+
+			if (AutoFiresFullClip())
+			{
+				m_bFiringWholeClip = true;
+			}
+
+#ifdef CLIENT_DLL
+			pOwner->SetFiredWeapon(true);
+#endif
+		}
+	}
+
+	// -----------------------
+	//  Reload pressed / Clip Empty
+	// -----------------------
+	if ((pOwner->m_nButtons & IN_RELOAD) && UsesClipsForAmmo1() && !m_bInReload)
+	{
+		// reload when reload is pressed, or if no buttons are down and weapon is empty.
+		Reload();
+		m_fFireDuration = 0.0f;
+	}
+
+	// -----------------------
+	//  No buttons down
+	// -----------------------
+	if (!((pOwner->m_nButtons & IN_ATTACK) || (pOwner->m_nButtons & IN_ATTACK2) || (CanReload() && pOwner->m_nButtons & IN_RELOAD)))
+	{
+		// no fire buttons down or reloading
+		if (!ReloadOrSwitchWeapons() && (m_bInReload == false))
+		{
+			WeaponIdle();
+		}
+	}
+}
+
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+void CBase1187CombatWeapon::WeaponIdle(void)
+{
+	if (Sprint_WeaponShouldBeLowered())
+	{
+		// Move to lowered position if we're not there yet
+		if (GetActivity() != ACT_VM_SPRINT_IDLE && GetActivity() != ACT_VM_SPRINT_ENTER
+			&& GetActivity() != ACT_TRANSITION)
+		{
+			SendWeaponAnim(ACT_VM_SPRINT_IDLE);
+		}
+		else if (HasWeaponIdleTimeElapsed())
+		{
+			// Keep idling low
+			SendWeaponAnim(ACT_VM_SPRINT_IDLE);
+		}
+		return;
+	}
+	else
+	{
+		if (GetOwner() && GetOwner()->IsPlayer() && (GetOwner()->GetFlags() & FL_DUCKING))
+		{
+			float speed = GetOwner()->GetAbsVelocity().Length2D();
+
+			if (speed > 1.0f)
+			{
+				// Move to lowered position if we're not there yet
+				if (GetActivity() != ACT_CROUCH && GetActivity() != ACT_TRANSITION)
+				{
+					SendWeaponAnim(ACT_CROUCH);
+				}
+				else if (HasWeaponIdleTimeElapsed())
+				{
+					// Keep idling low
+					SendWeaponAnim(ACT_CROUCH);
+				}
+			}
+			else
+			{
+				BaseClass::WeaponIdle();
+			}
+		}
+		else
+		{
+			BaseClass::WeaponIdle();
+		}
+	}
+}
+
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+bool CBase1187CombatWeapon::Sprint_IsWeaponLowered(void)
+{
+	return m_bLoweredOnSprint;
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+bool CBase1187CombatWeapon::Sprint_WeaponShouldBeLowered(void)
+{
+	// Can't be in the middle of another animation
+	if (GetIdealActivity() != ACT_VM_SPRINT_IDLE && GetIdealActivity() != ACT_VM_IDLE &&
+		GetIdealActivity() != ACT_VM_SPRINT_ENTER && GetIdealActivity() != ACT_VM_SPRINT_LEAVE)
+		return false;
+
+#if defined ( CLIENT_DLL )
+	C_BaseHLPlayer* pPlayer = dynamic_cast<C_BaseHLPlayer*>(GetOwner());
+#else
+	CHL2_Player* pPlayer = dynamic_cast<CHL2_Player*>(GetOwner());
+#endif
+	if (pPlayer && pPlayer->IsSprinting())
+		return true;
+
+	if (m_bLoweredOnSprint)
+		return true;
+
+	return false;
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+void CBase1187CombatWeapon::Sprint_SetState(bool state)
+{
+	m_bLoweredOnSprint = state;
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+void CBase1187CombatWeapon::Sprint_Lower(void)
+{
+	Sprint_SetState(true);
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+void CBase1187CombatWeapon::Sprint_Leave(void)
+{
+	Sprint_SetState(false);
+}
+
 //----------------------------------------------------------------------------
 // Purpose:
 //----------------------------------------------------------------------------
@@ -185,6 +488,16 @@ void CBase1187CombatWeapon::Operator_HandleLandEvent(float fVelocity, CBaseComba
 //----------------------------------------------------------------------------
 // Purpose:
 //----------------------------------------------------------------------------
+void CBase1187CombatWeapon::Operator_HandleMeleeEvent(CBaseCombatCharacter *pOperator)
+{
+#ifndef CLIENT_DLL
+	MeleeSwing();
+#endif
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
 Activity CBase1187CombatWeapon::GetPrimaryAttackActivity(void)
 {
 	return (!HasIronsights() || !IsIronsighted()) ? BaseClass::GetPrimaryAttackActivity() : GetIronsightsPrimaryAttackActivity();
@@ -196,6 +509,26 @@ Activity CBase1187CombatWeapon::GetPrimaryAttackActivity(void)
 Activity CBase1187CombatWeapon::GetSecondaryAttackActivity(void)
 {
 	return (!HasIronsights() || !IsIronsighted()) ? BaseClass::GetSecondaryAttackActivity() : GetIronsightsSecondaryAttackActivity();
+}
+
+const Vector& CBase1187CombatWeapon::GetDefaultBulletSpread(void)
+{
+	static Vector cone = VECTOR_CONE_15DEGREES;
+	return cone;
+}
+
+const Vector& CBase1187CombatWeapon::GetIronsightsBulletSpread(void)
+{
+	static Vector cone = VECTOR_CONE_PRECALCULATED;
+	return cone;
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+const Vector& CBase1187CombatWeapon::GetBulletSpread(void)
+{
+	return (!HasIronsights() || IsIronsighted()) ? GetDefaultBulletSpread() : GetIronsightsBulletSpread();
 }
 
 //----------------------------------------------------------------------------
@@ -310,6 +643,18 @@ Vector CBase1187CombatWeapon::GetIronsightPositionOffset(void) const
 #endif
 
 	return Get1187WpnData()->vecIronsightPosOffset;
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+Vector CBase1187CombatWeapon::GetFragPositionOffset(void) const
+{
+#ifdef _DEBUG
+	Assert(Get1187WpnData());
+#endif
+
+	return Get1187WpnData()->vecFragPosOffset;
 }
 
 //----------------------------------------------------------------------------

@@ -13,12 +13,15 @@
 #pragma once
 #endif
 
+#define BASEWEAPON_MELEE_RANGE		75.0f
+
 //-----------------------------------------------------------------------------
-// CWeaponCrowbar
+// C1187_BaseWeapon_Melee
 //-----------------------------------------------------------------------------
 
 class C1187_BaseWeapon_Melee : public CBase1187BludgeonWeapon
 {
+	DECLARE_DATADESC();
 public:
 	DECLARE_CLASS(C1187_BaseWeapon_Melee, CBase1187BludgeonWeapon);
 	DECLARE_ACTTABLE();
@@ -26,6 +29,11 @@ public:
 	C1187_BaseWeapon_Melee();
 
 	void		AddViewKick( void );
+
+	virtual void	ItemBusyFrame(void);
+	virtual void	ItemPostFrame(void);
+
+	virtual float	GetRange(void) { return BASEWEAPON_MELEE_RANGE; }
 
 	virtual Activity	GetPrimaryAttackActivity(void)	{ return ACT_VM_PRIMARYATTACK; }
 	virtual Activity	GetSecondaryAttackActivity(void)	{ return ACT_VM_SECONDARYATTACK; }
@@ -35,8 +43,14 @@ public:
 	void		PrimaryAttack(void);
 	void		SecondaryAttack( void )	{ return; }
 
+	virtual void		UpdateAttackHit(void);
+
+	virtual float		GetPrimaryAttackHitDelay(void) const { return 0.0f; }
+	virtual float		GetSecondaryAttackHitDelay(void) const { return 0.0f; }
+
 	// Animation event
 	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	virtual void Operator_HandleHitEvent(bool bIsSecondary, CBaseCombatCharacter *pOperator);
 
 protected:
 
@@ -45,6 +59,10 @@ protected:
 private:
 	// Animation event handlers
 	void HandleAnimEventMeleeHit( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+
+	float		m_flAttackHitTime;
+	bool		m_bInAttackHit;
+	bool		m_bIsSecondaryAttack;
 };
 
 #endif // ELEVENEIGHTYSEVEN_BASEWEAPON_MELEE_H

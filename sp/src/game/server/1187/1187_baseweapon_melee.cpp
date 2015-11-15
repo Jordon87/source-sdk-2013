@@ -24,6 +24,12 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+BEGIN_DATADESC(C1187_BaseWeapon_Melee)
+	DEFINE_FIELD(m_flAttackHitTime, FIELD_TIME),
+	DEFINE_FIELD(m_bInAttackHit, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_bIsSecondaryAttack, FIELD_BOOLEAN),
+END_DATADESC()
+
 //-----------------------------------------------------------------------------
 // C1187_BaseWeapon_Melee
 //-----------------------------------------------------------------------------
@@ -42,6 +48,9 @@ IMPLEMENT_ACTTABLE(C1187_BaseWeapon_Melee);
 //-----------------------------------------------------------------------------
 C1187_BaseWeapon_Melee::C1187_BaseWeapon_Melee(void)
 {
+	m_flAttackHitTime = 0.0f;
+	m_bInAttackHit = false;
+	m_bIsSecondaryAttack = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -61,6 +70,10 @@ void C1187_BaseWeapon_Melee::PrimaryAttack(void)
 	gamestats->Event_WeaponFired(pPlayer, true, GetClassname());
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+	m_flAttackHitTime = gpGlobals->curtime + GetPrimaryAttackHitDelay();
+
+	m_bIsSecondaryAttack = false;
+	m_bInAttackHit = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -82,6 +95,19 @@ void C1187_BaseWeapon_Melee::AddViewKick(void)
 	pPlayer->ViewPunch( punchAng ); 
 }
 
+void C1187_BaseWeapon_Melee::ItemBusyFrame(void)
+{
+	BaseClass::ItemBusyFrame();
+
+	UpdateAttackHit();
+}
+
+void C1187_BaseWeapon_Melee::ItemPostFrame(void)
+{
+	BaseClass::ItemPostFrame();
+
+	UpdateAttackHit();
+}
 
 //-----------------------------------------------------------------------------
 // Attempt to lead the target (needed because citizens can't hit manhacks with the crowbar!)
@@ -199,7 +225,13 @@ void C1187_BaseWeapon_Melee::Operator_HandleAnimEvent(animevent_t *pEvent, CBase
 	}
 }
 
-
+//-----------------------------------------------------------------------------
+// Animation event
+//-----------------------------------------------------------------------------
+void C1187_BaseWeapon_Melee::Operator_HandleHitEvent(bool bIsSecondary, CBaseCombatCharacter *pOperator)
+{
+	Swing( bIsSecondary );
+}
 
 //------------------------------------------------------------------------------
 // Purpose : Starts the swing of the weapon and determines the animation
@@ -207,7 +239,55 @@ void C1187_BaseWeapon_Melee::Operator_HandleAnimEvent(animevent_t *pEvent, CBase
 //------------------------------------------------------------------------------
 void C1187_BaseWeapon_Melee::Swing(int bIsSecondary)
 {
-#if 0
+#if 1
+	trace_t traceHit;
+
+	// Try a ray
+	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
+	pOwner->RumbleEffect(RUMBLE_CROWBAR_SWING, 0, RUMBLE_FLAG_RESTART);
+
+	Vector swingStart = pOwner->Weapon_ShootPosition();
+	Vector forward;
+
+	forward = pOwner->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT, GetRange());
+
+	Vector swingEnd = swingStart + forward * GetRange();
+	UTIL_TraceLine(swingStart, swingEnd, MASK_SHOT_HULL, pOwner, COLLISION_GROUP_NONE, &traceHit);
+	Activity nHitActivity = GetHitActivity();
+
+	// Like bullets, bludgeon traces have to trace against triggers.
+	CTakeDamageInfo triggerInfo(GetOwner(), GetOwner(), GetDamageForActivity(nHitActivity), DMG_CLUB);
+	triggerInfo.SetDamagePosition(traceHit.startpos);
+	triggerInfo.SetDamageForce(forward);
+	TraceAttackToTriggers(triggerInfo, traceHit.startpos, traceHit.endpos, forward);
+
+	//Play swing sound
+	WeaponSound(SINGLE);
+
+	// -------------------------
+	//	Miss
+	// -------------------------
+	if (traceHit.fraction == 1.0f)
+	{
+		//Play miss sound
+		WeaponSound(MELEE_MISS);
+
+		nHitActivity = bIsSecondary ? ACT_VM_MISSCENTER2 : ACT_VM_MISSCENTER;
+
+		// We want to test the first swing again
+		Vector testEnd = swingStart + forward * GetRange();
+
+		// See if we happened to hit water
+		ImpactWater(swingStart, testEnd);
+	}
+	else
+	{
+		Hit(traceHit, nHitActivity, bIsSecondary ? true : false);
+	}
+#else
 	trace_t traceHit;
 
 	// Try a ray
@@ -299,4 +379,14 @@ void C1187_BaseWeapon_Melee::Swing(int bIsSecondary)
 	//Play swing sound
 	WeaponSound(SINGLE);
 #endif
+}
+
+void C1187_BaseWeapon_Melee::UpdateAttackHit()
+{
+	if (m_bInAttackHit && m_flAttackHitTime != 0.0f && m_flAttackHitTime < gpGlobals->curtime)
+	{
+		Operator_HandleHitEvent( m_bIsSecondaryAttack, GetOwner() );
+		m_bInAttackHit = false;
+		m_flAttackHitTime = 0.0f;
+	}
 }

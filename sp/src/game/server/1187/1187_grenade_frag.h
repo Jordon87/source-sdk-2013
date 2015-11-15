@@ -10,6 +10,9 @@
 
 #include "basegrenade_shared.h"
 
+#define FRAG_GRENADE_RADIUS	4.0f // inches
+#define FRAG_GRENADE_TIMER	3
+
 class C1187GrenadeFrag : public CBaseGrenade
 {
 	DECLARE_CLASS(C1187GrenadeFrag, CBaseGrenade);

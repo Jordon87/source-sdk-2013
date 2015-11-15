@@ -164,8 +164,13 @@ public:
 
 	// Sprint Device
 	void StartAutoSprint( void );
+#if defined ( ELEVENEIGHTYSEVEN_DLL )
+	virtual void StartSprinting( void );
+	virtual void StopSprinting(void);
+#else
 	void StartSprinting( void );
-	void StopSprinting( void );
+	void StopSprinting(void);
+#endif
 	void InitSprinting( void );
 	bool IsSprinting( void ) { return m_fIsSprinting; }
 	bool CanSprint( void );
@@ -362,6 +367,10 @@ private:
 	float				m_flTimeNextLadderHint;	// Next time we're eligible to display a HUD hint about a ladder.
 	
 	friend class CHL2GameMovement;
+
+#if defined ( ELEVENEIGHTYSEVEN_DLL )
+	friend class C1187_Player;
+#endif
 };
 
 

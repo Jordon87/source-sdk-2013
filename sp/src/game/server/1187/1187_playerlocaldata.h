@@ -27,6 +27,9 @@ public:
 	DECLARE_EMBEDDED_NETWORKVAR();
 
 	C1187PlayerLocalData();
+
+	CNetworkVar(bool, m_bWeaponLoweredOnSprint);
+	CNetworkVar(bool, m_bAdjacentToWall);
 };
 
 EXTERN_SEND_TABLE(DT_1187Local);

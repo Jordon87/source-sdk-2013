@@ -300,8 +300,13 @@ bool C1187_BaseWeapon_MissileLauncher::Reload(void)
 	if (pOwner == NULL)
 		return false;
 
+#if 1
+	if (m_iClip1 <= 0)
+		return false;
+#else
 	if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 		return false;
+#endif
 
 	WeaponSound(RELOAD);
 

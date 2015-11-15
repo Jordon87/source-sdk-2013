@@ -6,7 +6,7 @@
 
 #include "cbase.h"
 #include "npcevent.h"
-#include "1187_npc_basezombie_headless.h"
+#include "1187_npc_basezombie_headless_runner.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -14,9 +14,9 @@
 ConVar sk_armoured_zombie_health("sk_armoured_zombie_health", "0");
 ConVar sk_armoured_zombie_dmg_one_slash("sk_armoured_zombie_dmg_one_slash", "0");
 
-class CNPC_ArmouredZombie : public C1187_NPC_BaseZombie_Headless
+class CNPC_ArmouredZombie : public C1187_NPC_BaseZombie_Headless_Runner
 {
-	DECLARE_CLASS(CNPC_ArmouredZombie, C1187_NPC_BaseZombie_Headless);
+	DECLARE_CLASS(CNPC_ArmouredZombie, C1187_NPC_BaseZombie_Headless_Runner);
 public:
 
 	void Spawn(void);

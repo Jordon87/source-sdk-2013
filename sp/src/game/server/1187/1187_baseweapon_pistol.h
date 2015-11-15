@@ -47,7 +47,7 @@ public:
 
 	DECLARE_ACTTABLE();
 
-private:
+protected:
 	float	m_flSoonestPrimaryAttack;
 	float	m_flLastAttackTime;
 	float	m_flAccuracyPenalty;

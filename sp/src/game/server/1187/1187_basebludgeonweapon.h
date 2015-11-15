@@ -44,6 +44,7 @@ public:
 	virtual int		CapabilitiesGet( void );
 	virtual	int		WeaponMeleeAttack1Condition( float flDot, float flDist );
 
+	// Ironsights
 	virtual bool	HasIronsights(void) { return false; }
 
 protected:

@@ -28,6 +28,12 @@ public:
 
 	bool MyTouch(CBasePlayer *pPlayer)
 	{
+		CSingleUserRecipientFilter user(pPlayer);
+		user.MakeReliable();
+		UserMessageBegin(user, "HintKeyDisplay");
+			WRITE_BYTE(1);	// So that the message has a size.
+		MessageEnd();
+
 		UTIL_Remove(this);
 		return true;
 	}

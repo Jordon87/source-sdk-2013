@@ -245,13 +245,16 @@ bool C1187_BaseWeapon_Shotgun::StartReload(void)
 	if (j <= 0)
 		return false;
 
+	if (HasIronsights() && IsIronsighted())
+		DisableIronsights();
+
 	SendWeaponAnim( ACT_SHOTGUN_RELOAD_START );
 
 	// Make shotgun shell visible
 	SetBodygroup(1,0);
 
 	pOwner->m_flNextAttack = gpGlobals->curtime;
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
 
 	m_bInReload = true;
 	return true;
@@ -286,13 +289,16 @@ bool C1187_BaseWeapon_Shotgun::Reload(void)
 	if (j <= 0)
 		return false;
 
+	if (HasIronsights() && IsIronsighted())
+		DisableIronsights();
+
 	FillClip();
 	// Play reload on different channel as otherwise steals channel away from fire sound
 	WeaponSound(RELOAD);
 	SendWeaponAnim( ACT_VM_RELOAD );
 
 	pOwner->m_flNextAttack = gpGlobals->curtime;
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
 
 	return true;
 }
@@ -312,13 +318,16 @@ void C1187_BaseWeapon_Shotgun::FinishReload(void)
 	if ( pOwner == NULL )
 		return;
 
+	if (HasIronsights() && IsIronsighted())
+		DisableIronsights();
+
 	m_bInReload = false;
 
 	// Finish reload animation
 	SendWeaponAnim( ACT_SHOTGUN_RELOAD_FINISH );
 
 	pOwner->m_flNextAttack = gpGlobals->curtime;
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -363,8 +372,8 @@ void C1187_BaseWeapon_Shotgun::Pump(void)
 	// Finish reload animation
 	SendWeaponAnim( ACT_SHOTGUN_PUMP );
 
-	pOwner->m_flNextAttack	= gpGlobals->curtime + SequenceDuration();
-	m_flNextPrimaryAttack	= gpGlobals->curtime + SequenceDuration();
+	pOwner->m_flNextAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+	m_flNextPrimaryAttack  = gpGlobals->curtime + GetViewModelSequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -377,7 +386,7 @@ void C1187_BaseWeapon_Shotgun::DryFire(void)
 	WeaponSound(EMPTY);
 	SendWeaponAnim( ACT_VM_DRYFIRE );
 	
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -406,7 +415,7 @@ void C1187_BaseWeapon_Shotgun::PrimaryAttack(void)
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
 	// Don't fire again until fire animation has completed
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
 	m_iClip1 -= 1;
 
 	Vector	vecSrc		= pPlayer->Weapon_ShootPosition( );
@@ -458,7 +467,7 @@ void C1187_BaseWeapon_Shotgun::SecondaryAttack(void)
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
 	// Don't fire again until fire animation has completed
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
 	m_iClip1 -= 2;	// Shotgun uses same clip for primary and secondary attacks
 
 	Vector vecSrc	 = pPlayer->Weapon_ShootPosition();
@@ -496,14 +505,14 @@ void C1187_BaseWeapon_Shotgun::ItemPostFrame(void)
 	if (m_bInReload)
 	{
 		// If I'm primary firing and have one round stop reloading and fire
-		if ((pOwner->m_nButtons & IN_ATTACK ) && (m_iClip1 >=1))
+		if ((pOwner->m_nButtons & IN_ATTACK) && IsPrimaryAttackAllowed() && (m_iClip1 >= 1))
 		{
 			m_bInReload		= false;
 			m_bNeedPump		= false;
 			m_bDelayedFire1 = true;
 		}
 		// If I'm secondary firing and have one round stop reloading and fire
-		else if ((pOwner->m_nButtons & IN_ATTACK2 ) && (m_iClip1 >=2))
+		else if ((pOwner->m_nButtons & IN_ATTACK2) && IsSecondaryAttackAllowed() && (m_iClip1 >= 2))
 		{
 			m_bInReload		= false;
 			m_bNeedPump		= false;
@@ -544,7 +553,7 @@ void C1187_BaseWeapon_Shotgun::ItemPostFrame(void)
 	}
 	
 	// Shotgun uses same timing and ammo for secondary attack
-	if ((m_bDelayedFire2 || pOwner->m_nButtons & IN_ATTACK2)&&(m_flNextPrimaryAttack <= gpGlobals->curtime))
+	if ((m_bDelayedFire2 || pOwner->m_nButtons & IN_ATTACK2) && IsSecondaryAttackAllowed() && (m_flNextPrimaryAttack <= gpGlobals->curtime))
 	{
 		m_bDelayedFire2 = false;
 		
@@ -582,7 +591,7 @@ void C1187_BaseWeapon_Shotgun::ItemPostFrame(void)
 			SecondaryAttack();
 		}
 	}
-	else if ( (m_bDelayedFire1 || pOwner->m_nButtons & IN_ATTACK) && m_flNextPrimaryAttack <= gpGlobals->curtime)
+	else if ((m_bDelayedFire1 || pOwner->m_nButtons & IN_ATTACK) && IsPrimaryAttackAllowed() && m_flNextPrimaryAttack <= gpGlobals->curtime)
 	{
 		m_bDelayedFire1 = false;
 		if ( (m_iClip1 <= 0 && UsesClipsForAmmo1()) || ( !UsesClipsForAmmo1() && !pOwner->GetAmmoCount(m_iPrimaryAmmoType) ) )

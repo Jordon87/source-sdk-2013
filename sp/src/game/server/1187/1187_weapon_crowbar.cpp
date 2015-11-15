@@ -22,9 +22,11 @@ class C1187WeaponCrowbar : public C1187_BaseWeapon_Melee
 public:
 	DECLARE_SERVERCLASS();
 
-	float GetDamageForActivity(Activity hitActivity);
+	virtual void		Operator_HandleHitEvent(bool bIsSecondary, CBaseCombatCharacter *pOperator);
 
-	virtual Activity	GetPrimaryAttackActivity(void)	{ return ACT_VM_PRIMARYATTACK; }
+	virtual float		GetPrimaryAttackHitDelay(void) const { return 0.5f; }
+
+	float				GetDamageForActivity(Activity hitActivity);
 };
 
 IMPLEMENT_SERVERCLASS_ST(C1187WeaponCrowbar, DT_1187WeaponCrowbar)
@@ -32,6 +34,26 @@ END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS(weapon_crowbar, C1187WeaponCrowbar);
 PRECACHE_WEAPON_REGISTER(weapon_crowbar);
+
+void C1187WeaponCrowbar::Operator_HandleHitEvent(bool bIsSecondary, CBaseCombatCharacter *pOperator)
+{
+	BaseClass::Operator_HandleHitEvent(bIsSecondary, pOperator);
+
+	CBasePlayer* pPlayer = ToBasePlayer( pOperator );
+	if (pPlayer)
+	{
+		//Disorient the player
+		QAngle angles = pPlayer->GetLocalAngles();
+
+		angles.x += random->RandomInt(-4, 4);
+		angles.y += random->RandomInt(-4, 4);
+		angles.z = 0;
+
+		pPlayer->SnapEyeAngles(angles);
+
+		pPlayer->ViewPunch(QAngle(random->RandomFloat(8, 10), random->RandomFloat(8, 10), 0));
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Get the damage amount for the animation we're doing

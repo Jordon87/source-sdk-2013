@@ -22,6 +22,10 @@ class C1187WeaponKnife : public C1187_BaseWeapon_Melee
 public:
 	DECLARE_SERVERCLASS();
 
+	virtual void		Operator_HandleHitEvent(bool bIsSecondary, CBaseCombatCharacter *pOperator);
+
+	virtual float		GetPrimaryAttackHitDelay(void) const { return 0.1f; }
+
 	float		GetDamageForActivity(Activity hitActivity);
 };
 
@@ -30,6 +34,27 @@ END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS(weapon_knife, C1187WeaponKnife);
 PRECACHE_WEAPON_REGISTER(weapon_knife);
+
+void C1187WeaponKnife::Operator_HandleHitEvent(bool bIsSecondary, CBaseCombatCharacter *pOperator)
+{
+	BaseClass::Operator_HandleHitEvent(bIsSecondary, pOperator);
+
+	CBasePlayer* pPlayer = ToBasePlayer(pOperator);
+	if (pPlayer)
+	{
+		//Disorient the player
+		QAngle angles = pPlayer->GetLocalAngles();
+
+		angles.x += random->RandomInt(-4, 4);
+		angles.y += random->RandomInt(-4, 4);
+		angles.z = 0;
+
+		pPlayer->SnapEyeAngles(angles);
+
+		pPlayer->ViewPunch(QAngle(random->RandomFloat(8, 10), -random->RandomFloat(8, 10), 0));
+	}
+}
+
 
 float C1187WeaponKnife::GetDamageForActivity(Activity hitActivity)
 {

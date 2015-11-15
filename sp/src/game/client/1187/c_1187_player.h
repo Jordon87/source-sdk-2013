@@ -29,7 +29,9 @@ public:
 
 	virtual void AddEntity(void);
 
+#if 0
 	QAngle GetAnimEyeAngles(void) { return m_angEyeAngles; }
+#endif
 
 	virtual const QAngle& GetRenderAngles();
 	virtual void PreThink(void);
@@ -37,11 +39,14 @@ public:
 
 	virtual void PostThink(void);
 
-	bool			ShouldDraw() { return true; }
+	bool			ShouldDraw();
 	bool			ShouldDrawThisPlayer() { return true; }
 
 	void			BuildTransformations(CStudioHdr *hdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed);
 	virtual void	BuildFirstPersonTransformations(CStudioHdr *hdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed);
+
+	bool			WeaponLoweredOnSprint_IsActive() const { return m_1187Local.m_bWeaponLoweredOnSprint; }
+	bool			WallProximity_IsAdjacentToWall(void) const { return m_bAdjacentToWall; }
 
 public:
 
@@ -50,12 +55,15 @@ public:
 private:
 	C_1187_Player(const C_1187_Player &); // not defined, not accessible
 
+#if 0
 	C1187PlayerAnimState m_PlayerAnimState;
 
 	QAngle	m_angEyeAngles;
 
 	CInterpolatedVar< QAngle >	m_iv_angEyeAngles;
+#endif
 
+	bool m_bAdjacentToWall;
 
 friend class C1187GameMovement;
 };

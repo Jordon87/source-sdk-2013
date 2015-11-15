@@ -235,7 +235,7 @@ void C1187GrenadeFrag::InputSetTimer(inputdata_t &inputdata)
 	SetTimer(inputdata.value.Float(), inputdata.value.Float() - FRAG_WARN_TIME);
 }
 
-CBaseGrenade *Handgrenade_Create(const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer)
+CBaseGrenade *Fraggrenade_Create_1187(const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer)
 {
 	// Don't set the owner here, or the player can't interact with grenades he's thrown
 	C1187GrenadeFrag *pGrenade = (C1187GrenadeFrag *)CBaseEntity::Create("npc_grenade_frag_1187", position, angles, pOwner);

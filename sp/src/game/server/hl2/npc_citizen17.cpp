@@ -296,7 +296,9 @@ int	ACT_CIT_STARTLED;		// Startled by sneaky scanner
 
 //---------------------------------------------------------
 
+#if !defined ( ELEVENEIGHTYSEVEN_DLL )
 LINK_ENTITY_TO_CLASS( npc_citizen, CNPC_Citizen );
+#endif // !defined ( ELEVENEIGHTYSEVEN_DLL )
 
 //---------------------------------------------------------
 

@@ -11,9 +11,278 @@
 #include "game.h"
 #include "in_buttons.h"
 #include "gamestats.h"
+#include "soundent.h"
+#include "rumble_shared.h"
+#include "te_effect_dispatch.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+
+#define MELEE_HULL_DIM		16
+
+static const Vector g_meleeMins(-MELEE_HULL_DIM, -MELEE_HULL_DIM, -MELEE_HULL_DIM);
+static const Vector g_meleeMaxs(MELEE_HULL_DIM, MELEE_HULL_DIM, MELEE_HULL_DIM);
+
+ConVar sk_plr_dmg_melee("sk_plr_dmg_melee", "10", FCVAR_CHEAT);
+
+//=========================================================
+// CBase1187CombatWeapon
+//=========================================================
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+bool CBase1187CombatWeapon::ImpactWater(const Vector &start, const Vector &end)
+{
+	//FIXME: This doesn't handle the case of trying to splash while being underwater, but that's not going to look good
+	//		 right now anyway...
+
+	// We must start outside the water
+	if (UTIL_PointContents(start) & (CONTENTS_WATER | CONTENTS_SLIME))
+		return false;
+
+	// We must end inside of water
+	if (!(UTIL_PointContents(end) & (CONTENTS_WATER | CONTENTS_SLIME)))
+		return false;
+
+	trace_t	waterTrace;
+
+	UTIL_TraceLine(start, end, (CONTENTS_WATER | CONTENTS_SLIME), GetOwner(), COLLISION_GROUP_NONE, &waterTrace);
+
+	if (waterTrace.fraction < 1.0f)
+	{
+		CEffectData	data;
+
+		data.m_fFlags = 0;
+		data.m_vOrigin = waterTrace.endpos;
+		data.m_vNormal = waterTrace.plane.normal;
+		data.m_flScale = 8.0f;
+
+		// See if we hit slime
+		if (waterTrace.contents & CONTENTS_SLIME)
+		{
+			data.m_fFlags |= FX_WATER_IN_SLIME;
+		}
+
+		DispatchEffect("watersplash", data);
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CBase1187CombatWeapon::ImpactEffect(trace_t &traceHit)
+{
+	// See if we hit water (we don't do the other impact effects in this case)
+	if (ImpactWater(traceHit.startpos, traceHit.endpos))
+		return;
+
+	//FIXME: need new decals
+	UTIL_ImpactTrace(&traceHit, DMG_CLUB);
+}
+
+void CBase1187CombatWeapon::MeleeHit(trace_t &traceHit)
+{
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
+
+	//Do view kick
+	AddViewKick();
+
+	//Make sound for the AI
+	CSoundEnt::InsertSound(SOUND_BULLET_IMPACT, traceHit.endpos, 400, 0.2f, pPlayer);
+
+	// This isn't great, but it's something for when the crowbar hits.
+	pPlayer->RumbleEffect(RUMBLE_AR2, 0, RUMBLE_FLAG_RESTART);
+
+	CBaseEntity	*pHitEntity = traceHit.m_pEnt;
+
+	//Apply damage to a hit target
+	if (pHitEntity != NULL)
+	{
+		if (pHitEntity->IsWorld())
+		{
+			//Play hit world sound
+			WeaponSound(MELEE_HIT_WORLD);
+		}
+		else
+		{
+			//Play regular hit sound
+			WeaponSound(MELEE_HIT);
+		}
+
+		Vector hitDirection;
+		pPlayer->EyeVectors(&hitDirection, NULL, NULL);
+		VectorNormalize(hitDirection);
+
+		CTakeDamageInfo info(GetOwner(), GetOwner(), sk_plr_dmg_melee.GetFloat(), DMG_CLUB);
+
+		if (pPlayer && pHitEntity->IsNPC())
+		{
+			// If bonking an NPC, adjust damage.
+			info.AdjustPlayerDamageInflictedForSkillLevel();
+		}
+
+		CalculateMeleeDamageForce(&info, hitDirection, traceHit.endpos);
+
+		pHitEntity->DispatchTraceAttack(info, hitDirection, &traceHit);
+		ApplyMultiDamage();
+
+		// Now hit all triggers along the ray that... 
+		TraceAttackToTriggers(info, traceHit.startpos, traceHit.endpos, hitDirection);
+	}
+
+	// Apply an impact effect
+	ImpactEffect(traceHit);
+}
+
+//------------------------------------------------------------------------------
+// Purpose : Starts the swing of the weapon and determines the animation
+// Input   : bIsSecondary - is this a secondary attack?
+//------------------------------------------------------------------------------
+void CBase1187CombatWeapon::MeleeSwing(void)
+{
+	trace_t traceHit;
+
+	// Try a ray
+	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
+	pOwner->RumbleEffect(RUMBLE_CROWBAR_SWING, 0, RUMBLE_FLAG_RESTART);
+
+	Vector swingStart = pOwner->Weapon_ShootPosition();
+	Vector forward;
+
+	forward = pOwner->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT, 75.0f);
+
+	Vector swingEnd = swingStart + forward * 75.0f;
+	UTIL_TraceLine(swingStart, swingEnd, MASK_SHOT_HULL, pOwner, COLLISION_GROUP_NONE, &traceHit);
+	Activity nHitActivity = ACT_VM_HITCENTER;
+
+	// Like bullets, bludgeon traces have to trace against triggers.
+	CTakeDamageInfo triggerInfo(GetOwner(), GetOwner(), sk_plr_dmg_melee.GetFloat(), DMG_CLUB);
+	triggerInfo.SetDamagePosition(traceHit.startpos);
+	triggerInfo.SetDamageForce(forward);
+	TraceAttackToTriggers(triggerInfo, traceHit.startpos, traceHit.endpos, forward);
+
+	if (traceHit.fraction == 1.0)
+	{
+		float bludgeonHullRadius = 1.732f * MELEE_HULL_DIM;  // hull is +/- 16, so use cuberoot of 2 to determine how big the hull is from center to the corner point
+
+		// Back off by hull "radius"
+		swingEnd -= forward * bludgeonHullRadius;
+
+		UTIL_TraceHull(swingStart, swingEnd, g_meleeMins, g_meleeMaxs, MASK_SHOT_HULL, pOwner, COLLISION_GROUP_NONE, &traceHit);
+		if (traceHit.fraction < 1.0 && traceHit.m_pEnt)
+		{
+			Vector vecToTarget = traceHit.m_pEnt->GetAbsOrigin() - swingStart;
+			VectorNormalize(vecToTarget);
+
+			float dot = vecToTarget.Dot(forward);
+
+			// YWB:  Make sure they are sort of facing the guy at least...
+			if (dot < 0.70721f)
+			{
+				// Force amiss
+				traceHit.fraction = 1.0f;
+			}
+			else
+			{
+				ChooseIntersectionPoint(traceHit, g_meleeMins, g_meleeMaxs, pOwner);
+			}
+		}
+	}
+
+
+	//Play swing sound
+	WeaponSound(SINGLE);
+
+	// -------------------------
+	//	Miss
+	// -------------------------
+	if (traceHit.fraction == 1.0f)
+	{
+
+		//Play miss sound
+		WeaponSound(MELEE_MISS);
+
+		// We want to test the first swing again
+		Vector testEnd = swingStart + forward * 75.0f;
+
+		// See if we happened to hit water
+		ImpactWater(swingStart, testEnd);
+	}
+	else
+	{
+		MeleeHit(traceHit);
+	}
+
+	// Send the anim
+	SendWeaponAnim(nHitActivity);
+
+	//Setup our next attack times
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
+	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
+}
+
+void CBase1187CombatWeapon::ChooseIntersectionPoint(trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner)
+{
+	int			i, j, k;
+	float		distance;
+	const float	*minmaxs[2] = { mins.Base(), maxs.Base() };
+	trace_t		tmpTrace;
+	Vector		vecHullEnd = hitTrace.endpos;
+	Vector		vecEnd;
+
+	distance = 1e6f;
+	Vector vecSrc = hitTrace.startpos;
+
+	vecHullEnd = vecSrc + ((vecHullEnd - vecSrc) * 2);
+	UTIL_TraceLine(vecSrc, vecHullEnd, MASK_SHOT_HULL, pOwner, COLLISION_GROUP_NONE, &tmpTrace);
+	if (tmpTrace.fraction == 1.0)
+	{
+		for (i = 0; i < 2; i++)
+		{
+			for (j = 0; j < 2; j++)
+			{
+				for (k = 0; k < 2; k++)
+				{
+					vecEnd.x = vecHullEnd.x + minmaxs[i][0];
+					vecEnd.y = vecHullEnd.y + minmaxs[j][1];
+					vecEnd.z = vecHullEnd.z + minmaxs[k][2];
+
+					UTIL_TraceLine(vecSrc, vecEnd, MASK_SHOT_HULL, pOwner, COLLISION_GROUP_NONE, &tmpTrace);
+					if (tmpTrace.fraction < 1.0)
+					{
+						float thisDistance = (tmpTrace.endpos - vecSrc).Length();
+						if (thisDistance < distance)
+						{
+							hitTrace = tmpTrace;
+							distance = thisDistance;
+						}
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		hitTrace = tmpTrace;
+	}
+}
+
+
+
+
+
+
+
+
+
+
 
 //=========================================================
 // Machine guns capable of switching between full auto and 

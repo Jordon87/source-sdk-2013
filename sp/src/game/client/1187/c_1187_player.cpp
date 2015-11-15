@@ -37,8 +37,12 @@ extern ConVar sensitivity;
 IMPLEMENT_CLIENTCLASS_DT(C_1187_Player, DT_1187_Player, C1187_Player)
 	RecvPropDataTable( RECVINFO_DT(m_1187Local),0, &REFERENCE_RECV_TABLE(DT_1187Local) ),
 
+#if 0
 	RecvPropFloat(RECVINFO(m_angEyeAngles[0])),
 	RecvPropFloat(RECVINFO(m_angEyeAngles[1])),
+#endif
+
+	RecvPropBool(RECVINFO(m_bAdjacentToWall)),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_1187_Player )
@@ -48,11 +52,19 @@ END_PREDICTION_DATA()
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
+#if 1
+C_1187_Player::C_1187_Player()
+#else
 C_1187_Player::C_1187_Player() : m_PlayerAnimState(this), m_iv_angEyeAngles("C_HL2MP_Player::m_iv_angEyeAngles")
+#endif
 {
+#if 0
 	m_angEyeAngles.Init();
 
 	AddVar(&m_angEyeAngles, &m_iv_angEyeAngles, LATCH_SIMULATION_VAR);
+#endif
+
+	m_bAdjacentToWall = false;
 }
 
 void C_1187_Player::PreThink(void)
@@ -65,7 +77,9 @@ void C_1187_Player::PreThink(void)
 	}
 	else
 	{
+#if 0
 		vTempAngles[PITCH] = m_angEyeAngles[PITCH];
+#endif
 	}
 
 	if (vTempAngles[YAW] < 0.0f)
@@ -80,6 +94,7 @@ void C_1187_Player::PreThink(void)
 
 const QAngle &C_1187_Player::EyeAngles()
 {
+#if 0
 	if (IsLocalPlayer())
 	{
 		return BaseClass::EyeAngles();
@@ -88,6 +103,9 @@ const QAngle &C_1187_Player::EyeAngles()
 	{
 		return m_angEyeAngles;
 	}
+#else
+	return BaseClass::EyeAngles();
+#endif
 }
 
 
@@ -98,12 +116,14 @@ void C_1187_Player::AddEntity(void)
 {
 	BaseClass::AddEntity();
 
+#if 0
 	QAngle vTempAngles = GetLocalAngles();
 	vTempAngles[PITCH] = m_angEyeAngles[PITCH];
 
 	SetLocalAngles(vTempAngles);
 
 	m_PlayerAnimState.Update();
+#endif
 
 	// Zero out model pitch, blending takes care of all of it.
 	SetLocalAnglesDim(X_INDEX, 0);
@@ -112,6 +132,7 @@ void C_1187_Player::AddEntity(void)
 
 const QAngle& C_1187_Player::GetRenderAngles()
 {
+#if 0
 	if (IsRagdoll())
 	{
 		return vec3_angle;
@@ -120,14 +141,29 @@ const QAngle& C_1187_Player::GetRenderAngles()
 	{
 		return m_PlayerAnimState.GetRenderAngles();
 	}
+#else
+	return BaseClass::GetRenderAngles();
+#endif
 }
 
 void C_1187_Player::PostThink(void)
 {
 	BaseClass::PostThink();
 
+#if 0
 	// Store the eye angles pitch so the client can compute its animation state correctly.
 	m_angEyeAngles = EyeAngles();
+#endif
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+bool C_1187_Player::ShouldDraw()
+{
+	if (IsInAVehicle())
+		return false;
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -139,7 +175,7 @@ void C_1187_Player::BuildTransformations(CStudioHdr *hdr, Vector *pos, Quaternio
 	BuildFirstPersonMeathookTransformations(hdr, pos, q, cameraTransform, boneMask, boneComputed, "ValveBiped.Bip01_Head1");
 
 	// Build the leg and upper body transformations.
-	BuildFirstPersonTransformations(hdr, pos, q, cameraTransform, boneMask, boneComputed);
+	// BuildFirstPersonTransformations(hdr, pos, q, cameraTransform, boneMask, boneComputed);
 }
 
 
@@ -147,6 +183,10 @@ void C_1187_Player::BuildFirstPersonTransformations(CStudioHdr *hdr, Vector *pos
 {
 	// Handle meathook mode. If we aren't rendering, just use last frame's transforms
 	if (!InFirstPersonView())
+		return;
+
+	// Do not draw when driving a vehicle.
+	if (IsInAVehicle())
 		return;
 
 	// If we're in third-person view, don't do anything special.

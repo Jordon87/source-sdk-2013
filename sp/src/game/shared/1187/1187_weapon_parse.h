@@ -37,6 +37,7 @@ public:
 	QAngle					angIronsightAngOffset;
 	float					flIronsightFOVOffset;
 
+	Vector					vecFragPosOffset;
 };
 
 // Each game implements this. It can return a derived class and override Parse() if it wants.
