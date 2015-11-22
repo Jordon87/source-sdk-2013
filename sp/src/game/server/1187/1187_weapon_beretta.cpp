@@ -23,6 +23,9 @@ public:
 	DECLARE_SERVERCLASS();
 
 	virtual void			AddMeleeViewKick( void );
+	virtual void			AddMeleeViewMiss(void);
+
+	virtual bool			HasBuiltInFlashlight(void) { return true; }
 };
 
 IMPLEMENT_SERVERCLASS_ST(C1187WeaponBeretta, DT_1187WeaponBeretta)
@@ -34,17 +37,19 @@ PRECACHE_WEAPON_REGISTER(weapon_pistol);
 void C1187WeaponBeretta::AddMeleeViewKick(void)
 {
 	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
-	if (!pPlayer)
-		return;
 
-	//Disorient the player
-	QAngle angles = pPlayer->GetLocalAngles();
+	if (pPlayer)
+	{
+		pPlayer->ViewPunch(QAngle(-random->RandomInt(6, 8), random->RandomInt(1, 2), 0));
+	}
+}
 
-	angles.x += random->RandomInt(-4, 4);
-	angles.y += random->RandomInt(-4, 4);
-	angles.z = 0;
+void C1187WeaponBeretta::AddMeleeViewMiss(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
 
-	pPlayer->SnapEyeAngles(angles);
-
-	pPlayer->ViewPunch(QAngle(random->RandomInt(-8, -12), random->RandomInt(1, 2), 0));
+	if (pPlayer)
+	{
+		pPlayer->ViewPunch(QAngle(-random->RandomInt(8, 10), random->RandomInt(1, 2), 0));
+	}
 }

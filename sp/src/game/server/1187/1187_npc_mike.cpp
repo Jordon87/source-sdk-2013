@@ -10,50 +10,33 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#define MIKE_MODEL		"models/humans/group01/male_09.mdl"
+
 extern ConVar g_johnhealth;
 
 class CNPC_Mike : public CNPC_Citizen
 {
 	DECLARE_CLASS(CNPC_Mike, CNPC_Citizen);
 public:
+	virtual void SelectModel(void);
 
 	virtual void Spawn(void);
-
 };
 
 LINK_ENTITY_TO_CLASS(npc_mike, CNPC_Mike);
 
-static const char* g_pszDuplicateMapNames[] =
+void CNPC_Mike::SelectModel()
 {
-	"1187d1",
-	"1187d2",
-	"1187d3",
-	"1187d4",
-	"1187d5",
-	"1187d6",
-	"1187d7",
-	"1187d8",
-	"1187d9",
-	"1187d10",
-};
+	SetModelName(AllocPooledString(MIKE_MODEL));
+}
 
 void CNPC_Mike::Spawn(void)
 {
+	RemoveSpawnFlags(SF_CITIZEN_RANDOM_HEAD | SF_CITIZEN_RANDOM_HEAD_MALE | SF_CITIZEN_RANDOM_HEAD_FEMALE);
+
 	BaseClass::Spawn();
 
 	m_iHealth = m_iMaxHealth = g_johnhealth.GetInt();
 
-	// Fix a bug where multiple instances of npc_mike would
-	// spawn. Remove those unnamed.
-	if (GetEntityName() == NULL_STRING)
-	{
-		for (size_t i = 0; i < ARRAYSIZE(g_pszDuplicateMapNames); i++)
-		{
-			if (FStrEq(STRING(gpGlobals->mapname), g_pszDuplicateMapNames[i]))
-			{
-				UTIL_Remove(this);
-				break;
-			}
-		}
-	}
+	SetModel(MIKE_MODEL);
 }

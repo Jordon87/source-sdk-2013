@@ -22,8 +22,12 @@
 #include <KeyValues.h>
 #include <vgui_controls/AnimationController.h>
 
+#include "1187_gamesettings.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+extern I1187GameSettings* g_p1187gamesettings;
 
 //-----------------------------------------------------------------------------
 // Purpose: Display the 'EasterEgg' icon
@@ -181,6 +185,12 @@ void C1187HudEasterEggDisplay::Paint(void)
 //-----------------------------------------------------------------------------
 void C1187HudEasterEggDisplay::MsgFunc_EasterEgg(bf_read &msg)
 {
+	long nEasterEggs = msg.ReadLong();
+
+	// Update easter eggs.
+	if (g_p1187gamesettings)
+		g_p1187gamesettings->SetEasterEggs(nEasterEggs);
+
 	g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("EasterEggDisplayShow");
 
 	m_flIconHoldStartTime = gpGlobals->curtime;

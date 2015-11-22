@@ -18,6 +18,8 @@ class C1187WeaponMP5K : public C1187_BaseWeapon_SMG
 	DECLARE_CLASS(C1187WeaponMP5K, C1187_BaseWeapon_SMG);
 public:
 	DECLARE_SERVERCLASS();
+
+	virtual void MeleeSwing(void);
 };
 
 IMPLEMENT_SERVERCLASS_ST(C1187WeaponMP5K, DT_1187WeaponMP5K)
@@ -25,3 +27,15 @@ END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS(weapon_smg1, C1187WeaponMP5K);
 PRECACHE_WEAPON_REGISTER(weapon_smg1);
+
+void C1187WeaponMP5K::MeleeSwing(void)
+{
+	BaseClass::MeleeSwing();
+
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer)
+	{
+		pPlayer->ViewPunch(QAngle(-random->RandomFloat(2, 4), 0, 0));
+	}
+}

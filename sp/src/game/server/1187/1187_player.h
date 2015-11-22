@@ -53,6 +53,7 @@ public:
 
 	virtual void		CheatImpulseCommands(int iImpulse);
 	virtual bool		ClientCommand(const CCommand &args);
+	virtual bool		Weapon_CanUse(CBaseCombatWeapon *pWeapon);
 
 	virtual void		OnJumping(float fImpulse);
 	virtual void		OnLanding(float fVelocity);

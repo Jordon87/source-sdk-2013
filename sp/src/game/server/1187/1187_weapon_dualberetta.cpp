@@ -18,6 +18,14 @@ class C1187WeaponDualBeretta : public C1187_BaseWeapon_DualPistol
 	DECLARE_CLASS(C1187WeaponDualBeretta, C1187_BaseWeapon_DualPistol);
 public:
 	DECLARE_SERVERCLASS();
+
+	virtual bool	HasIronsights(void) { return false; }
+
+	virtual void	AddMeleeViewKick(void);
+	virtual void	AddMeleeViewMiss(void);
+
+	virtual void	AddViewKickLeft(void);
+	virtual void	AddViewKickRight(void);
 };
 
 IMPLEMENT_SERVERCLASS_ST(C1187WeaponDualBeretta, DT_1187WeaponDualBeretta)
@@ -25,3 +33,43 @@ END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS(weapon_dualpistol, C1187WeaponDualBeretta);
 PRECACHE_WEAPON_REGISTER(weapon_dualpistol);
+
+void C1187WeaponDualBeretta::AddMeleeViewKick(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer)
+	{
+		pPlayer->ViewPunch(QAngle(random->RandomFloat(4, 6), random->RandomFloat(-1, 1), 0));
+	}
+}
+
+void C1187WeaponDualBeretta::AddMeleeViewMiss(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer)
+	{
+		pPlayer->ViewPunch(QAngle(random->RandomFloat(4, 8), random->RandomFloat(-1, 1), 0));
+	}
+}
+
+void C1187WeaponDualBeretta::AddViewKickLeft(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer)
+	{
+		pPlayer->ViewPunch(QAngle(-1, -random->RandomFloat(0, 1), 0));
+	}
+}
+
+void C1187WeaponDualBeretta::AddViewKickRight(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer)
+	{
+		pPlayer->ViewPunch(QAngle(-1, random->RandomFloat(0, 1), 0));
+	}
+}

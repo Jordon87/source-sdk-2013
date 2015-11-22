@@ -16,6 +16,11 @@ class CNPC_Citizen_Enemy : public CNPC_Citizen
 public:
 
 	Class_T Classify() { return CLASS_COMBINE; }
+
+	virtual bool 	IsMedic() 			{ return false; }
+	virtual bool 	IsAmmoResupplier() 	{ return false; }
+
+	virtual bool 	CanHeal()			{ return false; }
 };
 
 LINK_ENTITY_TO_CLASS(npc_citizen, CNPC_Citizen_Enemy);

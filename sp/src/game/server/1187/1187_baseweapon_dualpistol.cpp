@@ -312,6 +312,10 @@ void C1187_BaseWeapon_DualPistol::PrimaryAttack(void)
 	// Fire bullet.
 	DoFire(pPlayer, vecAiming);
 
+	AddViewKickRight();
+
+	// pPlayer->ViewPunch(QAngle(random->RandomFloat(-2, -1), random->RandomFloat(-2, 2), 0));
+
 	// Set next fire time.
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
 
@@ -339,7 +343,9 @@ void C1187_BaseWeapon_DualPistol::SecondaryAttack(void)
 	// Fire bullet.
 	DoFire(pPlayer, vecAiming, true);
 
-	pPlayer->ViewPunch(QAngle(random->RandomFloat(-2, -1), random->RandomFloat(-2, 2), 0));
+	AddViewKickLeft();
+
+	// pPlayer->ViewPunch(QAngle(random->RandomFloat(-2, -1), random->RandomFloat(-2, 2), 0));
 
 	// Set next fire time.
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();

@@ -21,10 +21,12 @@ public:
 
 	C1187_BaseWeapon_Revolver(void);
 
-	void	PrimaryAttack(void);
-	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
+	virtual void	PrimaryAttack(void);
+	virtual bool	Reload(void);
 
-	float	WeaponAutoAimScale()	{ return 0.6f; }
+	virtual void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
+
+	virtual float	WeaponAutoAimScale()	{ return 0.6f; }
 };
 
 #endif // ELEVENEIGHTYSEVEN_BASEWEAPON_REVOLVER_H

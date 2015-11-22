@@ -13,6 +13,10 @@
 #pragma once
 #endif
 
+#if defined ( CLIENT_DLL )
+#include "beamdraw.h"
+#endif
+
 class CBaseViewModel;
 
 #if defined( CLIENT_DLL )
@@ -39,6 +43,15 @@ public:
 
 							CBase1187CombatWeapon();
 	virtual 				~CBase1187CombatWeapon();
+
+#if defined ( CLIENT_DLL )
+	virtual void			NotifyShouldTransmit(ShouldTransmitState_t state);
+
+
+	// This function gets called on all client entities once per simulation phase.
+	// It dispatches events like OnDataChanged(), and calls the legacy function AddEntity().
+	virtual void					Simulate();
+#endif
 
 	// Override these to allow/disallow fire.
 	virtual bool			IsAllowedToFire(void);
@@ -92,12 +105,13 @@ public:
 	//---------------------------------------
 	// Melee swing
 	//---------------------------------------
-	void					MeleeSwing(void);
-	void					MeleeHit(trace_t &traceHit);
+	virtual void			MeleeSwing(void);
+	virtual void			MeleeHit(trace_t &traceHit);
 	void					ImpactEffect(trace_t &traceHit);
 	bool					ImpactWater(const Vector &start, const Vector &end);
 	void					ChooseIntersectionPoint(trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner);
 	virtual void			AddMeleeViewKick(void) { return; }
+	virtual void			AddMeleeViewMiss(void) { return; }
 #endif
 
 
@@ -128,12 +142,32 @@ public:
 
 	Vector					GetFragPositionOffset(void) const;
 
+	// Flashlight
+	virtual bool			HasBuiltInFlashlight(void) const;
+
+	// Damage handling
+	virtual int				GetWeaponDamage(void) const;
+	virtual int				GetWeaponMeleeDamage(void) const;
+
+
+#if defined ( CLIENT_DLL )
+	virtual void			UpdateFlashlight(void);
+#endif
+
 protected:
 
 	bool			m_bLoweredOnSprint;
 
 	CNetworkVar(bool, m_bIsIronsighted);
 	CNetworkVar(float, m_flIronsightedTime);
+
+#if defined ( CLIENT_DLL )
+	void DestroyFlashlightEffects();
+
+	void ReleaseFlashlight(void);
+	CFlashlightEffect*		m_pFlashlight;
+	Beam_t *m_pFlashlightBeam;
+#endif
 
 	friend class CBaseViewModel;
 };

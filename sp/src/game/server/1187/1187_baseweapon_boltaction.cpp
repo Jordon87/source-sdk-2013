@@ -287,7 +287,7 @@ void C1187_BaseWeapon_BoltAction::PrimaryAttack(void)
 	// Fire the bullets, and force the first shot to be perfectly accuracy
 	pPlayer->FireBullets(sk_plr_num_shotgun_pellets.GetInt(), vecSrc, vecAiming, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0, -1, -1, 0, NULL, true, true);
 
-	pPlayer->ViewPunch(QAngle(random->RandomFloat(-2, -1), random->RandomFloat(-2, 2), 0));
+	AddViewKick();
 
 	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), SOUNDENT_VOLUME_SHOTGUN, 0.2, GetOwner());
 
@@ -315,7 +315,7 @@ void C1187_BaseWeapon_BoltAction::ItemPostFrame(void)
 	if (m_bInReload)
 	{
 		// If I'm primary firing and have one round stop reloading and fire
-		if ((pOwner->m_nButtons & IN_ATTACK) && (m_iClip1 >= 1))
+		if ((pOwner->m_nButtons & IN_ATTACK) && IsPrimaryAttackAllowed() && (m_iClip1 >= 1))
 		{
 			m_bInReload = false;
 			m_bNeedPullPin = false;
@@ -337,7 +337,7 @@ void C1187_BaseWeapon_BoltAction::ItemPostFrame(void)
 	}
 
 	
-	if ((m_bDelayedFire1 || pOwner->m_nButtons & IN_ATTACK) && m_flNextPrimaryAttack <= gpGlobals->curtime)
+	if ((m_bDelayedFire1 || pOwner->m_nButtons & IN_ATTACK) && IsPrimaryAttackAllowed() && m_flNextPrimaryAttack <= gpGlobals->curtime)
 	{
 		m_bDelayedFire1 = false;
 		if ((m_iClip1 <= 0 && UsesClipsForAmmo1()) || (!UsesClipsForAmmo1() && !pOwner->GetAmmoCount(m_iPrimaryAmmoType)))
@@ -358,7 +358,7 @@ void C1187_BaseWeapon_BoltAction::ItemPostFrame(void)
 			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
 			return;
 		}
-		else
+		else if (IsPrimaryAttackAllowed())
 		{
 			// If the firing button was just pressed, reset the firing time
 			CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
@@ -408,7 +408,13 @@ void C1187_BaseWeapon_BoltAction::ItemPostFrame(void)
 
 }
 
-
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool C1187_BaseWeapon_BoltAction::Reload(void)
+{
+	return BaseClass::DefaultReload(GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor

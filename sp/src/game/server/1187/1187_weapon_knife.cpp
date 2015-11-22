@@ -27,6 +27,9 @@ public:
 	virtual float		GetPrimaryAttackHitDelay(void) const { return 0.1f; }
 
 	float		GetDamageForActivity(Activity hitActivity);
+
+	virtual void		AddMeleeViewKick(void);
+	virtual void		AddMeleeViewMiss(void);
 };
 
 IMPLEMENT_SERVERCLASS_ST(C1187WeaponKnife, DT_1187WeaponKnife)
@@ -62,4 +65,42 @@ float C1187WeaponKnife::GetDamageForActivity(Activity hitActivity)
 		return sk_plr_dmg_knife.GetFloat();
 
 	return sk_npc_dmg_knife.GetFloat();
+}
+
+void C1187WeaponKnife::AddMeleeViewKick(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer)
+	{
+		//Disorient the player
+		QAngle angles = pPlayer->GetLocalAngles();
+
+		angles.x += random->RandomInt(0, 1);
+		angles.y += -random->RandomInt(4, 6);
+		angles.z = 0;
+
+		pPlayer->SnapEyeAngles(angles);
+
+		pPlayer->ViewPunch(QAngle(1, -random->RandomFloat(6, 8), 0));
+	}
+}
+
+void C1187WeaponKnife::AddMeleeViewMiss(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer)
+	{
+		//Disorient the player
+		QAngle angles = pPlayer->GetLocalAngles();
+
+		angles.x += random->RandomInt(0, 1);
+		angles.y += -random->RandomInt(6, 8);
+		angles.z = 0;
+
+		pPlayer->SnapEyeAngles(angles);
+
+		pPlayer->ViewPunch(QAngle(1, -random->RandomFloat(8, 10), 0));
+	}
 }

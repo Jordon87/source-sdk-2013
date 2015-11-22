@@ -66,6 +66,15 @@ void C1187_BaseWeapon_Revolver::Operator_HandleAnimEvent(animevent_t *pEvent, CB
 	}
 }
 
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool C1187_BaseWeapon_Revolver::Reload(void)
+{
+	return BaseClass::DefaultReload(GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD);
+}
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -111,20 +120,13 @@ void C1187_BaseWeapon_Revolver::PrimaryAttack(void)
 	Vector vecSrc		= pPlayer->Weapon_ShootPosition();
 	Vector vecAiming	= pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );	
 
-	pPlayer->FireBullets( 1, vecSrc, vecAiming, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0 );
+	int iDamage = (GetWeaponDamage() != -1) ? GetWeaponDamage () : 0;
+
+	pPlayer->FireBullets(1, vecSrc, vecAiming, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0, -1, -1, iDamage);
 
 	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
 
-	//Disorient the player
-	QAngle angles = pPlayer->GetLocalAngles();
-
-	angles.x += random->RandomInt( -1, 1 );
-	angles.y += random->RandomInt( -1, 1 );
-	angles.z = 0;
-
-	pPlayer->SnapEyeAngles( angles );
-
-	pPlayer->ViewPunch( QAngle( -8, random->RandomFloat( -2, 2 ), 0 ) );
+	AddViewKick();
 
 	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), 600, 0.2, GetOwner() );
 }

@@ -26,6 +26,8 @@ private:
 public:
 	void	Precache(void);
 
+	virtual bool		Reload(void);
+
 	int CapabilitiesGet(void) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 
 	virtual const Vector& GetBulletSpread(void);

@@ -21,11 +21,16 @@
 #include "materialsystem/imaterial.h"
 #include "materialsystem/imaterialvar.h"
 
+#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+#include "c_vort_charge_token.h"
+#endif
+
 #define NUM_INTERIOR_PARTICLES	8
 
 #define DLIGHT_RADIUS (150.0f)
 #define DLIGHT_MINLIGHT (40.0f/255.0f)
 
+#if !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 class C_NPC_Vortigaunt : public C_AI_BaseNPC
 {
 	DECLARE_CLASS( C_NPC_Vortigaunt, C_AI_BaseNPC );
@@ -43,6 +48,7 @@ public:
 	bool  m_bIsBlack;    ///< wants to fade to black (networked)
 	float m_flBlackFade; ///< [0.00 .. 1.00] where 1.00 is all black. Locally interpolated.
 };
+#endif
 
 IMPLEMENT_CLIENTCLASS_DT( C_NPC_Vortigaunt, DT_NPC_Vortigaunt, CNPC_Vortigaunt )
 	RecvPropTime( RECVINFO(m_flBlueEndFadeTime ) ),

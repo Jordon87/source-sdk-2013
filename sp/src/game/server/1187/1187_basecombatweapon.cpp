@@ -89,7 +89,7 @@ void CBase1187CombatWeapon::MeleeHit(trace_t &traceHit)
 	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
 
 	//Do view kick
-	AddViewKick();
+	AddMeleeViewKick();
 
 	//Make sound for the AI
 	CSoundEnt::InsertSound(SOUND_BULLET_IMPACT, traceHit.endpos, 400, 0.2f, pPlayer);
@@ -105,7 +105,7 @@ void CBase1187CombatWeapon::MeleeHit(trace_t &traceHit)
 		if (pHitEntity->IsWorld())
 		{
 			//Play hit world sound
-			WeaponSound(MELEE_HIT_WORLD);
+			WeaponSound(/*MELEE_HIT_WORLD*/ MELEE_HIT);
 		}
 		else
 		{
@@ -117,7 +117,9 @@ void CBase1187CombatWeapon::MeleeHit(trace_t &traceHit)
 		pPlayer->EyeVectors(&hitDirection, NULL, NULL);
 		VectorNormalize(hitDirection);
 
-		CTakeDamageInfo info(GetOwner(), GetOwner(), sk_plr_dmg_melee.GetFloat(), DMG_CLUB);
+		float flDamage = (GetWeaponMeleeDamage() != -1) ? GetWeaponMeleeDamage() : sk_plr_dmg_melee.GetFloat();
+
+		CTakeDamageInfo info(GetOwner(), GetOwner(), flDamage, DMG_CLUB);
 
 		if (pPlayer && pHitEntity->IsNPC())
 		{
@@ -161,9 +163,11 @@ void CBase1187CombatWeapon::MeleeSwing(void)
 	Vector swingEnd = swingStart + forward * 75.0f;
 	UTIL_TraceLine(swingStart, swingEnd, MASK_SHOT_HULL, pOwner, COLLISION_GROUP_NONE, &traceHit);
 	Activity nHitActivity = ACT_VM_HITCENTER;
+	
+	float flDamage = (GetWeaponMeleeDamage() != -1) ? GetWeaponMeleeDamage() : sk_plr_dmg_melee.GetFloat();
 
 	// Like bullets, bludgeon traces have to trace against triggers.
-	CTakeDamageInfo triggerInfo(GetOwner(), GetOwner(), sk_plr_dmg_melee.GetFloat(), DMG_CLUB);
+	CTakeDamageInfo triggerInfo(GetOwner(), GetOwner(), flDamage, DMG_CLUB);
 	triggerInfo.SetDamagePosition(traceHit.startpos);
 	triggerInfo.SetDamageForce(forward);
 	TraceAttackToTriggers(triggerInfo, traceHit.startpos, traceHit.endpos, forward);
@@ -196,15 +200,13 @@ void CBase1187CombatWeapon::MeleeSwing(void)
 		}
 	}
 
-
-	//Play swing sound
-	WeaponSound(SINGLE);
-
 	// -------------------------
 	//	Miss
 	// -------------------------
 	if (traceHit.fraction == 1.0f)
 	{
+		// Add miss swing punch.
+		AddMeleeViewMiss();
 
 		//Play miss sound
 		WeaponSound(MELEE_MISS);

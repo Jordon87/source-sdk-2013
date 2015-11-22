@@ -18,14 +18,14 @@
 
 ConVar cl_viewbob_enabled("cl_viewbob_enabled", "1", FCVAR_CLIENTDLL | FCVAR_CHEAT);
 
-ConVar cl_viewbob_amplitude_min("cl_viewbob_amplitude_min", "0.03", FCVAR_CLIENTDLL | FCVAR_CHEAT);
-ConVar cl_viewbob_amplitude_max("cl_viewbob_amplitude_max", "0.04", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_min("cl_viewbob_amplitude_min", "0.01", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_max("cl_viewbob_amplitude_max", "0.02", FCVAR_CLIENTDLL | FCVAR_CHEAT);
 
-ConVar cl_viewbob_frequency_min("cl_viewbob_frequency_min", "2.0", FCVAR_CLIENTDLL | FCVAR_CHEAT);
-ConVar cl_viewbob_frequency_max("cl_viewbob_frequency_max", "2.5", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_frequency_min("cl_viewbob_frequency_min", "10.0", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_frequency_max("cl_viewbob_frequency_max", "12.0", FCVAR_CLIENTDLL | FCVAR_CHEAT);
 
-ConVar cl_viewbob_roll_min("cl_viewbob_roll_min", "0.02", FCVAR_CLIENTDLL | FCVAR_CHEAT);
-ConVar cl_viewbob_roll_max("cl_viewbob_roll_max", "0.03", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_roll_min("cl_viewbob_roll_min", "0.05", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_roll_max("cl_viewbob_roll_max", "0.06", FCVAR_CLIENTDLL | FCVAR_CHEAT);
 
 //-----------------------------------------------------------------------------
 // Purpose: 

@@ -38,6 +38,10 @@ public:
 	float					flIronsightFOVOffset;
 
 	Vector					vecFragPosOffset;
+
+	int						iDamage;
+	int						iMeleeDamage;
+	bool					bHasFlashlight;
 };
 
 // Each game implements this. It can return a derived class and override Parse() if it wants.

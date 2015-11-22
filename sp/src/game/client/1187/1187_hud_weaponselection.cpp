@@ -41,7 +41,7 @@ ConVar hud_showemptyweaponslots( "hud_showemptyweaponslots", "1", FCVAR_ARCHIVE,
 #define MAX_CAROUSEL_SLOTS				5
 
 //-----------------------------------------------------------------------------
-// Purpose: hl2 weapon selection hud element
+// Purpose: 1187 weapon selection hud element
 //-----------------------------------------------------------------------------
 class CHudWeaponSelection : public CBaseHudWeaponSelection, public vgui::Panel
 {
@@ -438,20 +438,16 @@ void CHudWeaponSelection::Paint()
 
 	// find and display our current selection
 	C_BaseCombatWeapon *pSelectedWeapon = NULL;
-#if 0
 	switch ( hud_fastswitch.GetInt() )
 	{
 	case HUDTYPE_FASTSWITCH:
 	case HUDTYPE_CAROUSEL:
-#endif
 		pSelectedWeapon = pPlayer->GetActiveWeapon();
-#if 0
 		break;
 	default:
 		pSelectedWeapon = GetSelectedWeapon();
 		break;
 	}
-#endif
 	if ( !pSelectedWeapon )
 		return;
 
@@ -477,12 +473,10 @@ void CHudWeaponSelection::Paint()
 		selectedColor[i] = m_BoxColor[i] + ((m_SelectedBoxColor[i] - m_BoxColor[i]) * percentageDone);
 	}
 
-#if 0
 	switch ( hud_fastswitch.GetInt() )
 	{
 	case HUDTYPE_CAROUSEL:
 		{
-#endif
 			// carousel style - flat line of items
 			ypos = 0;
 			if ( m_iSelectedWeaponBox == -1 || m_WeaponBoxes.Count() <= 1 )
@@ -518,18 +512,18 @@ void CHudWeaponSelection::Paint()
 			else
 			{
 				// draw the selected weapon in the center, as a continuous scrolling carosuel
+
 #if 1
 				int cx = GetWide() / 2 + m_flHorizWeaponSelectOffsetPoint - largeBoxWide / 2;
 
 				int slots = (MAX_CAROUSEL_SLOTS / 2) + 1;
 				int halfWidth = slots * largeBoxWide + (slots - 1) * m_flBoxGap;
 #endif
-
 				// draw at center the current selected and all items to its right
 #if 1
 				xpos = cx;
 #else
-				xpos = GetWide()/2 + m_flHorizWeaponSelectOffsetPoint - largeBoxWide/2;
+				xpos = GetWide() / 2 + m_flHorizWeaponSelectOffsetPoint - largeBoxWide / 2;
 #endif
 				int i = m_iSelectedWeaponBox;
 				while ( 1 )
@@ -554,10 +548,10 @@ void CHudWeaponSelection::Paint()
 					// advance until past edge
 					xpos += (largeBoxWide + m_flBoxGap);
 #if 1
-					if ( xpos >= cx + halfWidth )
+					if (xpos >= cx + halfWidth)
 						break;
 #else
-					if ( xpos >= GetWide() )
+					if (xpos >= GetWide())
 						break;
 #endif
 
@@ -599,20 +593,17 @@ void CHudWeaponSelection::Paint()
 
 					// retreat until past edge
 					xpos -= (largeBoxWide + m_flBoxGap);
-
 #if 1
-					if ( xpos <= cx - halfWidth )
+					if (xpos <= cx - halfWidth)
 						break;
 #else
-					if ( xpos + largeBoxWide <= 0 )
+					if (xpos + largeBoxWide <= 0)
 						break;
 #endif
 
 					--i;
 				}
 			}
-
-#if 0
 		}
 	break;
 
@@ -769,8 +760,6 @@ void CHudWeaponSelection::Paint()
 		break;
 	}
 
-#endif
-
 	if( bPushedViewport )
 	{
 		surface()->PopFullscreenViewport();
@@ -785,7 +774,6 @@ void CHudWeaponSelection::DrawLargeWeaponBox( C_BaseCombatWeapon *pWeapon, bool 
 {
 	Color col = bSelected ? m_SelectedFgColor : GetFgColor();
 	
-#if 0
 	switch ( hud_fastswitch.GetInt() )
 	{
 	case HUDTYPE_BUCKETS:
@@ -837,7 +825,6 @@ void CHudWeaponSelection::DrawLargeWeaponBox( C_BaseCombatWeapon *pWeapon, bool 
 	case HUDTYPE_PLUS:
 	case HUDTYPE_CAROUSEL:
 		{
-#endif
 			if ( !pWeapon )
 			{
 				// draw red box for an empty bubble
@@ -921,8 +908,6 @@ void CHudWeaponSelection::DrawLargeWeaponBox( C_BaseCombatWeapon *pWeapon, bool 
 					}
 				}
 			}
-
-#if 0
 		}
 		break;
 
@@ -938,7 +923,6 @@ void CHudWeaponSelection::DrawLargeWeaponBox( C_BaseCombatWeapon *pWeapon, bool 
 		// No text in plus bucket method
 		return;
 	}
-#endif
 
 	// draw text
 	col = m_TextColor;
@@ -1068,21 +1052,16 @@ void CHudWeaponSelection::ApplySchemeSettings(vgui::IScheme *pScheme)
 	GetPos(x, y);
 	GetHudSize(screenWide, screenTall);
 
-#if 0
 	if ( hud_fastswitch.GetInt() == HUDTYPE_CAROUSEL )
 	{
-#endif
 		// need bounds to be exact width for proper clipping during scroll 
 		int width = MAX_CAROUSEL_SLOTS*m_flLargeBoxWide + (MAX_CAROUSEL_SLOTS-1)*m_flBoxGap;
 		SetBounds( (screenWide-width)/2, y, width, screenTall - y);
-
-#if 0
 	}
 	else
 	{
 		SetBounds( x, y, screenWide - x, screenTall - y );
 	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1502,16 +1481,13 @@ void CHudWeaponSelection::SelectWeaponSlot( int iSlot )
 	if ( pPlayer->IsAllowedToSwitchWeapons() == false )
 		return;
 
-#if 0
 	switch( hud_fastswitch.GetInt() )
 	{
 	case HUDTYPE_FASTSWITCH:
 	case HUDTYPE_CAROUSEL:
 		{
-#endif
 			FastWeaponSwitch( iSlot );
 			return;
-#if 0
 		}
 		
 	case HUDTYPE_PLUS:
@@ -1567,5 +1543,4 @@ void CHudWeaponSelection::SelectWeaponSlot( int iSlot )
 	}
 
 	pPlayer->EmitSound( "Player.WeaponSelectionMoveSlot" );
-#endif
 }

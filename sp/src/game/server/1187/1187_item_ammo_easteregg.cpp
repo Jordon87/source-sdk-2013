@@ -6,9 +6,12 @@
 
 #include "cbase.h"
 #include "items.h"
+#include "1187_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+extern ConVar sv_eastereggs;
 
 // ========================================================================
 //	>> C1187_Item_EasterEgg
@@ -30,11 +33,21 @@ public:
 	}
 	bool MyTouch(CBasePlayer *pPlayer)
 	{
-		CSingleUserRecipientFilter user(pPlayer);
-		user.MakeReliable();
-		UserMessageBegin(user, "EasterEgg");
-			WRITE_BYTE(1);	// So that the message has a size.
-		MessageEnd();
+		// Increment easter egg game rules.
+		CElevenEightySeven* pGameRules = dynamic_cast<CElevenEightySeven*>(g_pGameRules);
+		if (pGameRules)
+		{
+			pGameRules->IncrementEasterEggs(1);
+
+			static long nEasterEggs = 0;
+			nEasterEggs = pGameRules->GetEasterEggs();
+
+			CSingleUserRecipientFilter user(pPlayer);
+			user.MakeReliable();
+			UserMessageBegin(user, "EasterEgg");
+				WRITE_LONG(nEasterEggs);	// Num easter eggs.
+			MessageEnd();
+		}
 
 		UTIL_Remove(this);
 		return true;

@@ -5,6 +5,7 @@
 //=============================================================================//
 
 #include "cbase.h"
+#include "fmtstr.h"
 
 #include "ienginevgui.h"
 
@@ -14,30 +15,14 @@
 #include <vgui_controls/CheckButton.h>
 #include <vgui_controls/Label.h>
 
+#include "../vgui/1187_gamesettings.h"
+#include "../1187_gamesettings_config.h"
+#include "1187_gamesettingsdialog.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 using namespace vgui;
-
-class C1187GameSettingsDialog : public vgui::PropertyDialog
-{
-	DECLARE_CLASS_SIMPLE(C1187GameSettingsDialog, vgui::PropertyDialog);
-public:
-	C1187GameSettingsDialog(vgui::VPANEL parent);
-	~C1187GameSettingsDialog();
-protected:
-	virtual bool OnOK(bool applyOnly);
-
-	vgui::CheckButton* m_pViewRealism;
-	vgui::CheckButton* m_pViewBobbing;
-	vgui::CheckButton* m_pIronBlur;
-	vgui::CheckButton* m_pSprintBlur;
-	vgui::CheckButton* m_pHudStyle;
-
-	vgui::Label* m_pEggList;
-	vgui::Label* m_pInfo;
-	vgui::Label* m_pLabel1;
-};
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -53,7 +38,7 @@ C1187GameSettingsDialog::C1187GameSettingsDialog(vgui::VPANEL parent) : Property
 	SetMouseInputEnabled(true);
 	SetKeyBoardInputEnabled(true);
 	
-	SetDeleteSelfOnClose(true);
+	// SetDeleteSelfOnClose(true);
 
 	SetTitle("#GameUI_1187_Options", true);
 	SetOKButtonText("#GameUI_Apply");
@@ -80,49 +65,49 @@ C1187GameSettingsDialog::~C1187GameSettingsDialog()
 
 	if (m_pViewRealism)
 	{
-		m_pViewRealism->MarkForDeletion();
+		delete m_pViewRealism;
 		m_pViewRealism = NULL;
 	}
 
 	if (m_pViewBobbing)
 	{
-		m_pViewBobbing->MarkForDeletion();
+		delete m_pViewBobbing;
 		m_pViewBobbing = NULL;
 	}
 
 	if (m_pIronBlur)
 	{
-		m_pIronBlur->MarkForDeletion();
+		delete m_pIronBlur;
 		m_pIronBlur = NULL;
 	}
 
 	if (m_pSprintBlur)
 	{
-		m_pSprintBlur->MarkForDeletion();
+		delete m_pSprintBlur;
 		m_pSprintBlur = NULL;
 	}
 
 	if (m_pHudStyle)
 	{
-		m_pHudStyle->MarkForDeletion();
+		delete m_pHudStyle;
 		m_pHudStyle = NULL;
 	}
 
 	if (m_pEggList)
 	{
-		m_pEggList->MarkForDeletion();
+		delete m_pEggList;
 		m_pEggList = NULL;
 	}
 
 	if (m_pInfo)
 	{
-		m_pInfo->MarkForDeletion();
+		delete m_pInfo;
 		m_pInfo = NULL;
 	}
 
 	if (m_pLabel1)
 	{
-		m_pLabel1->MarkForDeletion();
+		delete m_pLabel1;
 		m_pLabel1 = NULL;
 	}
 }
@@ -134,22 +119,55 @@ bool C1187GameSettingsDialog::OnOK(bool applyOnly)
 {
 	DevMsg("C1187GameSettingsDialog::OnOK\n");
 
+	static Eleven87GameSettings_t settings;
+
+	settings.m_viewbobbing	= (m_pViewBobbing && m_pViewBobbing->IsSelected());
+	settings.m_viewrealism	= (m_pViewRealism && m_pViewRealism->IsSelected());
+	settings.m_ironblur		= (m_pIronBlur && m_pIronBlur->IsSelected());
+	settings.m_sprintblur	= (m_pSprintBlur && m_pSprintBlur->IsSelected());
+	settings.m_hudstyle		= (m_pHudStyle && m_pHudStyle->IsSelected());
+
+	g_p1187gamesettings->Apply(&settings);
+	
 	return true;
 }
 
+void C1187GameSettingsDialog::SetSettings(void* data)
+{
+	Eleven87GameSettings_t* settings = (Eleven87GameSettings_t*)data;
 
+	if (settings)
+	{
+		if (m_pViewRealism)
+			m_pViewRealism->SetSelected(settings->m_viewrealism);
+
+		if (m_pViewBobbing)
+			m_pViewBobbing->SetSelected(settings->m_viewbobbing);
+
+		if (m_pIronBlur)
+			m_pIronBlur->SetSelected(settings->m_ironblur);
+
+		if (m_pSprintBlur)
+			m_pSprintBlur->SetSelected(settings->m_sprintblur);
+
+		if (m_pHudStyle)
+			m_pHudStyle->SetSelected(settings->m_hudstyle);
+
+		if (m_pEggList)
+			m_pEggList->SetText(CFmtStr("You have (%d) egg(s).\n", settings->m_eggcount));
+	}
+}
 
 //------------------------------------------------------------------------------
 void CC_Show1187GameSettings(const CCommand& args)
 {
-	VPANEL panel = enginevgui->GetPanel( PANEL_GAMEUIDLL );
-
-	C1187GameSettingsDialog* pGameSettings = new C1187GameSettingsDialog(panel);
-	if (pGameSettings)
+	if (g_p1187gamesettings)
 	{
-		pGameSettings->SetAutoDelete(true);
-		pGameSettings->Activate();
-		pGameSettings->SetVisible(true);
+		g_p1187gamesettings->SetVisible(true);
+	}
+	else
+	{
+		DevMsg("Couldn't open 1187 game settings.\n");
 	}
 }
 

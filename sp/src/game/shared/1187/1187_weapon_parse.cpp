@@ -35,6 +35,10 @@ extern ConVar hud_fastswitch;
 void C1187FileWeaponInfo_t::Parse(KeyValues *pKeyValuesData, const char *szWeaponName)
 {
 	BaseClass::Parse(pKeyValuesData, szWeaponName);
+
+	iDamage = pKeyValuesData->GetInt("damage", -1);
+	iMeleeDamage = pKeyValuesData->GetInt("MeleeDamage", -1);
+	bHasFlashlight = pKeyValuesData->GetBool("HasFlashlight", 0);
 		
 	KeyValues *pSights = pKeyValuesData->FindKey("IronSight");
 	if (pSights)

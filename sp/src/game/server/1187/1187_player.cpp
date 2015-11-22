@@ -47,6 +47,7 @@
 #include "gamestats.h"
 #include "filters.h"
 #include "tier0/icommandline.h"
+#include "ammodef.h"
 
 #include "1187_grenade_frag.h"
 
@@ -160,6 +161,8 @@ void C1187_Player::Precache(void)
 
 	PrecacheModel(PLAYER_MODEL_FIRSTPERSON);
 	PrecacheModel(PLAYER_MODEL_THIRDPERSON);
+
+	PrecacheModel("sprites/glow01.vmt");
 }
 
 //-----------------------------------------------------------------------------
@@ -231,7 +234,7 @@ void C1187_Player::PostThink(void)
 void C1187_Player::EquipSuit(bool bPlayEffects)
 {
 	MDLCACHE_CRITICAL_SECTION();
-	BaseClass::EquipSuit();
+	CBasePlayer::EquipSuit();
 	
 	m_HL2Local.m_bDisplayReticle = true;
 }
@@ -554,6 +557,29 @@ bool C1187_Player::ClientCommand(const CCommand &args)
 	return BaseClass::ClientCommand(args);
 }
 
+extern ConVar sk_max_grenade;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+bool C1187_Player::Weapon_CanUse(CBaseCombatWeapon *pWeapon)
+{
+	if (pWeapon->ClassMatches("weapon_frag"))
+	{
+		int ammoIndex = GetAmmoDef()->Index("grenade");
+		Assert(ammoIndex != -1);
+
+		if (GetAmmoCount(ammoIndex) < sk_max_grenade.GetInt())
+		{ 
+			GiveAmmo(1, ammoIndex, false);
+			UTIL_Remove(pWeapon);
+		}
+		return false;
+	}
+
+	return BaseClass::Weapon_CanUse(pWeapon);
+}
+
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void C1187_Player::OnJumping(float fImpulse)
@@ -601,7 +627,16 @@ void C1187_Player::OnHaulBack(void)
 	Vector vecThrow;
 	GetVelocity(&vecThrow, NULL);
 	vecThrow += vForward * 1200;
-	Fraggrenade_Create_1187(vecSrc, vec3_angle, vecThrow, AngularImpulse(600, random->RandomInt(-1200, 1200), 0), this, FRAG_GRENADE_TIMER);
+
+	if (Fraggrenade_Create_1187(vecSrc, vec3_angle, vecThrow, AngularImpulse(600, random->RandomInt(-1200, 1200), 0), this, FRAG_GRENADE_TIMER))
+	{
+		// Decrement grenade count.
+		int grenadeIndex = GetAmmoDef()->Index("grenade");
+
+		Assert(grenadeIndex != -1);
+
+		RemoveAmmo(1, grenadeIndex);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -730,6 +765,15 @@ bool C1187_Player::WallProximity_Check(void)
 //-----------------------------------------------------------------------------
 bool C1187_Player::CanHaulBack(void) const
 {
+	if (m_fIsSprinting)
+		return false;
+
+	int grenadeIndex = GetAmmoDef()->Index("grenade");
+
+	// Check if we have grenades.
+	if (GetAmmoCount(grenadeIndex) <= 0)
+		return false;
+
 	return true;
 }
 
@@ -839,6 +883,9 @@ void C1187_Player::CheckHaulBackInput(void)
 bool C1187_Player::CanMelee(void) const
 {
 	if (!GetActiveWeapon())
+		return false;
+
+	if (m_fIsSprinting)
 		return false;
 
 	return true;

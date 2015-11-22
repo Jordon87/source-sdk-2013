@@ -28,6 +28,10 @@
 #include "engine/IEngineSound.h"
 #include "movevars_shared.h"
 
+// For shockwave.
+#include "beam_flags.h"
+#include "te_effect_dispatch.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -38,6 +42,9 @@
 
 ConVar	sk_Houndeye_health("sk_Houndeye_health", "80");			// 0
 ConVar	sk_Houndeye_dmg_blast("sk_Houndeye_dmg_blast", "25");	// 0
+
+// For our shockwave explosion
+extern int s_nExplosionTexture;
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -687,7 +694,30 @@ void CNPC_Houndeye::SonicAttack(void)
 {
 	EmitSound("NPC_Houndeye.SonicAttack");
 
-#if 0
+#if 1
+
+	//Shockring
+	CBroadcastRecipientFilter filter2;
+
+	te->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
+		128,	//start radius
+		384,		//end radius
+		s_nExplosionTexture, //texture
+		0,			//halo index
+		0,			//start frame
+		2,			//framerate
+		0.25f,		//life
+		48,			//width
+		0,			//spread
+		0,			//amplitude
+		255,	//r
+		255,	//g
+		225,	//b
+		64,		//a
+		0,		//speed
+		FBEAM_FADEOUT
+		);
+#else
 	if (m_pEnergyWave)
 	{
 		UTIL_Remove(m_pEnergyWave);

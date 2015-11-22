@@ -18,5 +18,5 @@
 void Register1187UserMessages( void )
 {
 	usermessages->Register("HintKeyDisplay", -1);
-	usermessages->Register("EasterEgg", -1);
+	usermessages->Register("EasterEgg", 4);
 }

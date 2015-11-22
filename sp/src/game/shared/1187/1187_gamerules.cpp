@@ -31,6 +31,11 @@
 REGISTER_GAMERULES_CLASS(CElevenEightySeven);
 
 BEGIN_NETWORK_TABLE_NOBASE(CElevenEightySeven, DT_ElevenEightySevenGameRules)
+#if !defined( CLIENT_DLL )
+	SendPropInt(SENDINFO(m_nEasterEggs)),
+#else
+	RecvPropInt(RECVINFO(m_nEasterEggs)),
+#endif
 END_NETWORK_TABLE()
 
 

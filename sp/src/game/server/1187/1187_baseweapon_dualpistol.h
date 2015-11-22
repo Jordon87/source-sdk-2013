@@ -28,6 +28,9 @@ public:
 	void	PrimaryAttack(void);
 	void	SecondaryAttack(void);
 
+	virtual void	AddViewKickLeft(void) { return; }
+	virtual void	AddViewKickRight(void) { return; }
+
 	virtual int		GetMaxClipLeft() const;
 	virtual int		GetMaxClipRight() const;
 

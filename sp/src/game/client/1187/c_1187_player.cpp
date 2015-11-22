@@ -17,12 +17,20 @@
 #include "view_scene.h"
 #include "cam_thirdperson.h"
 
+#include "iviewrender_beams.h"			// flashlight beam
+#include "r_efx.h"
+#include "dlight.h"
+#include "flashlighteffect.h"
+#include "c_1187_basecombatweapon.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 #ifdef C1187_Player
 #undef C1187_Player
 #endif
+
+#define FLASHLIGHT_DISTANCE		1000
 
 // How fast to avoid collisions with center of other object, in units per second
 #define AVOID_SPEED 2000.0f
@@ -33,6 +41,13 @@ extern ConVar cl_sidespeed;
 extern ConVar zoom_sensitivity_ratio;
 extern ConVar default_fov;
 extern ConVar sensitivity;
+
+extern ConVar mat_motion_blur_enabled;
+extern ConVar mat_motion_blur_falling_min;
+extern ConVar mat_motion_blur_falling_max;
+
+static ConVar cl_1187_ironblur_enabled("cl_1187_ironblur_enabled", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Enable/Disable Ironsights motion blur.\n");
+static ConVar cl_1187_sprintblur_enabled("cl_1187_sprintblur_enabled", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Enable/Disable sprint motion blur.\n");
 
 IMPLEMENT_CLIENTCLASS_DT(C_1187_Player, DT_1187_Player, C1187_Player)
 	RecvPropDataTable( RECVINFO_DT(m_1187Local),0, &REFERENCE_RECV_TABLE(DT_1187Local) ),
@@ -65,6 +80,11 @@ C_1187_Player::C_1187_Player() : m_PlayerAnimState(this), m_iv_angEyeAngles("C_H
 #endif
 
 	m_bAdjacentToWall = false;
+}
+
+C_1187_Player::~C_1187_Player()
+{
+
 }
 
 void C_1187_Player::PreThink(void)
@@ -108,6 +128,15 @@ const QAngle &C_1187_Player::EyeAngles()
 #endif
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void C_1187_Player::ClientThink(void)
+{
+	BaseClass::ClientThink();
+
+	UpdatePlayerEffects();
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -156,6 +185,52 @@ void C_1187_Player::PostThink(void)
 #endif
 }
 
+void C_1187_Player::UpdateFlashlight(void)
+{
+	// The dim light is the flashlight.
+	if (IsEffectActive(EF_DIMLIGHT))
+	{
+		CBaseCombatWeapon* pWeapon = GetActiveWeapon();
+
+		if (pWeapon)
+		{
+			CBase1187CombatWeapon* p1187Weapon = ToBase1187CombatWeapon(pWeapon);
+			if (p1187Weapon && p1187Weapon->HasBuiltInFlashlight())
+			{
+				if (m_pFlashlight)
+				{
+					delete m_pFlashlight;
+					m_pFlashlight = NULL;
+				}
+				return;
+			}
+		}
+
+		if (!m_pFlashlight)
+		{
+			// Turned on the headlight; create it.
+			m_pFlashlight = new CFlashlightEffect(index);
+
+			if (!m_pFlashlight)
+				return;
+
+			m_pFlashlight->TurnOn();
+		}
+
+		Vector vecForward, vecRight, vecUp;
+		EyeVectors(&vecForward, &vecRight, &vecUp);
+
+		// Update the light with the new position and direction.		
+		m_pFlashlight->UpdateLight(EyePosition(), vecForward, vecRight, vecUp, FLASHLIGHT_DISTANCE);
+	}
+	else if (m_pFlashlight)
+	{
+		// Turned off the flashlight; delete it.
+		delete m_pFlashlight;
+		m_pFlashlight = NULL;
+	}
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 bool C_1187_Player::ShouldDraw()
@@ -173,151 +248,63 @@ void C_1187_Player::BuildTransformations(CStudioHdr *hdr, Vector *pos, Quaternio
 {
 	BaseClass::BuildTransformations(hdr, pos, q, cameraTransform, boneMask, boneComputed);
 	BuildFirstPersonMeathookTransformations(hdr, pos, q, cameraTransform, boneMask, boneComputed, "ValveBiped.Bip01_Head1");
-
-	// Build the leg and upper body transformations.
-	// BuildFirstPersonTransformations(hdr, pos, q, cameraTransform, boneMask, boneComputed);
 }
 
-
-void C_1187_Player::BuildFirstPersonTransformations(CStudioHdr *hdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed)
+void C_1187_Player::UpdatePlayerEffects()
 {
-	// Handle meathook mode. If we aren't rendering, just use last frame's transforms
-	if (!InFirstPersonView())
-		return;
+	if (ShouldUpdateMotionBlur())
+		UpdateMotionBlur();
+}
 
-	// Do not draw when driving a vehicle.
-	if (IsInAVehicle())
-		return;
+bool C_1187_Player::ShouldUpdateMotionBlur()
+{
+	return mat_motion_blur_enabled.GetBool();
+}
 
-	// If we're in third-person view, don't do anything special.
-	// If we're in first-person view rendering the main view and using the viewmodel, we shouldn't have even got here!
-	// If we're in first-person view rendering the main view(s), meathook and headless.
-	// If we're in first-person view rendering shadowbuffers/reflections, don't do anything special either (we could do meathook but with a head?)
-	if (IsAboutToRagdoll())
+bool C_1187_Player::ShouldUpdateMotionBlurIronsights()
+{
+	if (!cl_1187_ironblur_enabled.GetBool())
+		return false;
+
+	if (!GetActiveWeapon())
+		return false;
+
+	return true;
+}
+
+bool C_1187_Player::ShouldUpdateMotionBlurOnSprint()
+{
+	return cl_1187_sprintblur_enabled.GetBool();
+}
+
+void C_1187_Player::UpdateMotionBlur()
+{
+	bool bSprintBlur = false;
+	bool bIronBlur = false;
+
+	if (ShouldUpdateMotionBlurOnSprint())
 	{
-		// We're re-animating specifically to set up the ragdoll.
-		// Meathook can push the player through the floor, which makes the ragdoll fall through the world, which is no good.
-		// So do nothing.
-		return;
+		bSprintBlur = m_fIsSprinting;
 	}
 
-	if (!DrawingMainView())
+	if (ShouldUpdateMotionBlurIronsights())
 	{
-		return;
+		Assert( GetActiveWeapon() );
+
+		C_Base1187CombatWeapon* pWeapon = ToBase1187CombatWeapon(GetActiveWeapon());
+
+		if (pWeapon)
+			bIronBlur = pWeapon->HasIronsights() && pWeapon->IsIronsighted();
 	}
 
-	// If we aren't drawing the player anyway, don't mess with the bones. This can happen in Portal.
-	if (!ShouldDrawThisPlayer())
+	if (bSprintBlur || bIronBlur)
 	{
-		return;
+		mat_motion_blur_falling_max.SetValue(1);
+		mat_motion_blur_falling_min.SetValue(20);
 	}
-
-	m_BoneAccessor.SetWritableBones(BONE_USED_BY_ANYTHING);
-
-	QAngle bodyAngles = GetLocalAngles();
-
-	bodyAngles.x = 0;
-
-	Vector forward;
-	AngleVectors(bodyAngles, &forward);
-
-	Vector vLowerOffset, vUpperOffset;
-	vLowerOffset = forward * -16;
-	vUpperOffset = forward * -32;
-
-	int iBoneStart, iBoneEnd;
-
-	iBoneStart = 0;
-	iBoneEnd = LookupBone("ValveBiped.Bip01_Spine4");
-
-	if (iBoneStart == -1 || iBoneEnd == -1)
+	else
 	{
-		return;
-	}
-
-	int i;
-
-	for (i = 0; i < iBoneEnd; i++)
-	{
-		matrix3x4_t& bone = GetBoneForWrite(i);
-		Vector vBonePos;
-		MatrixGetTranslation(bone, vBonePos);
-		vBonePos += vLowerOffset;
-		MatrixSetTranslation(vBonePos, bone);
-	}
-
-	iBoneStart = iBoneEnd;
-	iBoneEnd = LookupBone("ValveBiped.Bip01_R_Thigh");
-
-	if (iBoneStart == -1 || iBoneEnd == -1)
-	{
-		return;
-	}
-
-	for (i = iBoneStart; i < iBoneEnd; i++)
-	{
-		// Only update bones reference by the bone mask.
-		if (!(hdr->boneFlags(i) & boneMask))
-		{
-			continue;
-		}
-
-		matrix3x4_t& bone = GetBoneForWrite(i);
-		Vector vBonePos;
-		MatrixGetTranslation(bone, vBonePos);
-		vBonePos += vUpperOffset;
-		MatrixSetTranslation(vBonePos, bone);
-		MatrixScaleByZero(bone);
-	}
-
-	// Start from where we left.
-	iBoneStart = iBoneEnd;
-
-	// Define the new end.
-	iBoneEnd = LookupBone("ValveBiped.Bip01_L_Finger4");
-
-	if (iBoneStart == -1 || iBoneEnd == -1)
-	{
-		return;
-	}
-
-	// For each bone in this, add a small offset.
-	for (i = iBoneStart; i < iBoneEnd; i++)
-	{
-		// Only update bones reference by the bone mask.
-		if (!(hdr->boneFlags(i) & boneMask))
-		{
-			continue;
-		}
-
-		matrix3x4_t& bone = GetBoneForWrite(i);
-		Vector vBonePos;
-		MatrixGetTranslation(bone, vBonePos);
-		vBonePos += vLowerOffset;
-		MatrixSetTranslation(vBonePos, bone);
-	}
-
-	iBoneStart = iBoneEnd;
-
-	if (iBoneStart == -1)
-	{
-		return;
-	}
-
-	// Traverse the skeleton to add an offset to the 
-	for (i = iBoneStart; i < hdr->numbones(); i++)
-	{
-		// Only update bones reference by the bone mask.
-		if (!(hdr->boneFlags(i) & boneMask))
-		{
-			continue;
-		}
-
-		matrix3x4_t& bone = GetBoneForWrite(i);
-		Vector vBonePos;
-		MatrixGetTranslation(bone, vBonePos);
-		vBonePos += vUpperOffset;
-		MatrixSetTranslation(vBonePos, bone);
-		MatrixScaleByZero(bone);
+		mat_motion_blur_falling_max.SetValue(mat_motion_blur_falling_max.GetDefault());
+		mat_motion_blur_falling_min.SetValue(mat_motion_blur_falling_min.GetDefault());
 	}
 }

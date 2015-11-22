@@ -48,6 +48,7 @@ ConVar rpg_missle_use_custom_detonators( "rpg_missle_use_custom_detonators", "1"
 
 const char *g_pLaserDotThink = "LaserThinkContext";
 
+#if !defined ( ELEVENEIGHTYSEVEN_DLL )
 //-----------------------------------------------------------------------------
 // Laser Dot
 //-----------------------------------------------------------------------------
@@ -88,6 +89,7 @@ protected:
 public:
 	CLaserDot			*m_pNext;
 };
+#endif // !defined ( ELEVENEIGHTYSEVEN_DLL )
 
 // a list of laser dots to search quickly
 CEntityClassList<CLaserDot> g_LaserDotList;

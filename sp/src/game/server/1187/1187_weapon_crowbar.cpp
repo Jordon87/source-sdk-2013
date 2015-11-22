@@ -27,6 +27,9 @@ public:
 	virtual float		GetPrimaryAttackHitDelay(void) const { return 0.5f; }
 
 	float				GetDamageForActivity(Activity hitActivity);
+
+	virtual void		AddMeleeViewKick(void);
+	virtual void		AddMeleeViewMiss(void);
 };
 
 IMPLEMENT_SERVERCLASS_ST(C1187WeaponCrowbar, DT_1187WeaponCrowbar)
@@ -66,4 +69,24 @@ float C1187WeaponCrowbar::GetDamageForActivity(Activity hitActivity)
 		return sk_plr_dmg_crowbar.GetFloat();
 
 	return sk_npc_dmg_crowbar.GetFloat();
+}
+
+void C1187WeaponCrowbar::AddMeleeViewKick(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer)
+	{
+		pPlayer->ViewPunch(QAngle(0, -random->RandomFloat(1, 2), 0));
+	}
+}
+
+void C1187WeaponCrowbar::AddMeleeViewMiss(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer)
+	{
+		pPlayer->ViewPunch(QAngle(1, -random->RandomFloat(2, 4), 0));
+	}
 }

@@ -12,8 +12,19 @@
 
 #include "1187_player_shared.h"
 
+#if defined ( CLIENT_DLL )
+#include "iviewrender_beams.h"			// flashlight beam
+#include "r_efx.h"
+#include "dlight.h"
+#include "flashlighteffect.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+#if defined ( CLIENT_DLL )
+#define FLASHLIGHT_DISTANCE		1000
+#endif
 
 //forward declarations of callbacks used by viewmodel_adjust_enable and viewmodel_adjust_fov
 void vm_adjust_enable_callback(IConVar *pConVar, char const *pOldString, float flOldValue);
@@ -116,6 +127,11 @@ CBase1187CombatWeapon::CBase1187CombatWeapon()
 	m_bIsIronsighted = false;
 	m_flIronsightedTime = 0.0f;
 	m_bLoweredOnSprint = false;
+
+#if defined ( CLIENT_DLL )
+	m_pFlashlight = NULL;
+	m_pFlashlightBeam = NULL;
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -123,6 +139,9 @@ CBase1187CombatWeapon::CBase1187CombatWeapon()
 //----------------------------------------------------------------------------
 CBase1187CombatWeapon::~CBase1187CombatWeapon()
 {
+#if defined ( CLIENT_DLL )
+	DestroyFlashlightEffects();
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -201,6 +220,10 @@ bool CBase1187CombatWeapon::Holster(CBaseCombatWeapon *pSwitchingTo)
 	if (bRet)
 	{
 		DisableIronsights();
+
+#if defined ( CLIENT_DLL )
+		DestroyFlashlightEffects();
+#endif
 	}
 
 	return bRet;
@@ -386,7 +409,8 @@ void CBase1187CombatWeapon::WeaponIdle(void)
 			if (speed > 1.0f)
 			{
 				// Move to lowered position if we're not there yet
-				if (GetActivity() != ACT_CROUCH && GetActivity() != ACT_TRANSITION)
+				if (GetActivity() != GetPrimaryAttackActivity() && GetActivity() != GetSecondaryAttackActivity() &&
+					GetActivity() != ACT_CROUCH && GetActivity() != ACT_TRANSITION)
 				{
 					SendWeaponAnim(ACT_CROUCH);
 				}
@@ -430,8 +454,18 @@ bool CBase1187CombatWeapon::Sprint_WeaponShouldBeLowered(void)
 #else
 	CHL2_Player* pPlayer = dynamic_cast<CHL2_Player*>(GetOwner());
 #endif
-	if (pPlayer && pPlayer->IsSprinting())
-		return true;
+	if (pPlayer)
+	{
+		if (pPlayer->IsSprinting())
+		{
+			return true;
+		}
+		else if (m_bLoweredOnSprint)
+		{
+			m_bLoweredOnSprint = false;
+			return false;
+		}
+	}
 
 	if (m_bLoweredOnSprint)
 		return true;
@@ -686,3 +720,204 @@ float CBase1187CombatWeapon::GetIronsightFOVOffset(void) const
 
 	return Get1187WpnData()->flIronsightFOVOffset;
 }
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+bool CBase1187CombatWeapon::HasBuiltInFlashlight(void) const
+{
+#ifdef _DEBUG
+	Assert(Get1187WpnData());
+#endif
+
+	return Get1187WpnData()->bHasFlashlight;
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+int CBase1187CombatWeapon::GetWeaponDamage(void) const
+{
+#ifdef _DEBUG
+	Assert(Get1187WpnData());
+#endif
+
+	return Get1187WpnData()->iDamage;
+}
+
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+int	CBase1187CombatWeapon::GetWeaponMeleeDamage(void) const
+{
+#ifdef _DEBUG
+	Assert(Get1187WpnData());
+#endif
+
+	return Get1187WpnData()->iMeleeDamage;
+}
+
+#if defined ( CLIENT_DLL )
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void C_Base1187CombatWeapon::NotifyShouldTransmit(ShouldTransmitState_t state)
+{
+	if (state == SHOULDTRANSMIT_END)
+	{
+		DestroyFlashlightEffects();
+	}
+
+	BaseClass::NotifyShouldTransmit(state);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void C_Base1187CombatWeapon::Simulate()
+{
+	BaseClass::Simulate();
+
+	C_BaseCombatCharacter* pOwner = GetOwner();
+	if (!pOwner)
+		return;
+
+	if (pOwner->GetActiveWeapon() == this && HasBuiltInFlashlight())
+	{
+		UpdateFlashlight();
+	}
+	else if ( m_pFlashlight )
+	{
+		DestroyFlashlightEffects();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void C_Base1187CombatWeapon::UpdateFlashlight(void)
+{
+	C_BasePlayer* pPlayer = dynamic_cast<C_BasePlayer*>(GetOwner());
+	if (!pPlayer)
+		return;
+
+	// The dim light is the flashlight.
+	if (pPlayer->IsEffectActive(EF_DIMLIGHT))
+	{
+		C_BaseViewModel* vm = pPlayer->GetViewModel();
+		if (!vm)
+			return;
+
+		int iAttachment = vm->LookupAttachment("muzzle");
+
+		if (iAttachment < 0)
+			return;
+
+		if (!m_pFlashlight)
+		{
+			// Turned on the headlight; create it.
+			m_pFlashlight = new CFlashlightEffect(index);
+
+			if (!m_pFlashlight)
+				return;
+
+			m_pFlashlight->TurnOn();
+		}
+
+
+		QAngle angles;
+		Vector vecOrigin, vecForward, vecRight, vecUp;
+		vm->GetAttachment(iAttachment, vecOrigin, angles);
+
+		AngleVectors(angles, &vecForward, &vecRight, &vecUp);
+
+		// Update the light with the new position and direction.		
+		m_pFlashlight->UpdateLight(vecOrigin, vecForward, vecRight, vecUp, FLASHLIGHT_DISTANCE);
+
+		trace_t tr;
+		UTIL_TraceLine(vecOrigin, vecOrigin + (vecForward * 200), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
+
+		if (!m_pFlashlightBeam)
+		{
+			BeamInfo_t beamInfo;
+			beamInfo.m_nType = TE_BEAMPOINTS;
+			beamInfo.m_vecStart = tr.startpos;
+			beamInfo.m_vecEnd = tr.endpos;
+			beamInfo.m_pszModelName = "sprites/glow01.vmt";
+			beamInfo.m_pszHaloName = "sprites/glow01.vmt";
+			beamInfo.m_flHaloScale = 3.0;
+			beamInfo.m_flWidth = 8.0f;
+			beamInfo.m_flEndWidth = 35.0f;
+			beamInfo.m_flFadeLength = 300.0f;
+			beamInfo.m_flAmplitude = 0;
+			beamInfo.m_flBrightness = 60.0;
+			beamInfo.m_flSpeed = 0.0f;
+			beamInfo.m_nStartFrame = 0.0;
+			beamInfo.m_flFrameRate = 0.0;
+			beamInfo.m_flRed = 255.0;
+			beamInfo.m_flGreen = 255.0;
+			beamInfo.m_flBlue = 255.0;
+			beamInfo.m_nSegments = 8;
+			beamInfo.m_bRenderable = true;
+			beamInfo.m_flLife = 0.5;
+			beamInfo.m_nFlags = FBEAM_FOREVER | FBEAM_ONLYNOISEONCE | FBEAM_NOTILE | FBEAM_HALOBEAM;
+
+			m_pFlashlightBeam = beams->CreateBeamPoints(beamInfo);
+		}
+
+		if (m_pFlashlightBeam)
+		{
+			BeamInfo_t beamInfo;
+			beamInfo.m_vecStart = tr.startpos;
+			beamInfo.m_vecEnd = tr.endpos;
+			beamInfo.m_flRed = 255.0;
+			beamInfo.m_flGreen = 255.0;
+			beamInfo.m_flBlue = 255.0;
+
+			beams->UpdateBeamInfo(m_pFlashlightBeam, beamInfo);
+
+			dlight_t *el = effects->CL_AllocDlight(0);
+			el->origin = tr.endpos;
+			el->radius = 50;
+			el->color.r = 200;
+			el->color.g = 200;
+			el->color.b = 200;
+			el->die = gpGlobals->curtime + 0.1;
+		}
+	}
+	else if (m_pFlashlight)
+	{
+		ReleaseFlashlight();
+
+		// Turned off the flashlight; delete it.
+		delete m_pFlashlight;
+		m_pFlashlight = NULL;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CBase1187CombatWeapon::DestroyFlashlightEffects()
+{
+	if (m_pFlashlight)
+	{
+		ReleaseFlashlight();
+
+		delete m_pFlashlight;
+		m_pFlashlight = NULL;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CBase1187CombatWeapon::ReleaseFlashlight(void)
+{
+	if (m_pFlashlightBeam)
+	{
+		m_pFlashlightBeam->flags = 0;
+		m_pFlashlightBeam->die = gpGlobals->curtime - 1;
+
+		m_pFlashlightBeam = NULL;
+	}
+}
+#endif

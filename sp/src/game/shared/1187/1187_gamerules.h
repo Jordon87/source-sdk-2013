@@ -33,7 +33,15 @@ public:
 #ifndef CLIENT_DLL
 #endif
 
+	// Easter eggs
+	int					GetEasterEggs(void) { return m_nEasterEggs; }
+	void				SetEasterEggs(int value) { m_nEasterEggs = value; }
+	void				IncrementEasterEggs(int value) { m_nEasterEggs += value; }
+	void				DecrementEasterEggs(int value) { m_nEasterEggs -= value; }
+
 private:
+
+	CNetworkVar(int, m_nEasterEggs);
 
 #ifdef CLIENT_DLL
 
@@ -52,6 +60,7 @@ private:
 	virtual const char*		AIClassText(int classType);
 	virtual const char*		GetGameDescription( void ) { return "ElevenEightySeven"; }
 #endif
+
 };
 
 
@@ -66,6 +75,8 @@ inline CElevenEightySeven * ElevenEightySevenGameRules()
 
 	return static_cast<CElevenEightySeven*>(g_pGameRules);
 }
+
+
 
 
 

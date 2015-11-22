@@ -55,6 +55,9 @@ public:
 	// Ironsights
 	virtual bool	HasIronsights(void) { return false; }
 
+	virtual void AddMeleeViewKick(void);
+	virtual void AddMeleeViewMiss(void);
+
 private:
 	void	UseHealthPack(CBasePlayer *pPlayer);
 	void	ThrowHealthPack(CBasePlayer *pPlayer);
@@ -97,6 +100,26 @@ CBase1187CombatWeapon(),
 m_bRedraw(false), m_bThrowEvent(false), m_flThrowEventTime(0.0f)
 {
 	NULL;
+}
+
+void C1187WeaponHealthPack::AddMeleeViewKick(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer)
+	{
+		pPlayer->ViewPunch(QAngle(-1, -1, 0));
+	}
+}
+
+void C1187WeaponHealthPack::AddMeleeViewMiss(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer)
+	{
+		pPlayer->ViewPunch(QAngle(-1, -1, 0));
+	}
 }
 
 //-----------------------------------------------------------------------------
