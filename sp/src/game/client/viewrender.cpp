@@ -54,6 +54,12 @@
 #include "sourcevr/isourcevirtualreality.h"
 #include "client_virtualreality.h"
 
+#if defined ( HUMANERROR_CLIENT_DLL )
+//TERO: added by me
+#include "human_error/c_manhack_screen.h"
+#include "c_vguiscreen.h" 
+#endif
+
 #ifdef PORTAL
 //#include "C_Portal_Player.h"
 #include "portal_render_targets.h"
@@ -1962,6 +1968,14 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		{
 			CViewSetup viewMiddle = GetView( STEREO_EYE_MONO );
 			DrawMonitors( viewMiddle );	
+
+#if defined ( HUMANERROR_CLIENT_DLL )
+			//TERO: used to be up there with DrawMonitors
+#if 0
+			DrawManhackScreen(view);
+			DrawCameraScreen(view);
+#endif
+#endif
 		}
 	#endif
 
@@ -2337,6 +2351,16 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 	{
 		CDebugViewRender::GenerateOverdrawForTesting();
 	}
+
+#if defined ( HUMANERROR_CLIENT_DLL )
+#if 1
+	if (g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 70)
+	{
+		DrawManhackScreen(view);
+		DrawCameraScreen(view);
+	}
+#endif
+#endif
 
 	render->PopView( GetFrustum() );
 	g_WorldListCache.Flush();
@@ -3175,6 +3199,130 @@ void CViewRender::DrawMonitors( const CViewSetup &cameraView )
 #endif // USE_MONITORS
 }
 
+#if defined ( HUMANERROR_CLIENT_DLL )
+
+
+//TERO: remember to edit this shit
+void CViewRender::DrawManhackScreen(const CViewSetup &viewSet)
+{
+	C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
+
+	if (!localPlayer)
+		return;
+
+	if (!localPlayer->GetActiveWeapon())
+		return;
+
+	if (!localPlayer->GetActiveWeapon()->IsWeaponManhack()) //FClassnameIs( localPlayer->GetActiveWeapon(), "weapon_manhack") )
+		return;
+
+	if (!localPlayer->GetActiveWeapon()->GetViewModel())
+		return;
+
+	//CHudElement *pHudElement = gHUD.FindElement("HudAmmo");
+	CManhackScreen *pScreen = GetManhackScreen();
+
+	if (!pScreen)
+	{
+		return;
+	}
+
+	//Get our camera render target.
+	ITexture *pRenderTarget = GetManhackScreenTexture();
+
+	if (pRenderTarget == NULL)
+		return;
+
+	if (!pRenderTarget->IsRenderTarget())
+		Msg(" not a render target");
+
+	//Msg("Drawing manhack screen");
+
+	CViewSetup ManhackView = viewSet;
+
+	ManhackView.width = pRenderTarget->GetActualWidth();
+	ManhackView.height = pRenderTarget->GetActualHeight();
+	ManhackView.x = 0;
+	ManhackView.y = 0;
+
+	render->Push2DView(ManhackView, 0, pRenderTarget, GetFrustum());
+
+	//surface()->DrawSetTextColor( 255, 255, 255, 255 ); // full red
+
+	pScreen->SetVisible(true);
+	pScreen->SetSize(ManhackView.width, ManhackView.height);
+	vgui::ipanel()->SetPos(pScreen->GetVPanel(), 0, 0);
+	vgui::ipanel()->SetSize(pScreen->GetVPanel(), ManhackView.width, ManhackView.height);
+	vgui::ipanel()->PaintTraverse(pScreen->GetVPanel(), true);
+
+	render->PopView(m_Frustum);
+
+	pScreen->SetVisible(false);
+	//pScreen->SetPaintEnabled(false);
+}
+
+//TERO: remember to edit this shit
+void CViewRender::DrawCameraScreen(const CViewSetup &viewSet)
+{
+	C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
+
+	if (!localPlayer)
+		return;
+
+	if (!localPlayer->GetActiveWeapon())
+		return;
+
+	if (!localPlayer->GetActiveWeapon()->IsWeaponCamera()) //FClassnameIs( localPlayer->GetActiveWeapon(), "weapon_manhack") )
+		return;
+
+	//DevMsg("weapon %s is camera\n", localPlayer->GetActiveWeapon()->GetDebugName());
+
+	if (!localPlayer->GetActiveWeapon()->GetViewModel())
+		return;
+
+	//Copy our current View.
+	CViewSetup scopeView = viewSet;
+
+	//Get our camera render target.
+	ITexture *pRenderTarget = GetCameraScreenTexture();
+
+	if (pRenderTarget == NULL)
+		return;
+
+	if (!pRenderTarget->IsRenderTarget())
+		Msg(" not a render target");
+
+	//Our view information, Origin, View Direction, window size
+	//	location on material, and visual ratios.
+	scopeView.width = pRenderTarget->GetActualWidth();
+	scopeView.height = pRenderTarget->GetActualHeight();
+	scopeView.x = 0;
+	scopeView.y = 0;
+	scopeView.fov = 45;
+	scopeView.m_bOrtho = false;
+
+	scopeView.m_flAspectRatio = 1.0f;
+
+	bool bDrew3dSkybox = false;	// bDrew3dSkybox = true turns the skybox OFF. DO NOT SET IT TO TRUE.
+	SkyboxVisibility_t nSkyboxVisible = SKYBOX_3DSKYBOX_VISIBLE; //SKYBOX_3DSKYBOX_VISIBLE;
+
+	int nClearFlags = VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR;
+
+	//Set the view up and output the scene to our RenderTarget (Scope Material).
+	render->Push3DView(scopeView, nClearFlags, pRenderTarget, GetFrustum());
+
+	CSkyboxView *pSkyView = new CSkyboxView(this);
+	if ((bDrew3dSkybox = pSkyView->Setup(scopeView, &nClearFlags, &nSkyboxVisible)) != false)
+	{
+		AddViewToScene(pSkyView);
+	}
+	SafeRelease(pSkyView);
+
+	ViewDrawScene(bDrew3dSkybox, nSkyboxVisible, scopeView, 0, VIEW_MAIN, VIEW_MONITOR);
+
+	render->PopView(m_Frustum);
+}
+#endif
 
 //-----------------------------------------------------------------------------
 //

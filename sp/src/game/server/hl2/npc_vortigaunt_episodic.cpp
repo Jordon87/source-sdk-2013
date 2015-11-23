@@ -20,7 +20,17 @@
 #include "particle_system.h"
 #include "ai_senses.h"
 
+#if defined ( HUMANERROR_DLL )
+#include "ai_squadslot.h"
+#include "weapon_physcannon.h"
+#endif
+
 #include "npc_vortigaunt_episodic.h"
+
+#if defined ( HUMANERROR_DLL )
+#include "basepropdoor.h"
+#include "doors.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -173,6 +183,11 @@ BEGIN_DATADESC( CNPC_Vortigaunt )
 	DEFINE_FIELD( m_flAimDelay,				FIELD_TIME ),
 	DEFINE_FIELD( m_bCarryingNPC,			FIELD_BOOLEAN ),
 	DEFINE_KEYFIELD( m_bRegenerateHealth,	FIELD_BOOLEAN, "HealthRegenerateEnabled" ),
+
+#if defined ( HUMANERROR_DLL )
+	DEFINE_FIELD(m_hDoor, FIELD_EHANDLE),
+	DEFINE_FIELD(m_flNextZapDoor, FIELD_TIME),
+#endif
 
 	// m_AssaultBehavior	(auto saved by AI)
 	// m_LeadBehavior
@@ -603,6 +618,12 @@ int CNPC_Vortigaunt::RangeAttack1Conditions( float flDot, float flDist )
 	if ( GetEnemy() == NULL )
 		return COND_NONE;
 
+#if defined ( HUMANERROR_DLL )
+	//TERO: added by me
+	if ((GetFlags() & FL_DISSOLVING) != 0)
+		return COND_NONE;
+#endif
+
 	if ( gpGlobals->curtime < m_flNextAttack )
 		return COND_NONE;
 
@@ -610,8 +631,30 @@ int CNPC_Vortigaunt::RangeAttack1Conditions( float flDot, float flDist )
 	if ( IsCurSchedule( SCHED_SCENE_GENERIC ) )
 		return COND_NONE;
 
+#if defined ( HUMANERROR_DLL )
+	//TERO: added by me
+	if (GetEnemy()->Classify() == CLASS_MANHACK)
+	{
+		if ((GetEnemy()->GetAbsOrigin().z - GetAbsOrigin().z) < 135)
+			return( COND_NONE );
+	}
+#endif
+
 	// dvs: Allow up-close range attacks for episodic as the vort's melee
 	// attack is rather ineffective.
+#if defined ( HUMANERROR_DLL )
+	//TERO: This is changed by me
+//#ifndef HL2_EPISODIC 
+	if ( flDist <= 70 )
+	{
+		return( COND_TOO_CLOSE_TO_ATTACK );
+	}
+/*	else
+#else
+	if ( flDist < 32.0f )
+		return COND_TOO_CLOSE_TO_ATTACK;
+#endif // HL2_EPISODIC*/
+#else
 #ifndef HL2_EPISODIC
 	if ( flDist <= 70 )
 	{
@@ -622,6 +665,8 @@ int CNPC_Vortigaunt::RangeAttack1Conditions( float flDot, float flDist )
 	if ( flDist < 32.0f )
 		return COND_TOO_CLOSE_TO_ATTACK;
 #endif // HL2_EPISODIC
+#endif
+
 	if ( flDist > InnateRange1MaxRange() )
 	{
 		return( COND_TOO_FAR_TO_ATTACK );
@@ -1106,6 +1151,16 @@ void CNPC_Vortigaunt::Spawn( void )
 	m_iHealth			= sk_vortigaunt_health.GetFloat();
 	SetViewOffset( Vector ( 0, 0, 64 ) );// position of the eyes relative to monster's origin.
 
+#if defined  ( HUMANERROR_DLL )
+	CapabilitiesRemove(bits_CAP_NO_HIT_PLAYER);
+
+	//TERO: added, weird bugs in DNS
+	//CapabilitiesRemove( bits_CAP_USE_WEAPONS );
+
+	m_hDoor = NULL;
+	m_flNextZapDoor = 0;
+#endif
+
 	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK1 );
 	CapabilitiesRemove( bits_CAP_USE_SHOT_REGULATOR );
 
@@ -1550,6 +1605,15 @@ int CNPC_Vortigaunt::SelectSchedule( void )
 			return nSchedule;
 	}
 
+#if defined ( HUMANERROR_DLL )
+	if (HasCondition( COND_VORTIGAUNT_CAN_BREAK_DOOR ) && m_hDoor)
+	{
+		GetMotor()->SetIdealYawToTargetAndUpdate( m_hDoor->GetAbsOrigin(), AI_KEEP_YAW_SPEED );
+		m_flNextZapDoor = gpGlobals->curtime + 5.0f;
+		return SCHED_VORTIGAUNT_BREAK_DOOR;
+	}
+#endif
+
 #ifndef HL2_EPISODIC
 	if ( BehaviorSelectSchedule() )
 		return BaseClass::SelectSchedule();
@@ -1573,8 +1637,50 @@ int CNPC_Vortigaunt::SelectSchedule( void )
 	}
 
 	// Heal a player if they can be
+#if defined ( HUMANERROR_DLL )
+	//if ( HasCondition( COND_VORTIGAUNT_CAN_HEAL ) )
+	//	return SCHED_VORTIGAUNT_HEAL;
+#else
 	if ( HasCondition( COND_VORTIGAUNT_CAN_HEAL ) )
 		return SCHED_VORTIGAUNT_HEAL;
+#endif
+
+#if defined ( HUMANERROR_DLL )
+	if (HasCondition(COND_ENEMY_OCCLUDED) )
+	{
+		// stand up, just in case
+		Stand();
+		DesireStand();
+
+		if (GetEnemy())
+		{
+			if (!(GetEnemy()->GetFlags() & FL_NOTARGET) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+			{
+				// Charge in and break the enemy's cover!
+				return SCHED_ESTABLISH_LINE_OF_FIRE;
+			}
+
+			
+			// If I'm a long, long way away, establish a LOF anyway. Once I get there I'll
+			// start respecting the squad slots again.
+			float flDistSq = GetEnemy()->WorldSpaceCenter().DistToSqr( WorldSpaceCenter() );
+			if ( flDistSq > Square(3000) )
+				return SCHED_ESTABLISH_LINE_OF_FIRE;
+		}
+	}
+
+	if ( HasCondition( COND_SEE_ENEMY ) && 
+		!HasCondition( COND_CAN_RANGE_ATTACK1 ) && 
+		!HasCondition( COND_CAN_MELEE_ATTACK1 ) && 
+		!HasCondition( COND_CAN_MELEE_ATTACK2 ) )
+	{
+		if ( HasCondition( COND_TOO_FAR_TO_ATTACK )  && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 )) //|| IsUsingTacticalVariant(TACTICAL_VARIANT_PRESSURE_ENEMY) )
+		{
+			//DevMsg("Vortigaunt: press attack\n");
+			return SCHED_VORTIGAUNT_PRESS_ATTACK;
+		}
+	}
+#endif
 
 	return BaseClass::SelectSchedule();
 }
@@ -2052,9 +2158,48 @@ void CNPC_Vortigaunt::CreateBeamBlast( const Vector &vecOrigin )
 //-----------------------------------------------------------------------------
 void CNPC_Vortigaunt::ZapBeam( int nHand )
 {
+#if defined ( HUMANERROR_DLL) 
+	//TERO: added by me
+	if ((GetFlags() & FL_DISSOLVING) != 0 )
+		return;
+#endif
+
 	Vector forward;
 	GetVectors( &forward, NULL, NULL );
 
+#if defined ( HUMANERROR_DLL )
+	Vector vecSrc = GetAbsOrigin() + GetViewOffset();
+	Vector vecAim, vecTarget;
+
+	if ( IsCurSchedule( SCHED_VORTIGAUNT_BREAK_DOOR ) && m_hDoor )
+	{
+		vecTarget = m_hDoor->WorldSpaceCenter();
+		vecAim = vecTarget - vecSrc;
+		VectorNormalize( vecAim );
+
+		ClearCondition( COND_VORTIGAUNT_CAN_BREAK_DOOR ); 
+		m_hDoor = NULL;
+	}
+	else
+	{
+		vecAim = GetShootEnemyDir( vecSrc, false );	// We want a clear shot to their core
+
+		if ( GetEnemy() )
+		{
+			vecTarget = GetEnemy()->BodyTarget( vecSrc, false );
+				
+			if ( g_debug_vortigaunt_aim.GetBool() )
+			{
+				NDebugOverlay::Cross3D( vecTarget, 4.0f, 255, 0, 0, true, 10.0f );
+				CBaseAnimating *pAnim = GetEnemy()->GetBaseAnimating();
+				if ( pAnim )
+				{	
+					pAnim->DrawServerHitboxes( 10.0f );
+				}
+			}
+		}
+	}
+#else
 	Vector vecSrc = GetAbsOrigin() + GetViewOffset();
 	Vector vecAim = GetShootEnemyDir( vecSrc, false );	// We want a clear shot to their core
 
@@ -2072,6 +2217,7 @@ void CNPC_Vortigaunt::ZapBeam( int nHand )
 			}
 		}
 	}
+#endif
 
 	// If we're too far off our center, the shot must miss!
 	if ( DotProduct( vecAim, forward ) < COS_60 )
@@ -2159,6 +2305,85 @@ void CNPC_Vortigaunt::ZapBeam( int nHand )
 	// Create a cover for the end of the beam
 	CreateBeamBlast( tr.endpos );
 }
+
+#if defined ( HUMANERROR_DLL )
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : *pEntity - 
+// Output : Returns true on success, false on failure.
+//-----------------------------------------------------------------------------
+bool CNPC_Vortigaunt::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker )
+{
+	CBaseEntity	*pHitEntity = NULL;
+	if ( BaseClass::FVisible( pEntity, traceMask, &pHitEntity ) )
+		return true;
+
+	CBasePropDoor *pDoor = dynamic_cast<CBasePropDoor*>((CBaseEntity*)pHitEntity);
+	if ( pDoor && pDoor->HasSpawnFlags(SF_BREAKABLE_BY_AGRUNTS))
+	{
+		//DevMsg("we can see through this breakable door\n");
+		return true;
+	}
+
+	if (ppBlocker)
+	{
+		*ppBlocker = pHitEntity;
+	}
+
+	return false;
+}
+
+//------------------------------------------------------------------------------
+// Purpose: Send physics objects on move, for example if the player is holding them
+//------------------------------------------------------------------------------
+void CNPC_Vortigaunt::ZapPhysicsEntity(CBaseEntity *pEntity)
+{
+	if (pEntity->IsPlayer() || !pEntity->VPhysicsGetObject())
+		return;
+
+	//Only zap these, no zapping, for example, the drivable APC
+	if (!FClassnameIs(pEntity, "prop_physics") && !FClassnameIs(pEntity, "func_physbox"))
+		return;
+
+	IPhysicsObject *pPhysObj = pEntity->VPhysicsGetObject();
+
+	if (!pPhysObj)
+		return;
+
+	if (pPhysObj->GetMass() > 120)
+		return;
+
+	CBasePlayer *pPlayer = ToBasePlayer( GetEnemy() );
+	if (pPlayer)
+	{
+		CPlayerPickupController *pPlayerPickupController = (CPlayerPickupController *)(pPlayer->GetUseEntity());
+
+		if ( pPlayerPickupController )
+		{
+			CBaseEntity *pObject = pPlayerPickupController->GetGrabController().GetAttached();
+
+			if (pObject == pEntity)
+				pPlayerPickupController->GetGrabController().DetachEntity(false);
+		}
+	}
+
+	Vector v;
+	Vector physicsCenter = pEntity->WorldSpaceCenter();
+	v = physicsCenter - WorldSpaceCenter();	//TERO: we send the object away from ourselves
+	VectorNormalize(v);
+
+	float flScale = RemapValClamped( pPhysObj->GetMass(), 40, 120, 1.0f, 0.1f);
+
+	DevMsg("npc_vortigaunt: zap physics mass %f scale %f\n", pPhysObj->GetMass(), flScale );
+
+	v = v * 500.0f * flScale;
+	v.z += 200.0f * flScale;
+
+	AngularImpulse angVelocity( random->RandomFloat(-180, 180), 20, random->RandomFloat(-360, 360) );
+
+	pPhysObj->AddVelocity( &v, &angVelocity );
+}
+#endif
 
 //------------------------------------------------------------------------------
 // Purpose: Clear glow from hands immediately
@@ -2454,6 +2679,45 @@ void CNPC_Vortigaunt::GatherConditions( void )
 	GatherHealConditions();
 }
 
+#if defined ( HUMANERROR_DLL )
+//-----------------------------------------------------------------------------
+// Purpose: Called when we are trying to open a prop_door and it's time to start
+//			the door moving. This is called either in response to an anim event
+//			or as a fallback when we don't have an appropriate open activity.
+//-----------------------------------------------------------------------------
+void CNPC_Vortigaunt::OpenPropDoorNow( CBasePropDoor *pDoor )
+{
+	//TERO: we accept the door if we are not going for a physics entity or we already have a door
+	if ( (m_NPCState == NPC_STATE_COMBAT ||  m_NPCState == NPC_STATE_ALERT ) && 
+		 pDoor->HasSpawnFlags(SF_BREAKABLE_BY_AGRUNTS) && m_flNextZapDoor < gpGlobals->curtime)
+	{
+		m_hDoor = pDoor;
+		//DevMsg("npc_aliengrunt: a breakable door during OpenPropDoornow(), grunt smash!\n");
+		return;
+	}
+
+	// Start the door moving.
+	pDoor->NPCOpenDoor(this);
+
+	// Wait for the door to finish opening before trying to move through the doorway.
+	m_flMoveWaitFinished = gpGlobals->curtime + pDoor->GetOpenInterval();
+}
+
+bool CNPC_Vortigaunt::OnInsufficientStopDist( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult )
+{
+	if ( pMoveGoal->directTrace.fStatus == AIMR_BLOCKED_ENTITY && pMoveGoal->directTrace.pObstruction)
+	{	
+		CBasePropDoor *pDoor = dynamic_cast<CBasePropDoor*>((CBaseEntity*)pMoveGoal->directTrace.pObstruction);
+		if (pDoor && pDoor->HasSpawnFlags(SF_BREAKABLE_BY_AGRUNTS))
+		{
+			m_hDoor = pMoveGoal->directTrace.pObstruction;
+		}
+	}
+
+	return BaseClass::OnInsufficientStopDist( pMoveGoal, distClear, pResult );
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -2834,6 +3098,9 @@ AI_BEGIN_CUSTOM_NPC( npc_vortigaunt, CNPC_Vortigaunt )
 	DECLARE_CONDITION( COND_VORTIGAUNT_HEAL_TARGET_BEHIND_US )
 	DECLARE_CONDITION( COND_VORTIGAUNT_HEAL_VALID )
 	DECLARE_CONDITION( COND_VORTIGAUNT_DISPEL_ANTLIONS )
+#if defined ( HUMANERROR_DLL )
+	DECLARE_CONDITION(COND_VORTIGAUNT_CAN_BREAK_DOOR)
+#endif
 
 	DECLARE_SQUADSLOT( SQUAD_SLOT_HEAL_PLAYER )
 
@@ -2921,6 +3188,9 @@ AI_BEGIN_CUSTOM_NPC( npc_vortigaunt, CNPC_Vortigaunt )
 		"		COND_HEAR_DANGER"
 		"		COND_VORTIGAUNT_DISPEL_ANTLIONS"
 		"		COND_VORTIGAUNT_CAN_HEAL"
+//#if defined ( HUMANERROR_DLL )
+		"		COND_VORTIGAUNT_CAN_BREAK_DOOR"
+//#endif
 	);
 
 	//=========================================================
@@ -3041,6 +3311,57 @@ AI_BEGIN_CUSTOM_NPC( npc_vortigaunt, CNPC_Vortigaunt )
 		"		COND_PROVOKED"
 		"		COND_HEAR_DANGER"
 		);
+
+
+#if defined ( HUMANERROR_DLL )
+	//=========================================================
+	// SCHED_VORTIGAUNT_PRESS_ATTACK
+	//=========================================================
+	DEFINE_SCHEDULE 
+	(
+		SCHED_VORTIGAUNT_PRESS_ATTACK,
+
+		"	Tasks "
+		"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_CHASE_ENEMY"
+		"		TASK_SET_TOLERANCE_DISTANCE		72"
+		"		TASK_GET_PATH_TO_ENEMY_LKP		0"
+		//"		TASK_COMBINE_SET_STANDING		1"
+		"		TASK_RUN_PATH					0"
+		"		TASK_WAIT_FOR_MOVEMENT			0"
+		""
+		"	Interrupts "
+		"		COND_NEW_ENEMY"
+		"		COND_ENEMY_DEAD"
+		"		COND_ENEMY_UNREACHABLE"
+		"		COND_TOO_CLOSE_TO_ATTACK"
+		"		COND_CAN_MELEE_ATTACK1"
+		"		COND_CAN_RANGE_ATTACK1"
+		"		COND_CAN_MELEE_ATTACK2"
+		"		COND_VORTIGAUNT_DISPEL_ANTLIONS"
+		"		COND_VORTIGAUNT_CAN_HEAL"
+		"		COND_HEAR_DANGER"
+		"		COND_HEAR_MOVE_AWAY"
+		"		COND_VORTIGAUNT_CAN_BREAK_DOOR"
+	);
+
+	//=========================================================
+	// > SCHED_VORTIGAUNT_BREAK_DOOR
+	//=========================================================
+	DEFINE_SCHEDULE
+	(
+		SCHED_VORTIGAUNT_BREAK_DOOR,
+
+		"	Tasks"
+	//	"		TASK_STOP_MOVING				0"
+		"		TASK_FACE_IDEAL					0"
+		"		TASK_ANNOUNCE_ATTACK			0"
+		"		TASK_RANGE_ATTACK1				0"
+		"		TASK_WAIT						0.2" // Wait a sec before killing beams
+		""
+		"	Interrupts"
+	);
+#endif
+
 AI_END_CUSTOM_NPC()
 
 

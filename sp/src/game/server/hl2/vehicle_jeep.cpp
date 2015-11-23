@@ -137,6 +137,12 @@ BEGIN_DATADESC( CPropJeep )
 	DEFINE_INPUTFUNC( FIELD_VOID, "FinishRemoveTauCannon", InputFinishRemoveTauCannon ),
 
 	DEFINE_THINKFUNC( JeepSeagullThink ),
+
+#if defined ( HUMANERROR_DLL )
+	DEFINE_INPUTFUNC(FIELD_VOID, "ForcePlayerIn", InputForcePlayerIn),
+	DEFINE_INPUTFUNC(FIELD_VOID, "ForcePlayerOut", InputForcePlayerOut),
+#endif // defined ( HUMANERROR_DLL )
+
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS_ST( CPropJeep, DT_PropJeep )
@@ -670,6 +676,39 @@ void CPropJeep::CreateRipple( const Vector &vecPosition )
 	DispatchEffect( "waterripple", data );
 }
 
+#if defined ( HUMANERROR_DLL )
+//-----------------------------------------------------------------------------
+// Purpose: These will be useful for weapon_manhack
+//-----------------------------------------------------------------------------
+void CPropJeep::InputForcePlayerIn(inputdata_t &inputdata)
+{
+	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	if (!pPlayer || m_hPlayer)
+		return;
+
+	// Make sure we successfully got in the vehicle
+	if (pPlayer->GetInVehicle(GetServerVehicle(), VEHICLE_ROLE_DRIVER) == false)
+	{
+		// The player was unable to enter the vehicle and the output has failed
+		Assert(0);
+		return;
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: These will be useful for weapon_manhack
+//-----------------------------------------------------------------------------
+void CPropJeep::InputForcePlayerOut(inputdata_t &inputdata)
+{
+	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	if (!pPlayer || !m_hPlayer)
+		return;
+
+	// Make sure we successfully got in the vehicle
+	pPlayer->LeaveVehicle(GetAbsOrigin(), GetAbsAngles());
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -785,11 +824,24 @@ void CPropJeep::Think( void )
 				}
 			}
 
+#if defined ( HUMANERROR_DLL )
+			//TERO: only if we have suit
+			if ( pPlayer && pPlayer->IsSuitEquipped() )
+			{
+
+				// The first few time we get into the jeep, print the jeep help
+				if ( m_iNumberOfEntries < hud_jeephint_numentries.GetInt() )
+				{
+					g_EventQueue.AddEvent(this, "ShowHudHint", 1.5f, this, this);
+				}
+			}
+#else
 			// The first few time we get into the jeep, print the jeep help
 			if ( m_iNumberOfEntries < hud_jeephint_numentries.GetInt() )
 			{
 				g_EventQueue.AddEvent( this, "ShowHudHint", 1.5f, this, this );
 			}
+#endif
 		}
 		
 		if ( hl2_episodic.GetBool() )

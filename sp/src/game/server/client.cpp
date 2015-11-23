@@ -1010,6 +1010,41 @@ void CC_Player_BugBaitSwap( void )
 }
 static ConCommand bugswap("bug_swap", CC_Player_BugBaitSwap, "Automatically swaps the current weapon for the bug bait and back again.", FCVAR_CHEAT );
 
+#if defined ( HUMANERROR_DLL )
+//--------------------------------------------------------------------------------------
+// Purpose: Quickly switch to the physics cannon, or back to previous item - HUMAN ERROR
+//--------------------------------------------------------------------------------------
+void CC_Player_StunSwap(void)
+{
+	CBasePlayer *pPlayer = ToBasePlayer(UTIL_GetCommandClient());
+
+	if (pPlayer)
+	{
+		CBaseCombatWeapon *pWeapon = pPlayer->GetActiveWeapon();
+
+		if (pWeapon)
+		{
+			// Tell the client to stop selecting weapons
+			engine->ClientCommand(UTIL_GetCommandClient()->edict(), "cancelselect");
+
+			const char *strWeaponName = pWeapon->GetName();
+
+			if (!Q_stricmp(strWeaponName, "weapon_stunstick") || !Q_stricmp(strWeaponName, "weapon_crowbar"))
+			{
+				pPlayer->SelectLastItem();
+			}
+			else
+			{
+				//TERO: since can't select carry them both:
+				pPlayer->SelectItem("weapon_crowbar");
+				pPlayer->SelectItem("weapon_stunstick");
+			}
+		}
+	}
+}
+static ConCommand stunswap("stun_swap", CC_Player_StunSwap, "Automatically swaps the current weapon for the stunstick and back again.");
+#endif
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 void CC_Player_Use( const CCommand &args )

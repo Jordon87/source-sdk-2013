@@ -121,6 +121,15 @@
 // Vortigaunt
 #define TLK_VORTIGAUNT_DISPEL	"TLK_VORTIGAUNT_DISPEL"	// Dispel attack starting
 
+#if defined ( HUMANERROR_DLL )
+// UNIQUE METROCOP - HUMAN ERROR (TERO)
+#define TLK_CP_MEDIC					"TLK_CP_MEDIC"
+#define TLK_CP_BEES						"TLK_CP_BEES"
+#define TLK_CP_RECHARGING				"TLK_CP_RECHARGING"
+#define TLK_CP_RECHARGE					"TLK_CP_RECHARGE"
+#define TLK_CP_GENERATOR_OFFLINE		"TLK_CP_GENERATOR_OFFLINE"
+#endif
+
 // resume is "as I was saying..." or "anyhow..."
 #define TLK_RESUME 		"TLK_RESUME"
 

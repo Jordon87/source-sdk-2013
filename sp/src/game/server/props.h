@@ -144,6 +144,11 @@ public:
 	void			SetMultiplayerBreakMode( mp_break_t mode ) { m_mpBreakMode = mode; }
 	mp_break_t		GetMultiplayerBreakMode( void ) const { return m_mpBreakMode; }
 
+#if defined ( HUMANERROR_DLL )
+	void			SetDontBreakIfMaxGibs(int max) { m_iDontBreakIfMaxGibs = max; }
+	int				GetDontBreakIfMaxGibs(void) { return m_iDontBreakIfMaxGibs; }
+#endif
+
 // derived by multiplayer phys props:
 	virtual void	SetPhysicsMode(int iMode) {}
 	virtual int		GetPhysicsMode() { return PHYSICS_MULTIPLAYER_SOLID; }
@@ -178,6 +183,10 @@ protected:
 	float			m_explodeDamage;
 	float			m_explodeRadius;
 	string_t		m_iszBreakModelMessage;
+
+#if defined ( HUMANERROR_DLL )
+	int				m_iDontBreakIfMaxGibs; //TERO
+#endif
 
 	// Count of how many pieces we'll break into, custom or generic
 	int				m_iNumBreakableChunks;

@@ -15,6 +15,10 @@ ITexture *GetWaterReflectionTexture( void );
 ITexture *GetWaterRefractionTexture( void );
 ITexture *GetFullscreenTexture( void );
 ITexture *GetCameraTexture( void );
+#if defined ( HUMANERROR_CLIENT_DLL )
+ITexture *GetManhackScreenTexture(void); //TERO: for weapon_manhack
+ITexture *GetCameraScreenTexture(void); //TERO: for weapon_camera
+#endif
 ITexture *GetFullFrameDepthTexture( void );
 
 // SmallBufferHDRx=r16g16b16a16 quarter-sized texture

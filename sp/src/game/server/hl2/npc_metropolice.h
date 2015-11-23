@@ -10,6 +10,12 @@
 #pragma once
 #endif
 
+#if defined(HUMANERROR_DLL)
+//TERO: NOTE NOTE NOTE! WHEN YOU START ADDING THE COMMANDABLE STUFF GO TO AI_ALLYMANAGER.CPP AND 
+//      void CAI_AllyManager::CountAllies( int *pTotal, int *pMedics ) AND CHANGE ALL THE ALLY
+//		STUFF TO POINT TO METROCOPS
+#endif
+
 #include "rope.h"
 #include "rope_shared.h"
 #include "ai_baseactor.h"
@@ -23,14 +29,52 @@
 #include "ai_behavior_rappel.h"
 #include "ai_behavior_police.h"
 #include "ai_behavior_follow.h"
+#if defined ( HUMANERROR_DLL )
+#include "Human_Error\ai_behavior_recharge.h"
+#endif
 #include "ai_sentence.h"
 #include "props.h"
 
+#if defined ( HUMANERROR_DLL )
+#include "npc_playercompanion.h"
+
+struct SquadCandidate_t;
+
+
+//#define SF_METROPOLICE_					0x00010000
+#define SF_METROPOLICE_SIMPLE_VERSION		0x00020000
+#define SF_METROPOLICE_ALWAYS_STITCH		0x00080000
+#define SF_METROPOLICE_NOCHATTER			0x00100000
+#define SF_METROPOLICE_ARREST_ENEMY			0x00200000
+#define SF_METROPOLICE_NO_FAR_STITCH		0x00400000
+#define SF_METROPOLICE_NO_MANHACK_DEPLOY	0x00800000
+#define SF_METROPOLICE_ALLOWED_TO_RESPOND	0x01000000
+#define SF_METROPOLICE_MID_RANGE_ATTACK		0x02000000
+
+#define SF_METROPOLICE_FOLLOW				0x04000000
+#define	SF_METROPOLICE_MEDIC				0x08000000
+#define SF_METROPOLICE_AMMORESUPPLIER		0x10000000	
+#define SF_METROPOLICE_NOT_COMMANDABLE		0x20000000
+#define SF_METROPOLICE_USE_RENDER_BOUNDS	0x40000000
+
+/*static const char *TLK_CP_MEDIC			= "TLK_CP_MEDIC";
+static const char *TLK_CP_BEES			= "TLK_CP_BEES";
+static const char *TLK_CP_RECHARGING	= "TLK_CP_RECHARGING";*/
+#endif
+
 class CNPC_MetroPolice;
 
+#if defined ( HUMANERROR_DLL )
+class CNPC_MetroPolice : public CNPC_PlayerCompanion //CAI_BaseActor
+#else
 class CNPC_MetroPolice : public CAI_BaseActor
+#endif
 {
+#if defined ( HUMANERROR_DLL )
+	DECLARE_CLASS(CNPC_MetroPolice, CNPC_PlayerCompanion); //CAI_BaseActor );
+#else
 	DECLARE_CLASS( CNPC_MetroPolice, CAI_BaseActor );
+#endif
 	DECLARE_DATADESC();
 
 public:
@@ -40,6 +84,17 @@ public:
 	bool CreateBehaviors();
 	void Spawn( void );
 	void Precache( void );
+
+#if defined ( HUMANERROR_DLL )
+#ifdef ELOISE_KICK_BALLS
+
+	int MeleeAttack1Conditions(float flDot, float flDist);
+
+#endif
+
+
+	virtual int			GetMaxHealth() { return m_iMaxHealth; }
+#endif
 
 	Class_T		Classify( void );
 	Disposition_t IRelationType(CBaseEntity *pTarget);
@@ -56,10 +111,20 @@ public:
 	float		GetIdealAccel( void ) const;
 	int			ObjectCaps( void ) { return UsableNPCObjectCaps(BaseClass::ObjectCaps()); }
 	void		PrecriminalUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+#if defined ( HUMANERROR_DLL )
+	void		SimpleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+#endif
 
+
+#if defined ( HUMANERROR_DLL )
+	//TERO:	we don't need this shit
+	//CBaseEntity			*CheckTraceHullAttack( float flDist, const Vector &mins, const Vector &maxs, int iDamage, int iDmgType, float forceScale, bool bDamageAnyNPC );
+	//CBaseEntity			*CheckTraceHullAttack( const Vector &vStart, const Vector &vEnd, const Vector &mins, const Vector &maxs, int iDamage, int iDmgType, float flForceScale, bool bDamageAnyNPC );
+#else
 	// These are overridden so that the cop can shove and move a non-criminal player safely
 	CBaseEntity *CheckTraceHullAttack( float flDist, const Vector &mins, const Vector &maxs, int iDamage, int iDmgType, float forceScale, bool bDamageAnyNPC );
 	CBaseEntity *CheckTraceHullAttack( const Vector &vStart, const Vector &vEnd, const Vector &mins, const Vector &maxs, int iDamage, int iDmgType, float flForceScale, bool bDamageAnyNPC );
+#endif
 
 	virtual int	SelectSchedule( void );
 	virtual int SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
@@ -107,6 +172,10 @@ public:
 
 	void	PlayFlinchGesture( void );
 
+#if defined ( HUMANERROR_DLL )
+	void				AnswerQuestion(CAI_PlayerAlly *pQuestioner, int iQARandomNum, bool bAnsweringHello);
+#endif
+
 protected:
 	// Determines the best type of flinch anim to play.
 	virtual Activity GetFlinchActivity( bool bHeavyDamage, bool bGesture );
@@ -142,9 +211,17 @@ private:
 	// Burst mode!
 	void		SetBurstMode( bool bEnable );
 
+#if defined ( HUMANERROR_DLL )
+	bool				ShoutForMedic(void);
+#endif
+
 	int			OnTakeDamage_Alive( const CTakeDamageInfo &info );
 
 	int			GetSoundInterests( void );
+
+#if defined ( HUMANERROR_DLL )
+	virtual bool		IsAllowedToSpeak(AIConcept_t concept, bool bRespondingToPlayer = false);
+#endif
 
 	void		BuildScheduleTestBits( void );
 
@@ -166,6 +243,14 @@ private:
 	void InputEnableManhackToss( inputdata_t &inputdata );
 	void InputSetPoliceGoal( inputdata_t &inputdata );
 	void InputActivateBaton( inputdata_t &inputdata );
+
+#if defined ( HUMANERROR_DLL )
+	void InputSpeakRecharge(inputdata_t &inputdata);
+	void InputSpeakGeneratorOffline(inputdata_t &inputdata);
+
+	//TERO: from player ally
+	//void InputAnswerQuestion( inputdata_t &inputdata );
+#endif
 
 	void NotifyDeadFriend ( CBaseEntity* pFriend );
 
@@ -324,6 +409,11 @@ private:
 		COND_METROPOLICE_CHANGE_BATON_STATE,
 		COND_METROPOLICE_PHYSOBJECT_ASSAULT,
 
+#if defined ( HUMANERROR_DLL )
+		COND_CP_PLAYERHEALREQUEST,
+		COND_CP_COMMANDHEAL,
+		COND_CP_SCRIPT_INTERRUPT,
+#endif
 	};
 
 	enum
@@ -361,6 +451,11 @@ private:
 		SCHED_METROPOLICE_ALERT_FACE_BESTSOUND,
 		SCHED_METROPOLICE_RETURN_TO_PRECHASE,
 		SCHED_METROPOLICE_SMASH_PROP,
+
+#if defined ( HUMANERROR_DLL )
+		SCHED_METROPOLICE_HEAL,
+		SCHED_METROPOLICE_HEAL_TOSS,
+#endif
 	};
 
 	enum 
@@ -387,6 +482,11 @@ private:
 		TASK_METROPOLICE_WAIT_FOR_SENTENCE,
 		TASK_METROPOLICE_GET_PATH_TO_PRECHASE,
 		TASK_METROPOLICE_CLEAR_PRECHASE,
+
+#if defined ( HUMANERROR_DLL )
+		TASK_CP_HEAL,
+		TASK_CP_HEAL_TOSS,
+#endif
 	};
 
 private:
@@ -452,6 +552,15 @@ private:
 	CAI_RappelBehavior		m_RappelBehavior;
 	CAI_PolicingBehavior	m_PolicingBehavior;
 	CAI_FollowBehavior		m_FollowBehavior;
+#if defined ( HUMANERROR_DLL )
+	CAI_RechargeBehavior	m_RechargeBehavior;
+
+	CHandle<CAI_FollowGoal>	m_hSavedFollowGoalEnt;
+
+	bool					m_bNotifyNavFailBlocked;
+	bool					m_bNeverLeavePlayerSquad; // Don't leave the player squad unless killed, or removed via Entity I/O. 
+
+#endif
 
 	CAI_Sentence< CNPC_MetroPolice > m_Sentences;
 
@@ -463,8 +572,180 @@ private:
 
 	static float	gm_flTimeLastSpokePeek;
 
+#if defined ( HUMANERROR_DLL )
+	// TERO: EVERYTHING THAT FOLLOWS FROM HERE IS COPIED FROM THE CITIZEN COMMANDABLE STUFF:
+
+private:
+
+	float			m_flNextHealthSearchTime;
+
+	bool			m_bMedkitHidden;
+
+	float			m_flPlayerHealTime;
+	float			m_flAllyHealTime;
+	float			m_flPlayerGiveAmmoTime;
+	string_t		m_iszAmmoSupply;
+	int				m_iAmmoAmount;
+	string_t		m_iszOriginalSquad;
+	float			m_flTimeJoinedPlayerSquad;
+	bool			m_bWasInPlayerSquad;
+	float			m_flTimeLastCloseToPlayer;
+	string_t		m_iszDenyCommandConcept;
+
+	CSimpleSimTimer	m_AutoSummonTimer;
+	Vector			m_vAutoSummonAnchor;
+
+	static CSimpleSimTimer gm_PlayerSquadEvaluateTimer;
+
+	float			m_flTimePlayerStare;	// The game time at which the player started staring at me.
+	float			m_flTimeNextHealStare;	// Next time I'm allowed to heal a player who is staring at me.
+
+	//-----------------------------------------------------
+	//	Outputs
+	//-----------------------------------------------------
+	COutputEvent		m_OnJoinedPlayerSquad;
+	COutputEvent		m_OnLeftPlayerSquad;
+	COutputEvent		m_OnFollowOrder;
+	COutputEvent		m_OnStationOrder;
+	COutputEvent		m_OnPlayerUse;
+	COutputEvent		m_OnNavFailBlocked;
+
+public:
+
+	void				UpdatePlayerGiveAmmoTime(float flGiveAmmoTime);
+
+	void				PostNPCInit();
+	void				OnRestore();
+	bool 				ShouldAlwaysThink();
+	bool				ShouldBehaviorSelectSchedule(CAI_BehaviorBase *pBehavior);
+	int					SelectSchedulePriorityAction();
+	int					SelectScheduleHeal();
+	bool				ShouldDeferToFollowBehavior();
+
+	void				PickupItem(CBaseEntity *pItem);
+	int					SelectScheduleRetrieveItem();
+
+	void 				OnChangeActiveWeapon(CBaseCombatWeapon *pOldWeapon, CBaseCombatWeapon *pNewWeapon);
+	void				GiveWeapon(string_t iszWeaponName);
+
+	bool				ShouldLookForBetterWeapon();
+
+	void				PredictPlayerPush();
+
+	bool				ShouldAcceptGoal(CAI_BehaviorBase *pBehavior, CAI_GoalEntity *pGoal);
+	void				OnClearGoal(CAI_BehaviorBase *pBehavior, CAI_GoalEntity *pGoal);
+	void				OnAnimEventHeal();
+	void				TaskFail(AI_TaskFailureCode_t code);
+
+	bool 				IsMedic() 			{ return HasSpawnFlags(SF_METROPOLICE_MEDIC); }
+	bool 				IsAmmoResupplier() 	{ return HasSpawnFlags(SF_METROPOLICE_AMMORESUPPLIER); }
+
+	bool 				CanHeal();
+	bool 				ShouldHealTarget(CBaseEntity *pTarget, bool bActiveUse = false);
+	bool				ShouldHealItself();
+	bool 				ShouldHealTossTarget(CBaseEntity *pTarget, bool bActiveUse = false);
+	void 				Heal();
+
+	bool				ShouldLookForHealthItem();
+
+	void				TossHealthKit(CBaseCombatCharacter *pThrowAt, const Vector &offset); // create a healthkit and throw it at someone
+	void				InputForceHealthKitToss(inputdata_t &inputdata);
+
+
+	//---------------------------------
+	// Inputs
+	//---------------------------------
+	void			InputRemoveFromPlayerSquad(inputdata_t &inputdata) { RemoveFromPlayerSquad(); }
+	void			InputSetCommandable(inputdata_t &inputdata);
+	void			InputSetNotCommandable(inputdata_t &inputdata);
+	void			InputSetMedicOn(inputdata_t &inputdata);
+	void			InputSetMedicOff(inputdata_t &inputdata);
+	void			InputSetAmmoResupplierOn(inputdata_t &inputdata);
+	void			InputSetAmmoResupplierOff(inputdata_t &inputdata);
+
+	void			InputSetRechargerOn(inputdata_t &inputdata);
+	void			InputSetRechargerOff(inputdata_t &inputdata);
+
+	//---------------------------------
+	// Commander mode
+	//---------------------------------
+	bool 			IsCommandable();
+	bool			IsPlayerAlly(CBasePlayer *pPlayer = NULL);
+	bool			CanJoinPlayerSquad();
+	bool			WasInPlayerSquad();
+	bool			HaveCommandGoal() const;
+	bool			IsCommandMoving();
+	bool			ShouldAutoSummon();
+	bool 			IsValidCommandTarget(CBaseEntity *pTarget);
+	bool 			NearCommandGoal();
+	bool 			VeryFarFromCommandGoal();
+	bool 			TargetOrder(CBaseEntity *pTarget, CAI_BaseNPC **Allies, int numAllies);
+	void 			MoveOrder(const Vector &vecDest, CAI_BaseNPC **Allies, int numAllies);
+	void			OnMoveOrder();
+	void 			CommanderUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	bool			ShouldSpeakRadio(CBaseEntity *pListener);
+	void			OnMoveToCommandGoalFailed();
+	void			AddToPlayerSquad();
+	void			RemoveFromPlayerSquad();
+	void 			TogglePlayerSquadState();
+	void			UpdatePlayerSquad();
+	static int __cdecl PlayerSquadCandidateSortFunc(const SquadCandidate_t *, const SquadCandidate_t *);
+	void 			FixupPlayerSquad();
+	void 			ClearFollowTarget();
+	void 			UpdateFollowCommandPoint();
+	bool			IsFollowingCommandPoint();
+	CAI_BaseNPC *	GetSquadCommandRepresentative();
+	void			SetSquad(CAI_Squad *pSquad);
+	void			AddInsignia();
+	void			RemoveInsignia();
+
+	//TERO: UNIQUE CIVIL PROTECTION OFFICERS
+protected:
+
+	enum unique_cps
+	{
+		METROPOLICE_NORMAL = 0,
+		METROPOLICE_LARSON,
+		METROPOLICE_NOAH,
+		METROPOLICE_ELOISE,
+	};
+
+	int		m_iUniqueMetropolice;
+
+	inline bool IsUnique() { return (m_iUniqueMetropolice != METROPOLICE_NORMAL); }
+	inline bool IsEloise() { return (m_iUniqueMetropolice == METROPOLICE_ELOISE); }
+	inline bool IsLarson() { return (m_iUniqueMetropolice == METROPOLICE_LARSON); }
+	inline bool IsNoah()   { return (m_iUniqueMetropolice == METROPOLICE_NOAH); }
+
+	bool	m_bCanRecharge;
+#endif
+
 public:
 	DEFINE_CUSTOM_AI;
 };
+
+#if defined ( HUMANERROR_DLL )
+//---------------------------------------------------------
+//---------------------------------------------------------
+inline bool CNPC_MetroPolice::NearCommandGoal()
+{
+	const float flDistSqr = COMMAND_GOAL_TOLERANCE * COMMAND_GOAL_TOLERANCE;
+	return ((GetAbsOrigin() - GetCommandGoal()).LengthSqr() <= flDistSqr);
+}
+
+//---------------------------------------------------------
+//---------------------------------------------------------
+inline bool CNPC_MetroPolice::VeryFarFromCommandGoal()
+{
+	const float flDistSqr = (12 * 50) * (12 * 50);
+	return ((GetAbsOrigin() - GetCommandGoal()).LengthSqr() > flDistSqr);
+}
+
+class CSquadInsignia : public CBaseAnimating
+{
+	DECLARE_CLASS(CSquadInsignia, CBaseAnimating);
+	void Spawn();
+};
+#endif
 
 #endif // NPC_METROPOLICE_H

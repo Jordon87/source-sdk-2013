@@ -118,6 +118,12 @@ public:
 	void			SetMultiplayerBreakMode( mp_break_t mode ) {}
 	mp_break_t		GetMultiplayerBreakMode( void ) const { return MULTIPLAYER_BREAK_DEFAULT; }
 
+#if defined ( HUMANERROR_DLL )
+	//TERO:			my addition
+	void			SetDontBreakIfMaxGibs(int max) {}
+	int				GetDontBreakIfMaxGibs(void) { return 0; }
+#endif
+
 protected:
 	float		m_angle;
 	Materials	m_Material;

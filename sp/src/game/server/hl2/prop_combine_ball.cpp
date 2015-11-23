@@ -705,6 +705,11 @@ void CPropCombineBall::WhizSoundThink()
 
 	pPhysicsObject->GetPosition( &vecPosition, NULL );
 	pPhysicsObject->GetVelocity( &vecVelocity, NULL );
+
+#if defined ( HUMANERROR_DLL )
+	//TERO: This is added by me
+	CSoundEnt::InsertSound(SOUND_DANGER, GetAbsOrigin(), 200, 0.5f, this, SOUNDENT_CHANNEL_REPEATED_DANGER, NULL);
+#endif
 	
 	if ( gpGlobals->maxClients == 1 )
 	{
@@ -1264,11 +1269,21 @@ void CPropCombineBall::OnHitEntity( CBaseEntity *pHitEntity, float flSpeed, int 
 					}
 
 					DissolveEntity( pHitEntity );
+#if defined ( HUMANERROR_DLL )
+					if ( pHitEntity->ClassMatches( "npc_hunter" ) || 
+						 pHitEntity->ClassMatches( "npc_aliengrunt" ) ||
+						 pHitEntity->ClassMatches( "npc_aliencontroller" ) )
+					{
+						DoExplosion();
+						return;
+					}
+#else
 					if ( pHitEntity->ClassMatches( "npc_hunter" ) )
 					{
 						DoExplosion();
 						return;
 					}
+#endif
 				}
 			}
 		}
@@ -1344,7 +1359,11 @@ bool CPropCombineBall::IsAttractiveTarget( CBaseEntity *pEntity )
 		return false;
 
 	// Don't guide toward striders
+#if defined ( HUMANERROR_DLL )
+	if ( FClassnameIs( pEntity, "npc_strider" ) || FClassnameIs(pEntity, "npc_aliencontroller") )
+#else
 	if ( FClassnameIs( pEntity, "npc_strider" ) )
+#endif
 		return false;
 
 	if( WasFiredByNPC() )
@@ -1698,6 +1717,10 @@ BEGIN_DATADESC( CFuncCombineBallSpawner )
 	DEFINE_UTLVECTOR( m_BallRespawnTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flDisableTime,	FIELD_TIME ),
 
+#if defined ( HUMANERROR_DLL )
+	DEFINE_KEYFIELD(m_CombineBallTargetName, FIELD_STRING, "combineball_targetname"),
+#endif
+
 	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 
@@ -1731,6 +1754,14 @@ CFuncCombineBallSpawner::CFuncCombineBallSpawner()
 void CFuncCombineBallSpawner::SpawnBall()
 {
 	CPropCombineBall *pBall = static_cast<CPropCombineBall*>( CreateEntityByName( "prop_combine_ball" ) );
+
+#if defined ( HUMANERROR_DLL )
+	//TERO: This next part added by me
+	if (STRING(m_CombineBallTargetName) != NULL)
+	{
+		pBall->KeyValue("targetname", STRING(m_CombineBallTargetName));
+	}
+#endif
 
 	float flRadius = m_flBallRadius;
 	pBall->SetRadius( flRadius );

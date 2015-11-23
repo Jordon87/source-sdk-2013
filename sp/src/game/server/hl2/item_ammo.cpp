@@ -35,6 +35,78 @@ int ITEM_GiveAmmo( CBasePlayer *pPlayer, float flCount, const char *pszAmmoName,
 	return pPlayer->GiveAmmo( flCount, iAmmoType, bSuppressSound );
 }
 
+#if defined ( HUMANERROR_DLL )
+// ========================================================================
+//	>> CItem_ManhackAmmo - Tero
+// ========================================================================
+class CItem_ManhackAmmo : public CItem
+{
+public:
+	DECLARE_CLASS( CItem_ManhackAmmo, CItem );
+
+	void Precache( void )
+	{
+		PrecacheModel ("models/manhack.mdl");
+	}
+
+	void Spawn( void )
+	{ 
+		Precache( );
+		SetModel( "models/manhack.mdl");
+		BaseClass::Spawn( );
+	}
+
+	bool MyTouch( CBasePlayer *pPlayer )
+	{
+		if (ITEM_GiveAmmo( pPlayer, 1, "Manhack" ) )
+		{
+			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			{
+				UTIL_Remove(this);	
+			}
+			return true;
+		}
+		return false;
+	}
+};
+
+// ========================================================================
+//	>> CItem_ManhackAmmo - Tero
+// ========================================================================
+class CItem_AlyxGunAmmo : public CItem
+{
+public:
+	DECLARE_CLASS( CItem_AlyxGunAmmo, CItem );
+
+	void Precache( void )
+	{
+		PrecacheModel ("models/items/alyxgun_ammo.mdl");
+	}
+
+	void Spawn( void )
+	{ 
+		Precache( );
+		SetModel( "models/items/alyxgun_ammo.mdl" );
+		BaseClass::Spawn( );
+	}
+
+	bool MyTouch( CBasePlayer *pPlayer )
+	{
+		if (ITEM_GiveAmmo( pPlayer, 100, "AlyxGun" ) )
+		{
+			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			{
+				UTIL_Remove(this);	
+			}
+			return true;
+		}
+		return false;
+	}
+};
+
+LINK_ENTITY_TO_CLASS( item_ammo_alyxgun, CItem_AlyxGunAmmo);
+#endif
+
 // ========================================================================
 //	>> BoxSRounds
 // ========================================================================
@@ -606,6 +678,10 @@ enum
 	AMMOCRATE_CROSSBOW,
 	AMMOCRATE_AR2_ALTFIRE,
 	AMMOCRATE_SMG_ALTFIRE,
+#if defined ( HUMANERROR_DLL )
+	AMMOCRATE_MANHACK,
+	AMMOCRATE_SMOKEGRENADE,
+#endif
 	NUM_AMMO_CRATE_TYPES,
 };
 
@@ -693,6 +769,10 @@ const char *CItem_AmmoCrate::m_lpzModelNames[NUM_AMMO_CRATE_TYPES] =
 	//FIXME: This model is incorrect!
 	"models/items/ammocrate_ar2.mdl",		// Combine Ball 
 	"models/items/ammocrate_smg2.mdl",	    // smg grenade
+#if defined ( HUMANERROR_DLL )
+	"models/items/ammocrate_manhack.mdl",		// Controllalbe Manhacks -Tero
+	"models/items/ammocrate_grenade.mdl",		// Smoke Grenades
+#endif
 };
 
 // Ammo type names
@@ -708,6 +788,10 @@ const char *CItem_AmmoCrate::m_lpzAmmoNames[NUM_AMMO_CRATE_TYPES] =
 	"XBowBolt",
 	"AR2AltFire",
 	"SMG1_Grenade",
+#if defined ( HUMANERROR_DLL )
+	"Manhack",
+	"SmokeGrenade"
+#endif
 };
 
 // Ammo amount given per +use
@@ -723,6 +807,10 @@ int CItem_AmmoCrate::m_nAmmoAmounts[NUM_AMMO_CRATE_TYPES] =
 	50,		// Crossbow
 	3,		// AR2 alt-fire
 	5,
+#if defined ( HUMANERROR_DLL )
+	3,		// Manhack
+	3,		// Smoke Grenades
+#endif
 };
 
 const char *CItem_AmmoCrate::m_pGiveWeapon[NUM_AMMO_CRATE_TYPES] =
@@ -737,6 +825,10 @@ const char *CItem_AmmoCrate::m_pGiveWeapon[NUM_AMMO_CRATE_TYPES] =
 	NULL,		// Crossbow
 	NULL,		// AR2 alt-fire
 	NULL,		// SMG alt-fire
+#if defined ( HUMANERROR_DLL )
+	"weapon_manhack",
+	"weapon_smokegrenade",
+#endif
 };
 
 #define	AMMO_CRATE_CLOSE_DELAY	1.5f

@@ -82,6 +82,10 @@
 #include "weapon_physcannon.h"
 #endif
 
+#if defined ( HUMANERROR_DLL )
+#include "Human_Error/hlss_weapon_id.h"
+#endif
+
 ConVar autoaim_max_dist( "autoaim_max_dist", "2160" ); // 2160 = 180 feet
 ConVar autoaim_max_deflect( "autoaim_max_deflect", "0.99" );
 
@@ -94,6 +98,10 @@ ConVar	spec_freeze_traveltime( "spec_freeze_traveltime", "0.4", FCVAR_CHEAT | FC
 #endif
 
 ConVar sv_bonus_challenge( "sv_bonus_challenge", "0", FCVAR_REPLICATED, "Set to values other than 0 to select a bonus map challenge type." );
+
+#if defined ( HUMANERROR_DLL )
+ConVar hlss_show_weapon_hints("hlss_show_weapon_hints", "1");
+#endif
 
 static ConVar sv_maxusrcmdprocessticks( "sv_maxusrcmdprocessticks", "24", FCVAR_NOTIFY, "Maximum number of client-issued usrcmd ticks that can be replayed in packet loss conditions, 0 to allow no restrictions" );
 
@@ -459,6 +467,13 @@ BEGIN_DATADESC( CBasePlayer )
 
 	// DEFINE_UTLVECTOR( m_vecPlayerCmdInfo ),
 	// DEFINE_UTLVECTOR( m_vecPlayerSimInfo ),
+
+#if defined ( HUMANERROR_DLL )
+	//TERO:
+	DEFINE_FIELD(m_flNextWeaponDropHintTime, FIELD_TIME),
+	DEFINE_FIELD(m_iLastWeaponBumpSlot, FIELD_INTEGER),
+#endif
+
 END_DATADESC()
 
 int giPrecacheGrunt = 0;
@@ -627,6 +642,12 @@ CBasePlayer::CBasePlayer( )
 	m_nBodyPitchPoseParam = -1;
 	m_flForwardMove = 0;
 	m_flSideMove = 0;
+
+#if defined ( HUMANERROR_DLL )
+	//TERO:
+	m_iLastWeaponBumpSlot = 0;
+	m_flNextWeaponDropHintTime = 0;
+#endif
 
 	// NVNT default to no haptics
 	m_bhasHaptics = false;
@@ -4242,6 +4263,10 @@ void CBasePlayer::SetSuitUpdate(const char *name, int fgroup, int iNoRepeatTime)
 	int isentence;
 	int iempty = -1;
 	
+#if defined ( HUMANERROR_DLL )
+	//TERO: we do not want this shit, Sunday
+	return;
+#endif
 	
 	// Ignore suit updates if no suit
 	if ( !IsSuitEquipped() )
@@ -5250,6 +5275,15 @@ void CBasePlayer::IncrementArmorValue( int nCount, int nMaxValue )
 	}
 }
 
+#if defined ( HUMANERROR_DLL )
+void CBasePlayer::DecrementArmorValue( int nCount )
+{ 
+	m_ArmorValue -= nCount;
+	if (m_ArmorValue < 0)
+		m_ArmorValue = 0;
+}
+#endif
+
 // used by the physics gun and game physics... is there a better interface?
 void CBasePlayer::SetPhysicsFlag( int nFlag, bool bSet )
 {
@@ -6146,6 +6180,10 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveAmmo( 3,	"smg1_grenade");
 		GiveAmmo( 3,	"rpg_round");
 		GiveAmmo( 5,	"grenade");
+#if defined ( HUMANERROR_DLL )
+		GiveAmmo( 3,	"SmokeGrenade"); //TERO: added
+		GiveAmmo( 3,	"Manhack" );	//TERO: added
+#endif
 		GiveAmmo( 32,	"357" );
 		GiveAmmo( 16,	"XBowBolt" );
 #ifdef HL2_EPISODIC
@@ -6160,6 +6198,10 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem( "weapon_physcannon" );
 		GiveNamedItem( "weapon_bugbait" );
 		GiveNamedItem( "weapon_rpg" );
+#if defined ( HUMANERROR_DLL )
+		GiveNamedItem( "weapon_smokegrenade" );
+		GiveNamedItem( "weapon_manhack" );
+#endif
 		GiveNamedItem( "weapon_357" );
 		GiveNamedItem( "weapon_crossbow" );
 #ifdef HL2_EPISODIC
@@ -6550,6 +6592,70 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 
 extern bool UTIL_ItemCanBeTouchedByPlayer( CBaseEntity *pItem, CBasePlayer *pPlayer );
 
+#if defined ( HUMANERROR_DLL )
+
+//-----------------------------------------------------------------------------
+// Purpose: Get Primary weapon ammo type from slot 2, for HLSS - TERO
+// Input  : void
+// Output : ammo type index
+//-----------------------------------------------------------------------------
+int CBasePlayer::GetPrimaryWeaponAmmoType()
+{
+	for (int i = 0; i < WeaponCount(); i++)
+	{
+		CBaseCombatWeapon *pSearch = GetWeapon(i);
+
+		if (pSearch && pSearch->GetSlot() == 2)
+		{
+			return pSearch->GetPrimaryAmmoType();
+		}
+	}
+
+	return -1;
+}
+
+CBaseCombatWeapon * CBasePlayer::HLSS_GetWeaponToDrop()
+{
+	if (m_flNextWeaponDropHintTime != 0 && m_flNextWeaponDropHintTime >= gpGlobals->curtime)
+	{
+		for (int i = 0; i < WeaponCount(); i++)
+		{
+			CBaseCombatWeapon *pSearch = GetWeapon(i);
+
+			if (pSearch && pSearch->GetSlot() == m_iLastWeaponBumpSlot)
+			{
+				return pSearch;
+			}
+		}
+	}
+
+	return GetActiveWeapon();
+}
+
+static const char *pWeaponHintNames[] =
+{
+	"None",
+
+	"SMG1",
+	"SMG2",
+	"Shotgun",
+	"AR2",
+	"RPG",
+	"Turret",
+	"Sniper",
+
+	"Crossbow",
+	"Physgun",
+
+	"Pistol",
+	"357",
+	"AlyxGun",
+
+	"Stunstick",
+	"Crowbar",
+};
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: Player reacts to bumping a weapon. 
 // Input  : pWeapon - the weapon that the player bumped into.
@@ -6562,6 +6668,89 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 	// Can I have this weapon type?
 	if ( !IsAllowedToPickupWeapons() )
 		return false;
+
+#if defined ( HUMANERROR_DLL )
+		//if we have the slot occupied dont pick up the weapon
+	for (int i=0; i < WeaponCount(); i++)
+	{
+		CBaseCombatWeapon *pSearch = GetWeapon( i );
+
+		if (pSearch && pSearch->GetSlot() == pWeapon->GetSlot() && pSearch->GetPosition() == pWeapon->GetPosition() ) //pWeapon->GetSlot()
+		{
+			/*if ( !pSearch->HasPrimaryAmmo() && !pSearch->HasSecondaryAmmo() && pSearch->UsesPrimaryAmmo() ) 
+			{
+				Weapon_Drop( pSearch, NULL, NULL);
+				//UTIL_Remove( pSearch );
+
+			}
+			else*/ 
+			
+			if ( Weapon_EquipAmmoOnly( pWeapon ) )
+			{
+				if (pWeapon->HasPrimaryAmmo() ) {		
+					return false;
+					}
+			
+				UTIL_Remove(pWeapon);
+				return true;
+			}
+			else
+			{	
+				if (!GetVehicle() && m_flNextWeaponDropHintTime < gpGlobals->curtime )
+				{
+					if (hlss_show_weapon_hints.GetBool())
+					{
+						if (pWeapon->GetSlot() <= 2 &&
+							pWeapon->GetSlot() == pSearch->GetSlot() &&
+							pWeapon->HLSS_GetWeaponId() != pSearch->HLSS_GetWeaponId())
+						{
+							if (pWeapon->HLSS_GetWeaponId() != HLSS_WEAPON_ID_NONE &&
+								pSearch->HLSS_GetWeaponId() != HLSS_WEAPON_ID_NONE)
+							{
+								char str[80];
+								strcpy (str,"#HLSS_Hint_Switch_");
+								strcat (str, pWeaponHintNames[pSearch->HLSS_GetWeaponId()]);
+								strcat (str, "_To_");
+								strcat (str, pWeaponHintNames[pWeapon->HLSS_GetWeaponId()]);
+
+								UTIL_HudHintText(this, str );
+							}	
+							else if (pWeapon->HLSS_GetWeaponId() == HLSS_WEAPON_ID_NONE &&
+									 pSearch->HLSS_GetWeaponId() != HLSS_WEAPON_ID_NONE)
+							{
+								char str[80];
+								strcpy (str,"#HLSS_Hint_Drop_");
+								strcat (str, pWeaponHintNames[pSearch->HLSS_GetWeaponId()]);
+
+								UTIL_HudHintText(this, str );
+							}
+							else if (pSearch->HLSS_GetWeaponId() == HLSS_WEAPON_ID_NONE &&
+									 pWeapon->HLSS_GetWeaponId() != HLSS_WEAPON_ID_NONE)
+							{
+								char str[80];
+								strcpy (str,"#HLSS_Hint_Pick_");
+								strcat (str, pWeaponHintNames[pWeapon->HLSS_GetWeaponId()]);
+
+								UTIL_HudHintText(this, str );
+							}
+						}
+						/*else
+						{
+							DevMsg("Hint conditions didn't match: found weapon %s, slot %d, id %d\n", pWeapon->GetDebugName(), pWeapon->GetSlot(), pWeapon->HLSS_GetWeaponId());
+							DevMsg("inventory weapon %s, slot %d, id %d\n", pSearch->GetDebugName(), pSearch->GetSlot(), pSearch->HLSS_GetWeaponId());
+						}*/
+					}//if convar
+
+					m_iLastWeaponBumpSlot		= pWeapon->GetSlot();
+					m_flNextWeaponDropHintTime	= gpGlobals->curtime + 1.0f;
+				}
+
+				return false;
+			}
+		}
+
+	}
+#endif
 
 	if ( pOwner || !Weapon_CanUse( pWeapon ) || !g_pGameRules->CanHavePlayerItem( this, pWeapon ) )
 	{
@@ -6635,10 +6824,17 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 			if ( !PlayerHasMegaPhysCannon() )
 			{
 				// If it uses clips, load it full. (this is the first time you've picked up this type of weapon)
+#if defined ( HUMANERROR_DLL )
+				/*if ( pWeapon->UsesClipsForAmmo1() )
+				{
+					pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
+				}*/
+#else
 				if ( pWeapon->UsesClipsForAmmo1() )
 				{
 					pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
 				}
+#endif
 
 				Weapon_Switch( pWeapon );
 			}
@@ -7284,6 +7480,27 @@ void CBasePlayer::Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector *pvecTar
 
 	BaseClass::Weapon_Drop( pWeapon, pvecTarget, pVelocity );
 
+#if defined ( HUMANERROR_DLL )
+	//TERO: drop ammo as well
+	/*if ( FClassnameIs( pWeapon, "weapon_smg1" ) || 
+		 FClassnameIs( pWeapon, "weapon_shotgun" ) ||
+		 FClassnameIs( pWeapon, "weapon_ar2" ) ||
+		 FClassnameIs( pWeapon, "weapon_rpg" ) )
+	{*/
+	if (pWeapon)
+	{
+		int iAmmoType = pWeapon->GetPrimaryAmmoType();
+
+		if (iAmmoType != -1)
+		{
+			int iAmmoCount = GetAmmoCount(iAmmoType);
+			SetAmmoCount( 0, iAmmoType );
+			pWeapon->SetPrimaryAmmoCount( iAmmoCount );
+		}
+	}
+	//}
+#endif
+
 	if ( bWasActiveWeapon )
 	{
 		if (!SwitchToNextBestWeapon( NULL ))
@@ -7327,6 +7544,17 @@ void CBasePlayer::Weapon_DropSlot( int weaponSlot )
 void CBasePlayer::Weapon_Equip( CBaseCombatWeapon *pWeapon )
 {
 	BaseClass::Weapon_Equip( pWeapon );
+
+#if defined ( HUMANERROR_DLL )
+	//TERO: added by moi, give ammo
+	int iAmmoType = pWeapon->GetPrimaryAmmoType();
+	if (iAmmoType >= 0)
+	{
+		int iAmmoCount = pWeapon->GetPrimaryAmmoCount();
+		GiveAmmo(iAmmoCount, iAmmoType, true);
+		pWeapon->SetPrimaryAmmoCount(0);
+	}
+#endif
 
 	bool bShouldSwitch = g_pGameRules->FShouldSwitchWeapon( this, pWeapon );
 

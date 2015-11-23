@@ -16,6 +16,9 @@
 
 #include "basegrenade_shared.h"
 #include "basehlcombatweapon.h"
+#if defined ( HUMANERROR_DLL )
+#include "Human_Error/hlss_weapon_id.h"
+#endif
 
 class CWeaponAR2 : public CHLMachineGun
 {
@@ -23,6 +26,10 @@ public:
 	DECLARE_CLASS( CWeaponAR2, CHLMachineGun );
 
 	CWeaponAR2();
+
+#if defined ( HUMANERROR_DLL )
+	virtual const int		HLSS_GetWeaponId() { return HLSS_WEAPON_ID_AR2; }
+#endif
 
 	DECLARE_SERVERCLASS();
 

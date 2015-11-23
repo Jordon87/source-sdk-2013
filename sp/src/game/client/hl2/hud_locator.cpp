@@ -15,16 +15,32 @@
 #include <vgui_controls/AnimationController.h>
 #include <vgui/ISurface.h>
 #include "c_basehlplayer.h"
+#if defined ( HUMANERROR_CLIENT_DLL )
+#include "Human_Error/c_manhack_screen.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#if defined ( HUMANERROR_CLIENT_DLL )
+#define LOCATOR_MATERIAL_JALOPY			"vgui/icons/icon_manhack"
+#else
 #define LOCATOR_MATERIAL_JALOPY			"vgui/icons/icon_jalopy"
+#endif
 #define LOCATOR_MATERIAL_BIG_TICK		"vgui/icons/tick_long"
 #define LOCATOR_MATERIAL_SMALL_TICK		"vgui/icons/tick_short"
 
 ConVar hud_locator_alpha( "hud_locator_alpha", "230" );
 ConVar hud_locator_fov("hud_locator_fov", "350" );
+
+#if defined ( HUMANERROR_CLIENT_DLL )
+/*static CManhackScreen *s_ManhackScreen = NULL;
+
+CManhackScreen *GetManhackScreen()
+{
+return s_ManhackScreen;
+}*/
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Shows positions of objects relative to the player.

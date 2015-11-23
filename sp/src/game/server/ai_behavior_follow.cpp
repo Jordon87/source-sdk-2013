@@ -339,6 +339,13 @@ void CAI_FollowBehavior::SetFollowTarget( CBaseEntity *pLeader, bool fFinishCurS
 	if ( pLeader == m_hFollowTarget )
 		return;
 
+#if defined ( HUMANERROR_DLL )
+	if (!GetOuter())
+		return;
+
+	Assert( GetOuter() );
+#endif
+
 	if ( !GetOuter()->IsAlive() )
 	{
 		return;

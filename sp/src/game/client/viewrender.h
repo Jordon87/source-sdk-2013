@@ -433,6 +433,10 @@ private:
 
 	void			DrawMonitors( const CViewSetup &cameraView );
 
+#if defined ( HUMANERROR_CLIENT_DLL )
+	void			DrawManhackScreen(const CViewSetup &cameraView);
+	void			DrawCameraScreen(const CViewSetup &cameraView);
+#endif
 	bool			DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_PointCamera *pCameraEnt, const CViewSetup &cameraView, C_BasePlayer *localPlayer, 
 						int x, int y, int width, int height );
 

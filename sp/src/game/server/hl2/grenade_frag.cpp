@@ -189,6 +189,7 @@ bool CGrenadeFrag::CreateVPhysics()
 	return true;
 }
 
+#if !defined ( HUMANERROR_DLL )
 // this will hit only things that are in newCollisionGroup, but NOT in collisionGroupAlreadyChecked
 class CTraceFilterCollisionGroupDelta : public CTraceFilterEntitiesOnly
 {
@@ -223,6 +224,7 @@ protected:
 	int		m_collisionGroupAlreadyChecked;
 	int		m_newCollisionGroup;
 };
+#endif // !defined ( HUMANERROR_DLL ) 
 
 void CGrenadeFrag::VPhysicsUpdate( IPhysicsObject *pPhysics )
 {

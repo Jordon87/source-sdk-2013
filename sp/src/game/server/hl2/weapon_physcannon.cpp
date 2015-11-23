@@ -433,7 +433,7 @@ static void ComputePlayerMatrix( CBasePlayer *pPlayer, matrix3x4_t &out )
 	AngleMatrix( angles, origin, out );
 }
 
-
+#if !defined ( HUMANERROR_DLL )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -442,6 +442,7 @@ struct game_shadowcontrol_params_t : public hlshadowcontrol_params_t
 {
 	DECLARE_SIMPLE_DATADESC();
 };
+#endif // !defined ( HUMANERROR_DLL )
 
 BEGIN_SIMPLE_DATADESC( game_shadowcontrol_params_t )
 	
@@ -456,6 +457,7 @@ BEGIN_SIMPLE_DATADESC( game_shadowcontrol_params_t )
 
 END_DATADESC()
 
+#if !defined ( HUMANERROR_DLL )
 //-----------------------------------------------------------------------------
 class CGrabController : public IMotionEvent
 {
@@ -519,6 +521,7 @@ private:
 
 	friend class CWeaponPhysCannon;
 };
+#endif // !defined ( HUMANERROR_DLL )
 
 BEGIN_SIMPLE_DATADESC( CGrabController )
 
@@ -964,6 +967,7 @@ bool CGrabController::IsObjectAllowedOverhead( CBaseEntity *pEntity )
 	return false;
 }
 
+#if !defined ( HUMANERROR_DLL )
 //-----------------------------------------------------------------------------
 // Player pickup controller
 //-----------------------------------------------------------------------------
@@ -990,6 +994,7 @@ private:
 	CGrabController		m_grabController;
 	CBasePlayer			*m_pPlayer;
 };
+#endif // !defined ( HUMANERROR_DLL )
 
 LINK_ENTITY_TO_CLASS( player_pickup, CPlayerPickupController );
 

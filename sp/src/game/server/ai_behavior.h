@@ -64,7 +64,11 @@ public:
 		return false;
 	}
 	
+#if defined ( HUMANERROR_DLL )
+	bool IsRunning()								{ if ( !GetOuter() ) return false; Assert( GetOuter() ); return ( GetOuter()->GetRunningBehavior() == this ); }
+#else
 	bool IsRunning()								{ Assert( GetOuter() ); return ( GetOuter()->GetRunningBehavior() == this ); }
+#endif
 	virtual bool CanSelectSchedule()				{ return true; }
 	virtual void BeginScheduleSelection() 			{}
 	virtual void EndScheduleSelection() 			{}

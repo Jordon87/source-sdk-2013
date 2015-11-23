@@ -8,6 +8,9 @@
 #define WEAPON_CROWBAR_H
 
 #include "basebludgeonweapon.h"
+#if defined ( HUMANERROR_DLL )
+#include "Human_Error/hlss_weapon_id.h"
+#endif
 
 #if defined( _WIN32 )
 #pragma once
@@ -33,6 +36,10 @@ public:
 	DECLARE_ACTTABLE();
 
 	CWeaponCrowbar();
+
+#if defined ( HUMANERROR_DLL )
+	virtual const int		HLSS_GetWeaponId() { return HLSS_WEAPON_ID_CROWBAR; }
+#endif
 
 	float		GetRange( void )		{	return	CROWBAR_RANGE;	}
 	float		GetFireRate( void )		{	return	CROWBAR_REFIRE;	}

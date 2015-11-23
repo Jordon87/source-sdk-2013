@@ -34,6 +34,9 @@
 #include "explode.h"
 #include "IEffects.h"
 #include "animation.h"
+#if defined ( HUMANERROR_DLL )
+#include "globalstate.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -138,7 +141,19 @@ public:
 
 	int OnTakeDamage(const CTakeDamageInfo &inputInfo);
 
+#if defined ( HUMANERROR_DLL )
+	Class_T Classify() 
+	{ 
+		if (!m_bEnabled)
+			return CLASS_NONE;
+		else if (GlobalEntity_GetState("combine_base_hacked") == GLOBAL_ON)
+			return CLASS_MILITARY_HACKED;
+		else
+			return CLASS_MILITARY;
+	}
+#else
 	Class_T Classify() { return (m_bEnabled) ? CLASS_MILITARY : CLASS_NONE; }
+#endif
 	
 	bool IsValidEnemy( CBaseEntity *pEnemy );
 	bool FVisible(CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL);

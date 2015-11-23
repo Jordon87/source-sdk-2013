@@ -264,6 +264,11 @@ private:
 	COutputEvent m_OnBallHitBottomSide;
 	COutputEvent m_OnLastBallGrabbed;
 	COutputEvent m_OnFirstBallReinserted;
+
+#if defined ( HUMANERROR_DLL )
+	//TERO: String for the prop_combine_ball name
+	string_t m_CombineBallTargetName;
+#endif
 };
 
 

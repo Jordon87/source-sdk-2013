@@ -17,6 +17,9 @@
 #include "soundent.h"
 #include "rumble_shared.h"
 #include "gamestats.h"
+#if defined ( HUMANERROR_DLL )
+#include "Human_Error/hlss_weapon_id.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -32,6 +35,10 @@ public:
 	CWeaponSMG1();
 
 	DECLARE_SERVERCLASS();
+
+#if defined ( HUMANERROR_DLL )
+	virtual const int		HLSS_GetWeaponId() { return HLSS_WEAPON_ID_SMG1; }
+#endif
 	
 	void	Precache( void );
 	void	AddViewKick( void );

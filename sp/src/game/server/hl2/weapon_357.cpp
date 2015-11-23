@@ -19,6 +19,9 @@
 #include "engine/IEngineSound.h"
 #include "te_effect_dispatch.h"
 #include "gamestats.h"
+#if defined ( HUMANERROR_DLL )
+#include "Human_Error/hlss_weapon_id.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -31,6 +34,10 @@ class CWeapon357 : public CBaseHLCombatWeapon
 {
 	DECLARE_CLASS( CWeapon357, CBaseHLCombatWeapon );
 public:
+
+#if defined ( HUMANERROR_DLL )
+	virtual const int		HLSS_GetWeaponId() { return HLSS_WEAPON_ID_357; }
+#endif
 
 	CWeapon357( void );
 

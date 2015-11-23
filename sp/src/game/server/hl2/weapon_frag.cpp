@@ -9,6 +9,9 @@
 #include "player.h"
 #include "gamerules.h"
 #include "grenade_frag.h"
+#if defined ( HUMANERROR_DLL )
+#include "Human_Error/grenade_smoke.h"
+#endif
 #include "npcevent.h"
 #include "engine/IEngineSound.h"
 #include "items.h"

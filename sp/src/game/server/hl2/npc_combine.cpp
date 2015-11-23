@@ -342,8 +342,11 @@ void CNPC_Combine::Spawn( void )
 	m_HackedGunPos = Vector ( 0, 0, 55 );
 
 	m_flStopMoveShootTime = FLT_MAX; // Move and shoot defaults on.
+#if defined ( HUMANERROR_DLL )
+	//m_MoveAndShootOverlay.SetInitialDelay( 0.75 ); // But with a bit of a delay. TERO: commented out because they are goodies now
+#else
 	m_MoveAndShootOverlay.SetInitialDelay( 0.75 ); // But with a bit of a delay.
-
+#endif
 	m_flNextLostSoundTime		= 0;
 	m_flAlertPatrolTime			= 0;
 

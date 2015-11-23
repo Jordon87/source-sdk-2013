@@ -125,6 +125,15 @@ ConceptInfo_t g_ConceptInfos[] =
 
 	// Passenger behaviour
 	{ TLK_PASSENGER_NEW_RADAR_CONTACT,		SPEECH_IMPORTANT,	-1,		-1,		-1,		-1,		-1,		-1,		AICF_DEFAULT,	},	
+
+#if defined ( HUMANERROR_DLL )
+	//Unique Metrocop -TERO
+	{	TLK_CP_MEDIC,				SPEECH_IMPORTANT,-1,	-1,		-1,		-1,		 -1,	-1,		AICF_DEFAULT,	},
+	{	TLK_CP_BEES,				SPEECH_IMPORTANT,-1,	-1,		-1,		-1,		 -1,	-1,		AICF_DEFAULT,	},
+	{	TLK_CP_RECHARGING,			SPEECH_IMPORTANT,-1,	-1,		-1,		-1,		 -1,	-1,		AICF_DEFAULT,	},
+	{	TLK_CP_RECHARGE,			SPEECH_IMPORTANT,-1,	-1,		-1,		-1,		 -1,	-1,		AICF_DEFAULT,	},
+	{	TLK_CP_GENERATOR_OFFLINE,	SPEECH_IMPORTANT,-1,	-1,		-1,		-1,		 -1,	-1,		AICF_DEFAULT,	},
+#endif
 };
 
 //-----------------------------------------------------------------------------

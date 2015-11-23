@@ -43,6 +43,10 @@ enum eyeState_t
 #define SF_FLOOR_TURRET_FASTRETIRE			0x00000080
 #define SF_FLOOR_TURRET_OUT_OF_AMMO			0x00000100
 #define SF_FLOOR_TURRET_CITIZEN				0x00000200	// Citizen modified turret
+#if defined ( HUMANERROR_DLL )
+#define SF_FLOOR_TURRET_BREAKABLE			0x00002000
+#define SF_FLOOR_TURRET_CAN_BE_CARRIED		0x00004000
+#endif
 
 class CTurretTipController;
 class CBeam;
@@ -57,6 +61,10 @@ class CNPC_FloorTurret : public CNPCBaseInteractive<CAI_BaseNPC>, public CDefaul
 public:
 
 	CNPC_FloorTurret( void );
+
+#if defined ( HUMANERROR_DLL )
+	static int		GetBreakableTurretHealth(void);
+#endif
 
 	virtual void	Precache( void );
 	virtual void	Spawn( void );
@@ -115,6 +123,15 @@ public:
 		return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE;
 	}
 
+#if defined( HUMANERROR_DLL )
+	//TERO:
+	bool CarryTurret(CBasePlayer *pPlayer);
+
+	bool CanBeCarried();
+
+	void CheckUseHold();
+#endif
+
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 	{
 		CBasePlayer *pPlayer = ToBasePlayer( pActivator );
@@ -131,6 +148,9 @@ public:
 	void	InputDepleteAmmo( inputdata_t &inputdata );
 	void	InputRestoreAmmo( inputdata_t &inputdata );
 	void	InputSelfDestruct( inputdata_t &inputdata );
+#if defined ( HUMANERROR_DLL )
+	void	InputMakeBreakable(inputdata_t &inputdata);
+#endif
 
 	virtual bool	IsValidEnemy( CBaseEntity *pEnemy );
 	bool			CanBeAnEnemyOf( CBaseEntity *pEnemy );
@@ -251,6 +271,11 @@ protected:
 
 	bool	m_bHackedByAlyx;
 	HSOUNDSCRIPTHANDLE			m_ShotSounds;
+	
+#if defined ( HUMANERROR_DLL )
+	//TERO: 
+	float	m_flCarryClickTime;
+#endif
 
 	DECLARE_DATADESC();
 	DEFINE_CUSTOM_AI;

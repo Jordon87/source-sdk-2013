@@ -425,6 +425,11 @@ void CNPC_CeilingTurret::Retire( void )
 			SetThink( &CNPC_CeilingTurret::SUB_DoNothing );
 		}
 	}
+
+#if defined ( HUMANERROR_DLL )
+	//TERO: added by me
+	StopSound("NPC_CeilingTurret.Alert");
+#endif
 }
 
 //-----------------------------------------------------------------------------

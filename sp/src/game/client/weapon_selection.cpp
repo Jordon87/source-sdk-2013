@@ -305,7 +305,11 @@ void CBaseHudWeaponSelection::UserCmd_Slot3(void)
 {
 	if( HUDTYPE_CAROUSEL == hud_fastswitch.GetInt() )
 	{
+#if defined ( HUMANERROR_CLIENT_DLL )
+		engine->ClientCmd( "stun_swap" );
+#else
 		engine->ClientCmd( "phys_swap" );
+#endif
 	}
 	else
 	{

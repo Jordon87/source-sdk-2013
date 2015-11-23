@@ -8,6 +8,9 @@
 #define WEAPON_ALYXGUN_H
 
 #include "basehlcombatweapon.h"
+#if defined ( HUMANERROR_DLL )
+#include "Human_Error/hlss_weapon_id.h"
+#endif
 
 #if defined( _WIN32 )
 #pragma once
@@ -23,6 +26,10 @@ public:
 	~CWeaponAlyxGun();
 
 	DECLARE_SERVERCLASS();
+
+#if defined ( HUMANERROR_DLL )
+	virtual const int		HLSS_GetWeaponId() { return HLSS_WEAPON_ID_ALYXGUN; }
+#endif
 	
 	void	Precache( void );
 
@@ -45,11 +52,19 @@ public:
 	void Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
 	void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 
+#if defined ( HUMANERROR_DLL )
+	/*virtual void SetPickupTouch( void )
+	{
+		// Alyx gun cannot be picked up
+		SetTouch(NULL);
+	}*/
+#else
 	virtual void SetPickupTouch( void )
 	{
 		// Alyx gun cannot be picked up
 		SetTouch(NULL);
 	}
+#endif
 
 	float m_flTooCloseTimer;
 

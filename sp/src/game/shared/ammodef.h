@@ -27,6 +27,11 @@ struct Ammo_t
 
 	int					nFlags;
 
+#if defined ( HUMANERROR_DLL ) || defined ( HUMANERROR_CLIENT_DLL )
+	wchar_t				m_Icon[2];
+	wchar_t				m_Title[16]; //TERO: used to be 12
+#endif
+
 	// Values for player/NPC damage and carrying capability
 	// If the integers are set, they override the CVars
 	int					pPlrDmg;		// CVar for player damage amount
@@ -83,14 +88,27 @@ public:
 	int					MaxSplashSize(int nAmmoIndex);
 	int					Flags(int nAmmoIndex);
 
+#if defined ( HUMANERROR_DLL ) || defined ( HUMANERROR_CLIENT_DLL )
+	void				AddAmmoType(char const* name, int damageType, int tracerType, int plr_dmg, int npc_dmg, int carry, float physicsForceImpulse, int nFlags, wchar_t *icon, wchar_t *AmmoTitle, int minSplashSize = 4, int maxSplashSize = 8 );
+	void				AddAmmoType(char const* name, int damageType, int tracerType, char const* plr_cvar, char const* npc_var, char const* carry_cvar, float physicsForceImpulse, int nFlags, wchar_t *icon, wchar_t *AmmoTitle, int minSplashSize = 4, int maxSplashSize = 8 );
+#else
 	void				AddAmmoType(char const* name, int damageType, int tracerType, int plr_dmg, int npc_dmg, int carry, float physicsForceImpulse, int nFlags, int minSplashSize = 4, int maxSplashSize = 8 );
 	void				AddAmmoType(char const* name, int damageType, int tracerType, char const* plr_cvar, char const* npc_var, char const* carry_cvar, float physicsForceImpulse, int nFlags, int minSplashSize = 4, int maxSplashSize = 8 );
+#endif
 
 	CAmmoDef(void);
 	virtual ~CAmmoDef( void );
 
+#if defined ( HUMANERROR_DLL ) || defined ( HUMANERROR_CLIENT_DLL )
+	//TERO: for the new ammo hud
+#endif
+
 private:
+#if defined ( HUMANERROR_DLL ) || defined ( HUMANERROR_CLIENT_DLL )
+	bool				AddAmmoType(char const* name, int damageType, int tracerType, int nFlags, int minSplashSize, int maxSplashSize, wchar_t *icon, wchar_t *AmmoTitle );
+#else
 	bool				AddAmmoType(char const* name, int damageType, int tracerType, int nFlags, int minSplashSize, int maxSplashSize );
+#endif
 };
 
 

@@ -28,6 +28,9 @@ public:
 	void SetShouldDisplayValue(bool state);
 	void SetShouldDisplaySecondaryValue(bool state);
 	void SetLabelText(const wchar_t *text);
+#if defined ( HUMANERROR_CLIENT_DLL )
+	void SetSecondaryLabelText(const wchar_t *text);
+#endif
 	void SetIndent(bool state);
 	void SetIsTime(bool state);
 
@@ -48,6 +51,9 @@ protected:
 	int m_iValue;
 	int m_iSecondaryValue;
 	wchar_t m_LabelText[32];
+#if defined ( HUMANERROR_CLIENT_DLL )
+	wchar_t m_SecondaryLabelText[32];
+#endif
 	bool m_bDisplayValue, m_bDisplaySecondaryValue;
 	bool m_bIndent;
 	bool m_bIsTime;
@@ -63,6 +69,10 @@ protected:
 
 	CPanelAnimationVarAliasType( float, text_xpos, "text_xpos", "8", "proportional_float" );
 	CPanelAnimationVarAliasType( float, text_ypos, "text_ypos", "20", "proportional_float" );
+#if defined ( HUMANERROR_CLIENT_DLL )
+	CPanelAnimationVarAliasType(float, text2_xpos, "text2_xpos", "128", "proportional_float");
+	CPanelAnimationVarAliasType(float, text2_ypos, "text2_ypos", "20", "proportional_float");
+#endif
 	CPanelAnimationVarAliasType( float, digit_xpos, "digit_xpos", "50", "proportional_float" );
 	CPanelAnimationVarAliasType( float, digit_ypos, "digit_ypos", "2", "proportional_float" );
 	CPanelAnimationVarAliasType( float, digit2_xpos, "digit2_xpos", "98", "proportional_float" );

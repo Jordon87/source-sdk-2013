@@ -32,6 +32,11 @@ public:
 	float			m_flNextScrambleSoundTime;
 	float			m_flNextNPCThink;
 
+#if defined ( HUMANERROR_DLL )
+	//copied from ai_playerally - TERO
+	float			m_flTimeLastRegen;
+#endif
+
 	// ------------------------------
 	//	Laser Beam
 	// ------------------------------
@@ -62,6 +67,11 @@ public:
 	// ------------------------------
 	CAI_Schedule*	WakeUp(void);
 	void			GoDormant(void);
+
+#if defined ( HUMANERROR_DLL )
+	//TERO: copied from Eli
+	void			SetupWithoutParent(void);
+#endif
 
 public:
 	void			Spawn( void );

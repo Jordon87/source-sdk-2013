@@ -16,6 +16,9 @@
 #include "Sprite.h"
 #include "npcevent.h"
 #include "beam_shared.h"
+#if defined ( HUMANERROR_DLL )
+#include "Human_Error/hlss_weapon_id.h"
+#endif
 
 class CWeaponRPG;
 class CLaserDot;
@@ -108,7 +111,9 @@ private:
 CBaseEntity *CreateLaserDot( const Vector &origin, CBaseEntity *pOwner, bool bVisibleDot );
 void SetLaserDotTarget( CBaseEntity *pLaserDot, CBaseEntity *pTarget );
 void EnableLaserDot( CBaseEntity *pLaserDot, bool bEnable );
-
+#if defined ( HUMANERROR_DLL )
+bool DoesLaserDotHaveTarget(CBaseEntity *pLaserDot);
+#endif
 
 //-----------------------------------------------------------------------------
 // Specialized mizzizzile
@@ -180,6 +185,10 @@ public:
 	DECLARE_SERVERCLASS();
 
 	void	Precache( void );
+
+#if defined ( HUMANERROR_DLL )
+	virtual const int		HLSS_GetWeaponId() { return HLSS_WEAPON_ID_RPG; }
+#endif
 
 	void	PrimaryAttack( void );
 	virtual float GetFireRate( void ) { return 1; };

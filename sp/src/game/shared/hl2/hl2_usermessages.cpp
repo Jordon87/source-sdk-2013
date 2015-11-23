@@ -46,6 +46,11 @@ void RegisterUserMessages( void )
 	usermessages->Register( "AchievementEvent", -1 );
 	usermessages->Register( "UpdateJalopyRadar", -1 );
 
+#if  defined ( HUMANERROR_DLL ) || defined ( HUMANERROR_CLIENT_DLL )
+	usermessages->Register("UpdateRadioDuration", sizeof(float));
+	usermessages->Register("UpdateAirDefenseRecharge", -1);
+#endif
+
 #ifndef _X360
 	// NVNT register haptic user messages
 	RegisterHapticMessages();

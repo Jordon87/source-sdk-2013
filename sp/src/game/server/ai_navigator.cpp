@@ -3205,6 +3205,56 @@ bool CAI_Navigator::SimplifyFlyPath(  const AI_ProgressFlyPathParams_t &params )
 	return false;
 }
 
+#if defined ( HUMANERROR_DLL )
+bool CAI_Navigator::SimplifyFlyPath(const AI_ProgressFlyPathParams_t &params, float flOffset)
+{
+	if ( !GetPath()->GetCurWaypoint() )
+		return false;
+
+	if ( m_flNextSimplifyTime > gpGlobals->curtime)
+		return false;
+
+	m_flNextSimplifyTime = gpGlobals->curtime + FLY_ROUTE_SIMPLIFY_TIME_DELAY;
+
+	if ( params.bTrySimplify && SimplifyPathForward( FLY_ROUTE_SIMPLIFY_LOOK_DIST ) )
+		return true;
+
+	//TERO: added
+	Vector vecOrigin = GetLocalOrigin() + Vector(0,0,flOffset);
+
+	// don't shorten path_corners
+	bool bIsStrictWaypoint = ( !params.bTrySimplify || ( (GetPath()->CurWaypointFlags() & (bits_WP_TO_PATHCORNER|bits_WP_DONT_SIMPLIFY) ) != 0 ) );
+
+	Vector dir = GetCurWaypointPos() - vecOrigin; //GetLocalOrigin();
+	float length = VectorNormalize( dir );
+	
+	if ( !bIsStrictWaypoint || length < params.strictPointTolerance )
+	{
+		// FIXME: This seems strange... Why should this condition ever be met?
+		// Don't advance your waypoint if you don't have one!
+		if (GetPath()->CurWaypointIsGoal())
+			return false;
+
+		AIMoveTrace_t moveTrace;
+		GetMoveProbe()->MoveLimit( NAV_FLY, vecOrigin, GetPath()->NextWaypointPos(),
+			params.collisionMask, params.pTarget, &moveTrace);
+		
+		if ( moveTrace.flDistObstructed - params.blockTolerance < 0.01 || 
+			 ( ( params.blockHandling == AISF_IGNORE) && ( moveTrace.fStatus == AIMR_BLOCKED_NPC ) ) )
+		{
+			AdvancePath();
+			return true;
+		}
+		else if ( moveTrace.pObstruction && params.blockHandling == AISF_AVOID )
+		{
+			PrependLocalAvoidance( params.blockTolerance - moveTrace.flDistObstructed, moveTrace );
+		}
+	}
+
+	return false;
+}
+#endif // HUMANERROR_DLL
+
 //-----------------------------------------------------------------------------
 // Purpose:
 // Input  :

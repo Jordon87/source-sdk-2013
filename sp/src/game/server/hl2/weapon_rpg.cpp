@@ -2257,6 +2257,14 @@ void EnableLaserDot( CBaseEntity *pLaserDot, bool bEnable )
 	}
 }
 
+#if defined ( HUMANERROR_DLL )
+bool DoesLaserDotHaveTarget(CBaseEntity *pLaserDot)
+{
+	CLaserDot *pDot = assert_cast< CLaserDot* >(pLaserDot);
+	return (pDot->GetTargetEntity() != NULL);
+}
+#endif
+
 CLaserDot::CLaserDot( void )
 {
 	m_hTargetEnt = NULL;

@@ -17,6 +17,9 @@
 #include "game.h"
 #include "vstdlib/random.h"
 #include "gamestats.h"
+#if defined ( HUMANERROR_DLL )
+#include "Human_Error/hlss_weapon_id.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -41,6 +44,10 @@ public:
 	DECLARE_CLASS( CWeaponPistol, CBaseHLCombatWeapon );
 
 	CWeaponPistol(void);
+
+#if defined ( HUMANERROR_DLL )
+	virtual const int		HLSS_GetWeaponId() { return HLSS_WEAPON_ID_PISTOL; }
+#endif
 
 	DECLARE_SERVERCLASS();
 

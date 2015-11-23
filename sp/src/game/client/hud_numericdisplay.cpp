@@ -85,6 +85,17 @@ void CHudNumericDisplay::SetLabelText(const wchar_t *text)
 	m_LabelText[(sizeof(m_LabelText) / sizeof(wchar_t)) - 1] = 0;
 }
 
+#if defined ( HUMANERROR_CLIENT_DLL )
+//-----------------------------------------------------------------------------
+// Purpose: data accessor
+//-----------------------------------------------------------------------------
+void CHudNumericDisplay::SetSecondaryLabelText(const wchar_t *text)
+{
+	wcsncpy(m_SecondaryLabelText, text, sizeof(m_SecondaryLabelText) / sizeof(wchar_t));
+	m_SecondaryLabelText[(sizeof(m_SecondaryLabelText) / sizeof(wchar_t)) - 1] = 0;
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: data accessor
 //-----------------------------------------------------------------------------
@@ -154,6 +165,16 @@ void CHudNumericDisplay::PaintLabel( void )
 	surface()->DrawSetTextColor(GetFgColor());
 	surface()->DrawSetTextPos(text_xpos, text_ypos);
 	surface()->DrawUnicodeString( m_LabelText );
+
+#if defined ( HUMANERROR_CLIENT_DLL )
+	if (m_SecondaryLabelText[0] != 0)
+	{
+		surface()->DrawSetTextFont(m_hTextFont);
+		surface()->DrawSetTextColor(GetFgColor());
+		surface()->DrawSetTextPos(text2_xpos, text2_ypos);
+		surface()->DrawUnicodeString(m_SecondaryLabelText);
+	}
+#endif
 }
 
 //-----------------------------------------------------------------------------

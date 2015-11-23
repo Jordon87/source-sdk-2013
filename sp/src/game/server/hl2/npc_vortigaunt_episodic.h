@@ -90,6 +90,11 @@ public:
 	virtual bool	CanBeUsedAsAFriend( void );
 	virtual bool	IsPlayerAlly( void ) { return true; }
 
+#if defined ( HUMANERROR_DLL )
+	//TERO: for breakable doors
+	bool	FVisible(CBaseEntity *pEntity, int traceMask = MASK_OPAQUE, CBaseEntity **ppBlocker = NULL);
+#endif
+
 	// Override these to set behavior
 	virtual int		TranslateSchedule( int scheduleType );
 	virtual int		SelectSchedule( void );
@@ -138,6 +143,11 @@ public:
 	// used so a grub can notify me that I stepped on it. Says a line.
 	void	OnSquishedGrub( const CBaseEntity *pGrub );
 
+#if defined ( HUMANERROR_DLL )
+	void	OpenPropDoorNow( CBasePropDoor *pDoor );
+	bool	OnInsufficientStopDist( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult );
+#endif
+
 private:
 
 	int		NumAntlionsInRadius( float flRadius );
@@ -167,6 +177,10 @@ private:
 		SCHED_VORTIGAUNT_DISPEL_ANTLIONS,
 		SCHED_VORT_FLEE_FROM_BEST_SOUND,
 		SCHED_VORT_ALERT_FACE_BESTSOUND,
+#if defined ( HUMANERROR_DLL )
+		SCHED_VORTIGAUNT_PRESS_ATTACK,
+		SCHED_VORTIGAUNT_BREAK_DOOR,
+#endif
 	};
 
 	//=========================================================
@@ -196,6 +210,9 @@ private:
 		COND_VORTIGAUNT_HEAL_TARGET_BEHIND_US,	// Not within our "forward" range
 		COND_VORTIGAUNT_HEAL_VALID,				// All conditions satisfied	
 		COND_VORTIGAUNT_DISPEL_ANTLIONS,		// Repulse all antlions around us
+#if defined ( HUMANERROR_DLL )
+		COND_VORTIGAUNT_CAN_BREAK_DOOR,
+#endif
 	};
 
 	// ------------
@@ -205,6 +222,9 @@ private:
 	void			ClearBeams( void );
 	void			ArmBeam( int beamType, int nHand );
 	void			ZapBeam( int nHand );
+#if defined ( HUMANERROR_DLL )
+	void			ZapPhysicsEntity(CBaseEntity *pEntity);
+#endif
 	int				m_nLightningSprite;
 
 	// ---------------
@@ -268,6 +288,11 @@ private:
 
 	// used for fading to black
 	CNetworkVar( bool, m_bIsBlack );
+
+#if defined ( HUMANERROR_DLL )
+	EHANDLE			m_hDoor;
+	float			m_flNextZapDoor;
+#endif
 
 public:
 	DECLARE_SERVERCLASS();

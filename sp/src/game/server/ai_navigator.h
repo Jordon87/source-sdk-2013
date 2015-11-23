@@ -419,6 +419,10 @@ public:
 										 float strictPointTolerance = 32.0, float blockTolerance = 0.0,
 										 AI_NpcBlockHandling_t blockHandling = AISF_BLOCK);
 	bool				SimplifyFlyPath(  const AI_ProgressFlyPathParams_t &params );
+
+#if defined ( HUMANERROR_DLL )
+	bool				SimplifyFlyPath(const AI_ProgressFlyPathParams_t &params, float flOffset);
+#endif
 	
 	bool				CanFitAtNode(int nodeNum, unsigned int collisionMask = MASK_NPCSOLID_BRUSHONLY); 
 	float				MovementCost( int moveType, Vector &vecStart, Vector &vecEnd );

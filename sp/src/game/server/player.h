@@ -510,6 +510,9 @@ public:
 	void					AddPoints( int score, bool bAllowNegativeScore );
 	void					AddPointsToTeam( int score, bool bAllowNegativeScore );
 	virtual bool			BumpWeapon( CBaseCombatWeapon *pWeapon );
+#if defined ( HUMANERROR_DLL )
+	int						GetPrimaryWeaponAmmoType(); //TERO: added for HE
+#endif
 	bool					RemovePlayerItem( CBaseCombatWeapon *pItem );
 	CBaseEntity				*HasNamedPlayerItem( const char *pszItemName );
 	bool 					HasWeapons( void );// do I have ANY weapons?
@@ -692,6 +695,9 @@ public:
 
 	void	SetArmorValue( int value );
 	void	IncrementArmorValue( int nCount, int nMaxValue = -1 );
+#if defined ( HUMANERROR_DLL )
+	void	DecrementArmorValue(int nCount);
+#endif
 
 	void	SetConnected( PlayerConnectedState iConnected ) { m_iConnected = iConnected; }
 	virtual void EquipSuit( bool bPlayEffects = true );
@@ -1204,6 +1210,15 @@ private:
 
 	CUtlLinkedList< CPlayerSimInfo >  m_vecPlayerSimInfo;
 	CUtlLinkedList< CPlayerCmdInfo >  m_vecPlayerCmdInfo;
+
+#if defined ( HUMANERROR_DLL )
+	//Human Error weapon bumping hints:
+	float	m_flNextWeaponDropHintTime;
+	int		m_iLastWeaponBumpSlot;
+
+public:
+	CBaseCombatWeapon *HLSS_GetWeaponToDrop();
+#endif
 
 	IntervalTimer m_weaponFiredTimer;
 

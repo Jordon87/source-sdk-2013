@@ -37,6 +37,9 @@
 #define SF_DOOR_IGNORE_USE			32768	// Completely ignores player +use commands.
 #define SF_DOOR_NEW_USE_RULES		65536	// For func_door entities, behave more like prop_door_rotating with respect to +USE (changelist 242482)
 
+#if defined (HUMANERROR_DLL )
+#define SF_BREAKABLE_BY_AGRUNTS	   131072	// HUMAN ERROR: Is this door breakable by Alien Grunts? 
+#endif
 
 enum FuncDoorSpawnPos_t
 {

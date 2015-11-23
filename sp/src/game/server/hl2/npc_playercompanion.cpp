@@ -287,6 +287,51 @@ bool CNPC_PlayerCompanion::ShouldAlwaysThink()
 	return ( BaseClass::ShouldAlwaysThink() || ( GetFollowBehavior().GetFollowTarget() && GetFollowBehavior().GetFollowTarget()->IsPlayer() ) ); 
 }
 
+#if defined ( HUMANERROR_DLL )
+//-----------------------------------------------------------------------------
+// TERO: I removed this so that citizens would attack turrets
+//-----------------------------------------------------------------------------
+/*Disposition_t CNPC_PlayerCompanion::IRelationType( CBaseEntity *pTarget )
+{
+	if ( !pTarget )
+		return D_NU;
+
+	Disposition_t baseRelationship = BaseClass::IRelationType( pTarget );
+
+	if ( baseRelationship != D_LI )
+	{
+		if ( IsTurret( pTarget ) )
+		{
+			// Citizens are afeared of turrets, so long as the turret
+			// is active... that is, not classifying itself as CLASS_NONE
+			if( pTarget->Classify() != CLASS_NONE )
+			{
+				if( !hl2_episodic.GetBool() && IsSafeFromFloorTurret(GetAbsOrigin(), pTarget) )
+				{
+					return D_NU;
+				}
+
+				return D_FR;
+			}
+		}
+		else if ( baseRelationship == D_HT && 
+				  pTarget->IsNPC() && 
+				  ((CAI_BaseNPC *)pTarget)->GetActiveWeapon() && 
+				  ((CAI_BaseNPC *)pTarget)->GetActiveWeapon()->ClassMatches( gm_iszShotgunClassname ) &&
+				  ( !GetActiveWeapon() || !GetActiveWeapon()->ClassMatches( gm_iszShotgunClassname ) ) )
+		{
+			if ( (pTarget->GetAbsOrigin() - GetAbsOrigin()).LengthSqr() < Square( 25 * 12 ) )
+			{
+				// Ignore enemies on the floor above us
+				if ( fabs(pTarget->GetAbsOrigin().z - GetAbsOrigin().z) < 100 )
+					return D_FR;
+			}
+		}
+	}
+
+	return baseRelationship;
+}*/
+#else
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 Disposition_t CNPC_PlayerCompanion::IRelationType( CBaseEntity *pTarget )
@@ -329,6 +374,7 @@ Disposition_t CNPC_PlayerCompanion::IRelationType( CBaseEntity *pTarget )
 
 	return baseRelationship;
 }
+#endif
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1378,6 +1424,74 @@ Activity CNPC_PlayerCompanion::NPC_TranslateActivity( Activity activity )
 
 	return TranslateActivityReadiness( activity );
 }
+
+#if defined ( HUMANERROR_DLL )
+void CNPC_PlayerCompanion::UpdateOnRemove()
+{
+	RemoveHat();
+
+	BaseClass::UpdateOnRemove();
+}
+
+void CNPC_PlayerCompanion::Event_Killed( const CTakeDamageInfo &info )
+{
+	if (m_hMinersHat)
+	{
+		Vector vecSpeed = info.GetDamageForce();
+
+		m_hMinersHat->SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
+		m_hMinersHat->SetAbsVelocity( vecSpeed );
+		m_hMinersHat->SetGravity( 1.0f );
+		m_hMinersHat->SetParent( NULL );
+		m_hMinersHat->Die(10.0f);
+		m_hMinersHat = NULL;
+	}
+
+	m_bMinersHat = false;
+
+	BaseClass::Event_Killed( info );
+}
+
+
+
+void CNPC_PlayerCompanion::RemoveHat() //, bool bRemoveOwner)
+{
+	if (m_hMinersHat)
+	{
+		m_hMinersHat->SetOwnerEntity( NULL );
+
+		UTIL_Remove( m_hMinersHat );
+		m_hMinersHat = NULL;
+	}
+
+	m_bMinersHat = false;
+}
+
+void CNPC_PlayerCompanion::AddHat()
+{
+	if (!m_hMinersHat)
+	{
+		int iHead = LookupAttachment("eyes");
+		Vector vecOrigin;
+		QAngle angAngles;
+		GetAttachment(iHead, vecOrigin, angAngles);
+
+		CHLSS_MinersHat *pHat = CHLSS_MinersHat::Create( vecOrigin, angAngles, NULL );
+
+		if (pHat)
+		{
+			//pFlare->SetAbsOrigin( vecOrigin - (vecForward * 6.0f) );
+			pHat->SetParent(this, iHead);	
+			pHat->m_bLight = true;
+
+			DispatchSpawn( pHat );
+
+			m_hMinersHat = pHat;
+		}
+	}
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 // Purpose: Handle animation events
@@ -2878,6 +2992,10 @@ bool CNPC_PlayerCompanion::OverrideMove( float flInterval )
 {
 	bool overrode = BaseClass::OverrideMove( flInterval );
 
+#if defined ( HUMANERROR_DLL )
+	bool isPlayerAlly = (Classify() == CLASS_METROPOLICE || Classify() == CLASS_PLAYER_ALLY || Classify() == CLASS_PLAYER_ALLY_VITAL);
+#endif
+
 	if ( !overrode && GetNavigator()->GetGoalType() != GOALTYPE_NONE )
 	{
 		string_t iszEnvFire = AllocPooledString( "env_fire" );
@@ -2918,7 +3036,11 @@ bool CNPC_PlayerCompanion::OverrideMove( float flInterval )
 				}
 			}
 #ifdef HL2_EPISODIC			
+#if defined ( HUMANERROR_DLL )
+			else if ( pEntity->m_iClassname == iszNPCTurretFloor && !isPlayerAlly )
+#else
 			else if ( pEntity->m_iClassname == iszNPCTurretFloor )
+#endif
 			{
 				UTIL_TraceLine( WorldSpaceCenter(), pEntity->WorldSpaceCenter(), MASK_BLOCKLOS, pEntity, COLLISION_GROUP_NONE, &tr );
 				if (tr.fraction == 1.0 && !tr.startsolid)
@@ -2946,7 +3068,11 @@ bool CNPC_PlayerCompanion::OverrideMove( float flInterval )
 			else if ( pEntity->m_iClassname == iszBounceBomb )
 			{
 				CBounceBomb *pBomb = static_cast<CBounceBomb *>(pEntity);
+#if defined ( HUMANERROR_DLL )
+				if ( pBomb && !isPlayerAlly && pBomb->IsAwake() )	//TERO: added is player ally check, used to be !pBomb->IsPlayerPlaced() 
+#else
 				if ( pBomb && !pBomb->IsPlayerPlaced() && pBomb->IsAwake() )
+#endif
 				{
 					UTIL_TraceLine( WorldSpaceCenter(), pEntity->WorldSpaceCenter(), MASK_BLOCKLOS, pEntity, COLLISION_GROUP_NONE, &tr );
 					if (tr.fraction == 1.0 && !tr.startsolid)

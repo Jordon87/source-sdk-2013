@@ -51,6 +51,11 @@
 #include "npc_alyx_episodic.h"
 #endif
 
+#if defined ( HUMANERROR_DLL )
+#include "ammodef.h"
+#include "weapon_stunstick.h"
+#endif
+
 #ifdef PORTAL
 #include "portal_player.h"
 #endif // PORTAL
@@ -160,9 +165,6 @@ bool g_bCacheLegacyFlashlightStatus = true;
 bool g_bUseLegacyFlashlight;
 bool Flashlight_UseLegacyVersion( void )
 {
-#if defined ( MOP_DLL )
-	return true;
-#else
 	// If this is the first run through, cache off what the answer should be (cannot change during a session)
 	if ( g_bCacheLegacyFlashlightStatus )
 	{
@@ -179,7 +181,6 @@ bool Flashlight_UseLegacyVersion( void )
 
 	// Return the results
 	return g_bUseLegacyFlashlight;
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -247,6 +248,34 @@ static ConCommand toggle_zoom("toggle_zoom", CC_ToggleZoom, "Toggles zoom displa
 // ConVar cl_forwardspeed( "cl_forwardspeed", "400", FCVAR_CHEAT ); // Links us to the client's version
 ConVar xc_crouch_range( "xc_crouch_range", "0.85", FCVAR_ARCHIVE, "Percentarge [1..0] of joystick range to allow ducking within" );	// Only 1/2 of the range is used
 ConVar xc_use_crouch_limiter( "xc_use_crouch_limiter", "0", FCVAR_ARCHIVE, "Use the crouch limiting logic on the controller" );
+
+#if defined ( HUMANERROR_DLL )
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//TERO: razvanadrian's tutorial for dropping weapons
+
+void CC_Player_Drop(void)
+{
+	CBasePlayer *pPlayer = NULL;
+	pPlayer = ToBasePlayer(UTIL_GetCommandClient());
+
+	if (!pPlayer)
+		return;
+
+	if (pPlayer->GetVehicle())
+		return;
+
+	CBaseCombatWeapon *pPlayerItem = pPlayer->HLSS_GetWeaponToDrop();
+
+	if (pPlayerItem && pPlayerItem->GetSlot() <= 2)
+	{
+		pPlayer->Weapon_Drop(pPlayerItem, NULL, NULL);
+	}
+
+	UTIL_HudHintText(pPlayer, "");
+}
+static ConCommand drop("drop", CC_Player_Drop, "Drop Player item");
+#endif
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -2594,6 +2623,44 @@ int CHL2_Player::GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound)
 	if (nAmmoIndex < 0)
 		return 0;
 
+#if defined ( HUMANERROR_DLL )
+	//TERO: added
+	bool bHaveWeaponThatUsesThisAmmoType = false;
+
+	//if (GetAmmoDef()->Index("AR2AltFire") == nAmmoIndex)
+
+	//TERO: Unless it's ammo for one of these weapons, it doesn't matter if we don't have the weapon.
+	//		For example, player should still be able to carry SMG1 Grenade ammo even though he doesn't have SMG1.
+	if ((GetAmmoDef()->Index("AR2") != nAmmoIndex) && 
+		(GetAmmoDef()->Index("SMG1") != nAmmoIndex) && 
+		(GetAmmoDef()->Index("Buckshot") != nAmmoIndex) &&
+		(GetAmmoDef()->Index("RPG_Round") != nAmmoIndex) &&
+		(GetAmmoDef()->Index("Pistol") != nAmmoIndex) &&
+		(GetAmmoDef()->Index("AlyxGun") != nAmmoIndex) &&
+		(GetAmmoDef()->Index("357") != nAmmoIndex))
+	{
+		bHaveWeaponThatUsesThisAmmoType = true;
+	}
+	else
+	{
+		for (int i=0; (i < WeaponCount() && !bHaveWeaponThatUsesThisAmmoType ); i++)
+		{
+			CBaseCombatWeapon *pSearch = GetWeapon( i );
+
+			if (pSearch && (pSearch->m_iPrimaryAmmoType == nAmmoIndex || pSearch->m_iSecondaryAmmoType == nAmmoIndex))
+			{
+				bHaveWeaponThatUsesThisAmmoType = true;
+			}
+		}
+	}
+
+	if (!bHaveWeaponThatUsesThisAmmoType)
+	{
+		return 0;
+	}
+	//TERO: hlss code ends here
+#endif
+
 	bool bCheckAutoSwitch = false;
 	if (!HasAnyAmmoOfType(nAmmoIndex))
 	{
@@ -2634,12 +2701,23 @@ int CHL2_Player::GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound)
 bool CHL2_Player::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 {
 #ifndef HL2MP	
+#if defined ( HUMANERROR_DLL )
+	/*	//TERO: if we already have stunstick, use other stunsticks for battery
+	if ( Weapon_OwnsThisType( "weapon_stunstick" ) &&  pWeapon->ClassMatches( "weapon_stunstick" ) )
+	{
+		DevMsg("has stunstick already");
+		if ( ApplyBattery( 0.5 ) )
+			UTIL_Remove( pWeapon );
+		return false;
+	}*/
+#else
 	if ( pWeapon->ClassMatches( "weapon_stunstick" ) )
 	{
 		if ( ApplyBattery( 0.5 ) )
 			UTIL_Remove( pWeapon );
 		return false;
 	}
+#endif
 #endif
 
 	return BaseClass::Weapon_CanUse( pWeapon );
@@ -2675,6 +2753,24 @@ void CHL2_Player::Weapon_Equip( CBaseCombatWeapon *pWeapon )
 //-----------------------------------------------------------------------------
 bool CHL2_Player::BumpWeapon( CBaseCombatWeapon *pWeapon )
 {
+#if defined ( HUMANERROR_DLL )
+	//TERO: HLSS thing
+	/*if ( Weapon_OwnsThisType( "weapon_stunstick" ) &&  
+		 pWeapon->ClassMatches( "weapon_stunstick" ) )
+	{
+		int iAmmoType = pWeapon->GetPrimaryAmmoType();
+		
+		if (GetAmmoCount( iAmmoType ) >= GetAmmoDef()->MaxCarry(iAmmoType))
+		{	 
+			if ( ApplyBattery( pWeapon->GetPrimaryAmmoCount() * 0.34 ) )
+			{
+				UTIL_Remove( pWeapon );
+				return false;
+			}
+		}
+	}*/
+
+#endif
 
 #if	HL2_SINGLE_PRIMARY_WEAPON_MODE
 

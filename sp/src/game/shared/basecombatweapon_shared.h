@@ -160,6 +160,13 @@ public:
 	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
+#if defined ( HUMANERROR_DLL ) || defined ( HUMANERROR_CLIENT_DLL )
+	//TERO: Added by moi
+	virtual bool			IsWeaponManhack() { return false; }
+	virtual bool			IsWeaponCamera() { return false; }
+	virtual const int		HLSS_GetWeaponId() { return 0; }
+#endif
+
 							CBaseCombatWeapon();
 	virtual 				~CBaseCombatWeapon();
 

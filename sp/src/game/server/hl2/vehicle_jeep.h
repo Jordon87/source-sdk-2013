@@ -119,6 +119,12 @@ private:
 	void		InputStartRemoveTauCannon( inputdata_t &inputdata );
 	void		InputFinishRemoveTauCannon( inputdata_t &inputdata );
 
+#if defined ( HUMANERROR_DLL )
+	//TERO: HLSS
+	void		InputForcePlayerIn(inputdata_t &inputdata);
+	void		InputForcePlayerOut(inputdata_t &inputdata);
+#endif
+
 protected:
 
 	virtual void HandleWater( void );

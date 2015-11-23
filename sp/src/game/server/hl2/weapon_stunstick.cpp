@@ -11,11 +11,29 @@
 #include "weapon_stunstick.h"
 #include "IEffects.h"
 
+#if defined ( HUMANERROR_DLL )
+#include "rumble_shared.h"
+#include "physics_prop_ragdoll.h"
+#include "RagdollBoogie.h"
+#include "gamestats.h"
+#include "ammodef.h"
+#endif
+
+#if defined ( STUNSTICK_IMPACT_EFFECT )
+#include "te_effect_dispatch.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 ConVar    sk_plr_dmg_stunstick	( "sk_plr_dmg_stunstick","0");
+#if defined ( HUMANERROR_DLL )
+ConVar    sk_plr_dmg_stunstick_nopower("sk_plr_dmg_stunstick_nopower", "0");
+#endif
 ConVar    sk_npc_dmg_stunstick	( "sk_npc_dmg_stunstick","0");
+#if defined ( HUMANERROR_DLL )
+ConVar	  hlss_stunstick_only_reduce_ammo_when_hit("hlss_stunstick_only_reduce_ammo_when_hit", "0");
+#endif
 
 extern ConVar metropolice_move_and_melee;
 
@@ -25,6 +43,9 @@ extern ConVar metropolice_move_and_melee;
 
 IMPLEMENT_SERVERCLASS_ST(CWeaponStunStick, DT_WeaponStunStick)
 	SendPropInt( SENDINFO( m_bActive ), 1, SPROP_UNSIGNED ),
+#if defined ( HUMANERROR_DLL )
+	SendPropBool(SENDINFO(m_bInSwing)),
+#endif
 END_SEND_TABLE()
 
 #ifndef HL2MP
@@ -44,6 +65,12 @@ IMPLEMENT_ACTTABLE(CWeaponStunStick);
 BEGIN_DATADESC( CWeaponStunStick )
 
 	DEFINE_FIELD( m_bActive, FIELD_BOOLEAN ),
+#if defined ( HUMANERROR_DLL )
+	DEFINE_FIELD( m_bInSwing,					FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_bHasPower,					FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_iStunstickHints,			FIELD_INTEGER ),
+	DEFINE_FIELD( m_iStunstickDepletedHints,	FIELD_INTEGER ),
+#endif
 
 END_DATADESC()
 
@@ -57,6 +84,12 @@ CWeaponStunStick::CWeaponStunStick( void )
 	// HACK:  Don't call SetStunState because this tried to Emit a sound before
 	//  any players are connected which is a bug
 	m_bActive = false;
+#if defined ( HUMANERROR_DLL )
+	m_bInSwing = false;
+	m_bHasPower = true;
+	m_iStunstickHints = 0;
+	m_iStunstickDepletedHints = 0;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -77,6 +110,17 @@ void CWeaponStunStick::Precache()
 	PrecacheScriptSound( "Weapon_StunStick.Activate" );
 	PrecacheScriptSound( "Weapon_StunStick.Deactivate" );
 
+#if defined ( HUMANERROR_DLL )
+	PrecacheScriptSound("Weapon_Crowbar.Melee_Hit");
+	PrecacheScriptSound("Weapon_Crowbar.Single");
+
+	PrecacheScriptSound("ItemBattery.Touch");
+#endif
+
+#if defined ( STUNSTICK_IMPACT_EFFECT )
+	PrecacheScriptSound("Weapon_StunStick.Melee_Hit");
+	PrecacheScriptSound("Weapon_StunStick.Melee_HitWorld");
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -86,8 +130,18 @@ void CWeaponStunStick::Precache()
 //-----------------------------------------------------------------------------
 float CWeaponStunStick::GetDamageForActivity( Activity hitActivity )
 {
+#if defined ( HUMANERROR_DLL )
+	if ( ( GetOwner() != NULL ) && ( GetOwner()->IsPlayer() ) )
+	{
+		if (m_bHasPower)
+			return sk_plr_dmg_stunstick.GetFloat();
+		else
+			return sk_plr_dmg_stunstick_nopower.GetFloat();
+	}
+#else
 	if ( ( GetOwner() != NULL ) && ( GetOwner()->IsPlayer() ) )
 		return sk_plr_dmg_stunstick.GetFloat();
+#endif
 	
 	return sk_npc_dmg_stunstick.GetFloat();
 }
@@ -179,6 +233,15 @@ void CWeaponStunStick::ImpactEffect( trace_t &traceHit )
 	
 	//FIXME: need new decals
 	UTIL_ImpactTrace( &traceHit, DMG_CLUB );
+
+#if defined ( STUNSTICK_IMPACT_EFFECT )
+	CEffectData	data;
+
+	data.m_vNormal = traceHit.plane.normal;
+	data.m_vOrigin = traceHit.endpos + (data.m_vNormal * 4.0f);
+
+	DispatchEffect("StunstickImpact", data);
+#endif
 }
 
 void CWeaponStunStick::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
@@ -308,6 +371,10 @@ void CWeaponStunStick::SetStunState( bool state )
 {
 	m_bActive = state;
 
+#if defined ( HUMANERROR_DLL )
+	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
+#endif
+
 	if ( m_bActive )
 	{
 		//FIXME: START - Move to client-side
@@ -319,12 +386,26 @@ void CWeaponStunStick::SetStunState( bool state )
 
 		//FIXME: END - Move to client-side
 
+#if defined ( HUMANERROR_DLL )
+		if (pOwner && pOwner->GetAmmoCount(m_iPrimaryAmmoType) > 0)
+		{
+			EmitSound( "Weapon_StunStick.Activate" );
+		}
+#else
 		EmitSound( "Weapon_StunStick.Activate" );
+#endif
 	}
+#if defined ( HUMANERROR_DLL )
+	else if (pOwner && pOwner->GetAmmoCount(m_iPrimaryAmmoType) > 0)
+	{
+		EmitSound( "Weapon_StunStick.Deactivate" );
+	}
+#else
 	else
 	{
 		EmitSound( "Weapon_StunStick.Deactivate" );
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -334,6 +415,18 @@ void CWeaponStunStick::SetStunState( bool state )
 bool CWeaponStunStick::Deploy( void )
 {
 	SetStunState( true );
+
+#if defined ( HUMANERROR_DLL )
+	if (m_iStunstickHints < 3)
+	{
+		CBasePlayer *pOwner = ToBasePlayer(GetOwner());
+		if (pOwner && (m_iStunstickHints <= 0 || pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 3))
+		{
+			m_iStunstickHints++;
+			UTIL_HudHintText(pOwner, "#HLSS_StunstickRecharge");
+		}
+	}
+#endif
 
 	return BaseClass::Deploy();
 }
@@ -346,10 +439,113 @@ bool CWeaponStunStick::Holster( CBaseCombatWeapon *pSwitchingTo )
 	if ( BaseClass::Holster( pSwitchingTo ) == false )
 		return false;
 
+#if defined ( HUMANERROR_DLL )
+	m_bInSwing = false;
+#endif
+
 	SetStunState( false );
 
 	return true;
 }
+
+#if defined ( HUMANERROR_DLL )
+void CWeaponStunStick::ItemPostFrame( void )
+{
+	int activity = GetActivity();
+
+	if ( m_bHasPower &&
+		(activity == GetPrimaryAttackActivity() || 
+		 activity == GetSecondaryAttackActivity() ||
+		 activity == ACT_VM_MISSCENTER ||
+		 activity == ACT_VM_MISSCENTER2 ))
+	{
+		m_bInSwing = true;
+	}
+	else
+	{
+		m_bInSwing = false;
+	}
+
+	BaseClass::ItemPostFrame();
+}
+
+void CWeaponStunStick::PrimaryAttack()
+{
+	Swing_StunStick();
+	BaseClass::PrimaryAttack();
+}
+
+void CWeaponStunStick::SecondaryAttack()
+{
+	CBasePlayer *pOwner  = ToBasePlayer( GetOwner() );
+	// Try a ray
+	if ( !pOwner )
+		return;
+
+	m_flNextSecondaryAttack = gpGlobals->curtime + 0.2f;
+
+	if (DecreamentEnergy( pOwner, true) )
+	{
+		EmitSound( "ItemBattery.Touch" );
+
+		m_iStunstickHints++;
+	}
+	else if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	{
+		//if (m_bHasPower && (m_iStunstickDepletedHints < 2))
+		if (!m_bHasPower && m_iStunstickDepletedHints < 2)
+		{
+			m_iStunstickDepletedHints++;
+			UTIL_HudHintText( pOwner , "#HLSS_StunstickDepleted" );
+		}
+
+		EmitSound("SuitRecharge.Deny");
+	}
+}
+
+bool CWeaponStunStick::DecreamentEnergy( CBasePlayer *pOwner, bool bTakeAmmo )
+{
+	int iCount = pOwner->GetAmmoCount(m_iPrimaryAmmoType);
+
+	if ( pOwner->ArmorValue() >= STUNSTICK_POWER_NEEDED && ( !bTakeAmmo || iCount < GetAmmoDef()->MaxCarry( m_iPrimaryAmmoType )))
+	{
+		pOwner->DecrementArmorValue( STUNSTICK_POWER_NEEDED );
+
+		if (bTakeAmmo)
+		{
+			pOwner->SetAmmoCount( iCount + 1, m_iPrimaryAmmoType );
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+void CWeaponStunStick::Swing_StunStick()
+{
+	//TERO: This used t obe here, moved to Hit so that
+	//		you would loose ammo only when hitting an NPC
+	CBasePlayer *pOwner  = ToBasePlayer( GetOwner() );
+	if ( !pOwner )
+		return;
+
+	if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) > 0)
+	{
+		m_bHasPower = true; 
+		//pOwner->RemoveAmmo( 1, m_iPrimaryAmmoType );
+	}
+	else 
+	{
+		if (!m_bHasPower && (m_iStunstickHints < 4))
+		{
+			UTIL_HudHintText( pOwner , "#HLSS_StunstickRecharge" );
+		}
+
+		m_bHasPower = false;
+	}
+}
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -357,6 +553,9 @@ bool CWeaponStunStick::Holster( CBaseCombatWeapon *pSwitchingTo )
 //-----------------------------------------------------------------------------
 void CWeaponStunStick::Drop( const Vector &vecVelocity )
 {
+#if defined ( HUMANERROR_DLL )
+	m_bInSwing = false;
+#endif
 	SetStunState( false );
 
 	BaseClass::Drop( vecVelocity );
@@ -370,3 +569,194 @@ bool CWeaponStunStick::GetStunState( void )
 {
 	return m_bActive;
 }
+
+#if defined ( HUMANERROR_DLL )
+//------------------------------------------------------------------------------
+// Purpose: Implement impact function
+//------------------------------------------------------------------------------
+void CWeaponStunStick::Hit( trace_t &traceHit, Activity nHitActivity, bool bIsSecondary )
+{
+	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	
+	//Do view kick
+	AddViewKick();
+
+	//Make sound for the AI
+	CSoundEnt::InsertSound( SOUND_BULLET_IMPACT, traceHit.endpos, 400, 0.2f, pPlayer );
+
+	// This isn't great, but it's something for when the crowbar hits.
+	pPlayer->RumbleEffect( RUMBLE_AR2, 0, RUMBLE_FLAG_RESTART );
+
+	CBaseEntity	*pHitEntity = traceHit.m_pEnt;
+
+	//Apply damage to a hit target
+	if ( pHitEntity != NULL )
+	{
+		if (hlss_stunstick_only_reduce_ammo_when_hit.GetBool())
+		{
+			if ( pHitEntity->IsNPC() || pHitEntity->IsPlayer() )
+			{	
+				CBasePlayer *pOwner  = ToBasePlayer( GetOwner() );
+
+				if (pOwner && (pOwner->IRelationType(pHitEntity) != D_LI))
+				{
+					if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) > 0)
+					{
+						pOwner->RemoveAmmo( 1, m_iPrimaryAmmoType );
+					}
+				}
+			}
+		}
+		else
+		{
+			CBasePlayer *pOwner  = ToBasePlayer( GetOwner() );
+
+			if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) > 0)
+			{
+				pOwner->RemoveAmmo( 1, m_iPrimaryAmmoType );
+			}
+		}
+
+
+		/*if (pHitEntity->MyNPCPointer())
+		{
+			DevMsg("weapon_stunstick: sum damage before hit %d\n", pHitEntity->MyNPCPointer()->SumDamage());
+		}*/
+
+		Vector hitDirection;
+		pPlayer->EyeVectors( &hitDirection, NULL, NULL );
+		VectorNormalize( hitDirection );
+
+		CTakeDamageInfo info( GetOwner(), GetOwner(), GetDamageForActivity( nHitActivity ), DMG_CLUB );
+
+		if( pPlayer && pHitEntity->IsNPC() )
+		{
+			// If bonking an NPC, adjust damage.
+			info.AdjustPlayerDamageInflictedForSkillLevel();
+		}
+
+		CalculateMeleeDamageForce( &info, hitDirection, traceHit.endpos );
+
+		pHitEntity->DispatchTraceAttack( info, hitDirection, &traceHit ); 
+		ApplyMultiDamage();
+
+		// Now hit all triggers along the ray that... 
+		TraceAttackToTriggers( info, traceHit.startpos, traceHit.endpos, hitDirection );
+
+		if ( ToBaseCombatCharacter( pHitEntity ) )
+		{
+			gamestats->Event_WeaponHit( pPlayer, !bIsSecondary, GetClassname(), info );
+		}
+
+		if ( m_bHasPower && pHitEntity->MyNPCPointer() && pHitEntity->MyNPCPointer()->CanBecomeRagdoll() && 
+			 CBaseCombatCharacter::GetDefaultRelationshipDispositionBetweenClasses( CLASS_PLAYER, pHitEntity->Classify() ) != D_LI )
+		{
+			if ( (pHitEntity->m_iHealth - pHitEntity->MyNPCPointer()->SumDamage()) < 1 )
+			{
+				
+
+				CBaseEntity *pRagdoll = CreateServerRagdoll( (CBaseAnimating *)pHitEntity, -1, info, COLLISION_GROUP_DEBRIS, true );
+				if ( pRagdoll )
+				{
+					DevMsg("creating ragdoll boogie\n");
+					CRagdollBoogie::Create( pRagdoll, 100, gpGlobals->curtime, 2.0f, SF_RAGDOLL_BOOGIE_ELECTRICAL );
+
+					CTakeDamageInfo infoFinalBlow( GetOwner(), GetOwner(), GetDamageForActivity( nHitActivity ), DMG_REMOVENORAGDOLL );
+					pHitEntity->AddEFlags( EFL_IS_BEING_LIFTED_BY_BARNACLE );
+
+					if (pHitEntity->m_lifeState == LIFE_ALIVE)
+					{
+						pHitEntity->MyNPCPointer()->Event_Killed( infoFinalBlow );
+					}
+
+					UTIL_Remove( pHitEntity );
+				}
+			}
+		}
+		/*else
+		{
+			CRagdollBoogie::Create( pHitEntity, 100, gpGlobals->curtime, 2.0f, SF_RAGDOLL_BOOGIE_ELECTRICAL );
+
+			if (pHitEntity->IsAlive())
+				DevMsg("weapon_stunstick: pHitEntity IsAlive(), health left: %d\n", pHitEntity->m_iHealth);
+			else
+				DevMsg("weapon_stunstick: pHitEntity not dead yet, health left: %d\n", pHitEntity->m_iHealth);
+
+			if (pHitEntity->MyNPCPointer())
+			{
+				DevMsg("weapon_stunstick: damagesum %f\n", pHitEntity->MyNPCPointer()->SumDamage());
+			}
+		}*/
+
+		//CRagdollBoogie::Create( pHitEntity, 100, gpGlobals->curtime, 2.0f, SF_RAGDOLL_BOOGIE_ELECTRICAL );
+	}
+
+	// Apply an impact effect
+	ImpactEffect( traceHit );
+
+	//m_bHasPower = false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : iIndex - 
+// Output : const char
+//-----------------------------------------------------------------------------
+const char *CWeaponStunStick::GetShootSound( int iIndex ) const
+{
+	if (!m_bHasPower)
+	{
+		// We override this if we're the charged up version
+		switch( iIndex )
+		{
+
+		case SINGLE:
+			return "Weapon_Crowbar.Single";
+			break;
+
+		case MELEE_HIT: 
+			return "Weapon_Crowbar.Melee_Hit";
+			break;
+
+		case MELEE_MISS:
+			return "";
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	return BaseClass::GetShootSound( iIndex );
+}
+#endif
+
+#if defined ( STUNSTICK_IMPACT_EFFECT )
+void CWeaponStunStick::AddViewKick(void)
+{
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
+
+	if (pPlayer == NULL)
+		return;
+
+	QAngle punchAng;
+
+	punchAng.x = random->RandomFloat(1.0f, 2.0f);
+	punchAng.y = random->RandomFloat(-2.0f, -1.0f);
+	punchAng.z = 0.0f;
+
+	pPlayer->ViewPunch(punchAng);
+}
+
+void CWeaponStunStick::MeleeHit(trace_t &trace)
+{
+	if (HasPower())
+		EmitSound( "Weapon_StunStick.Melee_Hit" );
+}
+
+void CWeaponStunStick::MeleeHitWorld(trace_t &trace)
+{
+	if (HasPower())
+		EmitSound("Weapon_StunStick.Melee_HitWorld");
+}
+#endif

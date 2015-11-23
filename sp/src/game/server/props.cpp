@@ -42,6 +42,10 @@
 #include "gamestats.h"
 #include "vehicle_base.h"
 
+#if defined ( HUMANERROR_DLL )
+#include "Human_Error/hlss_debris_maker.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -756,6 +760,11 @@ BEGIN_DATADESC( CBreakableProp )
 	DEFINE_FIELD( m_iNumBreakableChunks, FIELD_INTEGER ),
 	DEFINE_FIELD( m_nPhysgunState, FIELD_CHARACTER ),
 	DEFINE_KEYFIELD( m_iszPuntSound, FIELD_STRING, "puntsound" ),
+
+#if defined ( HUMANERROR_DLL )
+	//TERO
+	DEFINE_FIELD(m_iDontBreakIfMaxGibs, FIELD_INTEGER),
+#endif
 
 	DEFINE_KEYFIELD( m_flPressureDelay, FIELD_FLOAT, "PressureDelay" ),
 	DEFINE_FIELD( m_preferredCarryAngles, FIELD_VECTOR ),
@@ -4668,6 +4677,92 @@ enum PropDoorRotatingOpenDirection_e
 	DOOR_ROTATING_OPEN_BACKWARD,
 };
 
+#if defined ( HUMANERROR_DLL )
+
+//===============================================
+// HUMAN ERROR, BREAKABLE DOORS FOR GRUNTS - TERO
+//===============================================
+
+
+void CBasePropDoor::BreakDoors(Vector vecOrigin, AngularImpulse angImpulse)
+{
+	//TERO: only break friends if we are closed
+	if (IsDoorClosed())
+	{
+		if (GetMaster())
+		{
+			GetMaster()->BreakDoors(vecOrigin, angImpulse);
+			return;
+		}
+
+		CBasePropDoor *pTarget = NULL;
+		while ((pTarget = (CBasePropDoor*)gEntList.FindEntityByName(pTarget, m_SlaveName)) != NULL)
+		{
+			pTarget->BreakDoor(vecOrigin, angImpulse);
+		}
+	}
+
+	BreakDoor(vecOrigin, angImpulse);
+}
+
+void CBasePropDoor::BreakDoor(Vector vecOrigin, AngularImpulse angImpulse)
+{
+
+	//DevMsg("trying to create  physics prop");
+
+	// Try to create entity
+	CPhysicsProp *pProp = dynamic_cast< CPhysicsProp * >(CreateEntityByName("prop_physics"));
+	if (pProp)
+	{
+		char buf[512];
+		// Pass in standard key values
+		Q_snprintf(buf, sizeof(buf), "%.10f %.10f %.10f", GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z);
+		pProp->KeyValue("origin", buf);
+		Q_snprintf(buf, sizeof(buf), "%.10f %.10f %.10f", GetAbsAngles().x, GetAbsAngles().y, GetAbsAngles().z);
+		pProp->KeyValue("angles", buf);
+		pProp->KeyValue("model", STRING(GetModelName()));
+		pProp->KeyValue("fademindist", "-1");
+		pProp->KeyValue("fademaxdist", "0");
+		pProp->KeyValue("fadescale", "1");
+		pProp->KeyValue("inertiaScale", "1.0");
+		pProp->KeyValue("physdamagescale", "0.1");
+
+		pProp->Precache();
+		DispatchSpawn(pProp);
+		pProp->m_nSkin = m_nSkin;
+		pProp->SetBodygroup(1, GetBodygroup(1));
+		pProp->Activate();
+
+		IPhysicsObject *pPhysObj = pProp->VPhysicsGetObject();
+
+		if (pPhysObj)
+		{
+			Vector v = WorldSpaceCenter() - vecOrigin;
+			VectorNormalize(v);
+
+			// Send the object at 800 in/sec toward the enemy.  Add 200 in/sec up velocity to keep it
+			// in the air for a second or so.
+			v = v * 1000;
+			v.z += 100;
+
+			pPhysObj->AddVelocity(&v, &angImpulse);
+		}
+
+		//TERO: since interactive debris doesn't allow collision with player, I needed to code this crap
+		//pProp->SetCollisionGroup( COLLISION_GROUP_INTERACTIVE_DEBRIS );
+		//TERO: the door should become debris after a time
+		CHLSS_Debris_Maker::Create(pProp);
+
+		m_OnOpen.FireOutput(this, this);
+
+		RemoveSpawnFlags(SF_BREAKABLE_BY_AGRUNTS);
+
+
+		UTIL_Remove(this);
+	}
+}
+#endif
+
 //===============================================
 // Rotating prop door
 //===============================================
@@ -4829,6 +4924,14 @@ void CPropDoorRotating::Spawn()
 	// Figure out our volumes of movement as this door opens
 	CalculateDoorVolume( GetLocalAngles(), m_angRotationOpenForward, &m_vecForwardBoundsMin, &m_vecForwardBoundsMax );
 	CalculateDoorVolume( GetLocalAngles(), m_angRotationOpenBack, &m_vecBackBoundsMin, &m_vecBackBoundsMax );
+
+#if defined ( HUMANERROR_DLL )
+	//TERO: we want the vortigaunts to see through these doors
+	/*if (HasSpawnFlags( SF_BREAKABLE_BY_AGRUNTS ))
+	{
+	SetBlocksLOS( false );
+	}*/
+#endif
 }
 
 //-----------------------------------------------------------------------------

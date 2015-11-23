@@ -174,6 +174,17 @@ void CBaseHLBludgeonWeapon::Hit( trace_t &traceHit, Activity nHitActivity, bool 
 		{
 			gamestats->Event_WeaponHit( pPlayer, !bIsSecondary, GetClassname(), info );
 		}
+
+#if defined ( STUNSTICK_IMPACT_EFFECT )
+		if (!pHitEntity->IsWorld())
+		{
+			MeleeHit(traceHit);
+		}
+		else
+		{
+			MeleeHitWorld(traceHit);
+		}
+#endif
 	}
 
 	// Apply an impact effect
@@ -354,6 +365,16 @@ void CBaseHLBludgeonWeapon::Swing( int bIsSecondary )
 
 	gamestats->Event_WeaponFired( pOwner, !bIsSecondary, GetClassname() );
 
+#if defined ( STUNSTICK_IMPACT_EFFECT )
+	bool isWeaponStunstick = FClassnameIs(this, "weapon_stunstick");
+
+	if (isWeaponStunstick)
+	{
+		//Play swing sound
+		WeaponSound(SINGLE);
+	}
+#endif
+
 	// -------------------------
 	//	Miss
 	// -------------------------
@@ -379,6 +400,14 @@ void CBaseHLBludgeonWeapon::Swing( int bIsSecondary )
 	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
 	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
 
+#if defined ( STUNSTICK_IMPACT_EFFECT )
+	if (!isWeaponStunstick)
+	{
+		//Play swing sound
+		WeaponSound(SINGLE);
+	}
+#else
 	//Play swing sound
 	WeaponSound( SINGLE );
+#endif
 }

@@ -16,6 +16,10 @@
 #include "ai_behavior_lead.h"
 #include "ai_behavior_actbusy.h"
 #include "ai_behavior_fear.h"
+#if defined ( HUMANERROR_DLL )
+#include "weapon_flaregun.h"
+#include "Human_Error/hlss_minershat.h"
+#endif
 
 #ifdef HL2_EPISODIC
 #include "ai_behavior_operator.h"
@@ -109,7 +113,11 @@ public:
 	int 			ObjectCaps();
 	bool 			ShouldAlwaysThink();
 
+#if defined ( HUMANERROR_DLL )
+	//Disposition_t	IRelationType( CBaseEntity *pTarget );	//TERO: removed by me
+#else
 	Disposition_t	IRelationType( CBaseEntity *pTarget );
+#endif
 	
 	bool			IsSilentSquadMember() const;
 
@@ -333,13 +341,20 @@ protected:
 		NEXT_TASK,
 	};
 
+#if defined ( HUMANERROR_DLL )
+public:
+	bool			m_bMovingAwayFromPlayer;	//TERO: I made this public... I am not sure if it's a bad thing...
+#endif
+
 private:
 	void SetupCoverSearch( CBaseEntity *pEntity );
 	void CleanupCoverSearch();
 
 	//-----------------------------------------------------
 	
+#if !defined ( HUMANERROR_DLL )
 	bool			m_bMovingAwayFromPlayer;
+#endif
 	bool			m_bWeightPathsInCover;
 
 	enum eCoverType
@@ -356,6 +371,19 @@ private:
 
 	// Derived classes should not use the expresser directly
 	virtual CAI_Expresser *GetExpresser()	{ return BaseClass::GetExpresser(); }
+
+#if defined ( HUMANERROR_DLL )
+public:
+	bool						m_bMinersHat;
+	CHandle<CHLSS_MinersHat>	m_hMinersHat;
+
+	void					AddHat();
+	void					RemoveHat();
+
+	//virtual void			OnRestore();
+	virtual void			UpdateOnRemove();
+	virtual void			Event_Killed( const CTakeDamageInfo &info );
+#endif
 
 protected:
 	//-----------------------------------------------------

@@ -50,4 +50,11 @@ extern ConVar r_AirboatViewDampenFreq;
 extern ConVar r_AirboatViewDampenDamp;
 extern ConVar r_AirboatViewZHeight;
 
+#if defined ( HUMANERROR_DLL ) || defined  ( HUMANERROR_CLIENT_DLL )
+// Manhack convars
+extern ConVar r_ManhackViewDampenFreq;
+extern ConVar r_ManhackViewDampenDamp;
+extern ConVar r_ManhackViewZHeight;
+#endif
+
 #endif // MOVEVARS_SHARED_H

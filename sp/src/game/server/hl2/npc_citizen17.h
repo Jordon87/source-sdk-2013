@@ -61,6 +61,11 @@ enum CitizenExpressionTypes_t
 	CIT_EXP_LAST_TYPE,
 };
 
+#if defined ( HUMANERROR_DLL )
+//TERO: blindness in smoke enabled, yay
+#define CITIZEN_MAKE_BLIND_IN_SMOKE 
+#endif
+
 //-------------------------------------
 
 class CNPC_Citizen : public CNPC_PlayerCompanion
@@ -104,6 +109,9 @@ public:
 	void 			GatherConditions();
 	void			PredictPlayerPush();
 	void 			PrescheduleThink();
+#if defined ( HUMANERROR_DLL )
+	bool			ShouldMoveAndShoot();
+#endif
 	void			BuildScheduleTestBits();
 
 	bool			FInViewCone( CBaseEntity *pEntity );
@@ -111,12 +119,26 @@ public:
 	int				SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
 	int				SelectSchedule();
 
+#if defined ( HUMANERROR_DLL )
+	void			PainSound(const CTakeDamageInfo &info);
+
+	//TERO: this one because of ice cream truck
+	//bool			OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval );
+
+
+	//TERO:			added from playtest sessions with Cukel
+	virtual float	GetReactionDelay(CBaseEntity *pEnemy);
+#endif
+
 	int 			SelectSchedulePriorityAction();
 	int 			SelectScheduleHeal();
 	int 			SelectScheduleRetrieveItem();
 	int 			SelectScheduleNonCombat();
 	int 			SelectScheduleManhackCombat();
 	int 			SelectScheduleCombat();
+#if defined ( HUMANERROR_DLL )
+	int				SelectIceCreamTruckSchedule();
+#endif
 	bool			ShouldDeferToFollowBehavior();
 	int 			TranslateSchedule( int scheduleType );
 
@@ -140,6 +162,11 @@ public:
 
 	virtual const char *SelectRandomExpressionForState( NPC_STATE state );
 
+#if defined ( HUMANERROR_DLL )
+	//void			CalculateIKLocks( float currentTime );
+	//void			UpdateStepOrigin();
+#endif
+
 	//---------------------------------
 	// Combat
 	//---------------------------------
@@ -156,12 +183,16 @@ public:
 
 	bool			ShouldLookForBetterWeapon();
 
+#if defined ( HUMANERROR_DLL )
+	WeaponProficiency_t CalcWeaponProficiency(CBaseCombatWeapon *pWeapon);
+#endif
 
 	//---------------------------------
 	// Damage handling
 	//---------------------------------
 	int 			OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	
+#if !defined ( HUMANERROR_DLL )
 	//---------------------------------
 	// Commander mode
 	//---------------------------------
@@ -195,7 +226,8 @@ public:
 	void			AddInsignia();
 	void			RemoveInsignia();
 	bool			SpeakCommandResponse( AIConcept_t concept, const char *modifiers = NULL );
-	
+#endif // !defined ( HUMANERROR_DLL )
+
 	//---------------------------------
 	// Scanner interaction
 	//---------------------------------
@@ -231,7 +263,11 @@ public:
 	//---------------------------------
 	// Inputs
 	//---------------------------------
+#if defined(HUMANERROR_DLL)
+	void			InputReturnNormalMovement( inputdata_t &inputdata );
+#else
 	void			InputRemoveFromPlayerSquad( inputdata_t &inputdata ) { RemoveFromPlayerSquad(); }
+#endif
 	void 			InputStartPatrolling( inputdata_t &inputdata );
 	void 			InputStopPatrolling( inputdata_t &inputdata );
 	void			InputSetCommandable( inputdata_t &inputdata );
@@ -250,6 +286,27 @@ public:
 
 	virtual void	OnChangeRunningBehavior( CAI_BehaviorBase *pOldBehavior,  CAI_BehaviorBase *pNewBehavior );
 
+#if defined ( HUMANERROR_DLL )
+	//---------------------------------
+	//	Human Error specific
+	//---------------------------------
+
+public:
+
+	void			RunAwayFromSmoke(CBaseEntity *pSmokeGrenade);
+	bool			ShouldRunAwayFromSmoke(void);
+
+private:
+
+	EHANDLE			m_hSmokeGrenade;
+
+#ifdef CITIZEN_MAKE_BLIND_IN_SMOKE
+	bool			m_bIsBlind;
+#endif
+
+	void			MakeBlind(bool bBlind);
+#endif
+
 private:
 	//-----------------------------------------------------
 	// Conditions, Schedules, Tasks
@@ -260,6 +317,9 @@ private:
 		COND_CIT_COMMANDHEAL,
 		COND_CIT_HURTBYFIRE,
 		COND_CIT_START_INSPECTION,
+#if defined ( HUMANERROR_DLL )
+		COND_CIT_CAN_HAVE_MOLOTOV,
+#endif
 		
 		SCHED_CITIZEN_PLAY_INSPECT_ACTIVITY = BaseClass::NEXT_SCHEDULE,
 		SCHED_CITIZEN_HEAL,
@@ -271,6 +331,9 @@ private:
 #ifdef HL2_EPISODIC
 		SCHED_CITIZEN_HEAL_TOSS,
 #endif
+#if defined ( HUMANERROR_DLL )
+		SCHED_CITIZEN_THROW_MOLOTOV,		//TERO: HLSS
+#endif
 		
 		TASK_CIT_HEAL = BaseClass::NEXT_TASK,
 		TASK_CIT_RPG_AUGER,
@@ -278,6 +341,9 @@ private:
 		TASK_CIT_SIT_ON_TRAIN,
 		TASK_CIT_LEAVE_TRAIN,
 		TASK_CIT_SPEAK_MOURNING,
+#if defined ( HUMANERROR_DLL )
+		TASK_CIT_FACE_THROW_TARGET,
+#endif // defined ( HUMANERROR_DLL )
 #ifdef HL2_EPISODIC
 		TASK_CIT_HEAL_TOSS,
 #endif
@@ -293,11 +359,14 @@ private:
 	float			m_flPlayerHealTime;
 	float			m_flNextHealthSearchTime; // Next time I'm allowed to look for a healthkit
 	float			m_flAllyHealTime;
+#if !defined ( HUMANERROR_DLL )
 	float			m_flPlayerGiveAmmoTime;
 	string_t		m_iszAmmoSupply;
 	int				m_iAmmoAmount;
 	bool			m_bRPGAvoidPlayer;
+#endif // !defined ( HUMANERROR_DLL )
 	bool			m_bShouldPatrol;
+#if !defined ( HUMANERROR_DLL )
 	string_t		m_iszOriginalSquad;
 	float			m_flTimeJoinedPlayerSquad;
 	bool			m_bWasInPlayerSquad;
@@ -306,7 +375,7 @@ private:
 
 	CSimpleSimTimer	m_AutoSummonTimer;
 	Vector			m_vAutoSummonAnchor;
-
+#endif // !defined ( HUMANERROR_DLL )
 	CitizenType_t	m_Type;
 	CitizenExpressionTypes_t	m_ExpressionType;
 
@@ -335,6 +404,42 @@ private:
 	bool					m_bNotifyNavFailBlocked;
 	bool					m_bNeverLeavePlayerSquad; // Don't leave the player squad unless killed, or removed via Entity I/O. 
 	
+#if defined(HUMANERROR_DLL)
+	//-----------------------------------------------------
+	//TERO: some special behavior stuff here
+	//-----------------------------------------------------
+
+	float					m_flStopMoveShootTime;
+
+	bool					m_bParentedToTruck;
+
+	int						m_iNumberMolotovCocktails;
+	float					m_flNextMolotovCocktail;
+	//float					m_flTimeHasHadMolotov;
+	Vector					m_vecTossVelocity;
+
+	//void					ChangeToMolotov();
+
+	/*	bool					m_bFlare;
+	//CHandle<CFlare>			m_hChestFlare;
+	CHandle<CPhysicsProp>	m_hChestFlare;
+
+	void					StopFlare(float flTime);
+	void					StartFlare(float flTime);*/
+
+public:
+
+	//	void					UpdateOnRemove();
+	//	void					Event_Killed( const CTakeDamageInfo &info );
+
+	void					GiveWeapon(string_t iszWeaponName);
+
+	//int					RangeAttack2Conditions( float flDot, float flDist );
+	void					MolotovThrowCondition();
+
+private:
+#endif
+
 	//-----------------------------------------------------
 	
 	DECLARE_DATADESC();
@@ -344,6 +449,7 @@ protected:
 	DEFINE_CUSTOM_AI;
 };
 
+#if !defined(HUMANERROR_DLL)
 //---------------------------------------------------------
 //---------------------------------------------------------
 inline bool CNPC_Citizen::NearCommandGoal()
@@ -359,7 +465,7 @@ inline bool CNPC_Citizen::VeryFarFromCommandGoal()
 	const float flDistSqr = (12*50) * (12*50);
 	return ( ( GetAbsOrigin() - GetCommandGoal() ).LengthSqr() > flDistSqr );
 }
-
+#endif // !defined ( HUMANERROR_DLL )
 
 
 //==============================================================================
