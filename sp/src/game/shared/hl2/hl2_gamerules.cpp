@@ -1775,6 +1775,7 @@ bool CHalfLife2::ShouldBurningPropsEmitLight()
 // Global functions.
 // ------------------------------------------------------------------------------------ //
 
+#if !defined ( TRIAGE_DLL ) && !defined ( TRIAGE_CLIENT_DLL )
 #ifndef HL2MP
 #ifndef PORTAL
 
@@ -1787,7 +1788,6 @@ bool CHalfLife2::ShouldBurningPropsEmitLight()
 #define BULLET_IMPULSE_EXAGGERATION			3.5
 // convert a velocity in ft/sec and a mass in grains to an impulse in kg in/s
 #define BULLET_IMPULSE(grains, ftpersec)	((ftpersec)*12*BULLET_MASS_GRAINS_TO_KG(grains)*BULLET_IMPULSE_EXAGGERATION)
-
 
 CAmmoDef *GetAmmoDef()
 {
@@ -1878,3 +1878,4 @@ CAmmoDef *GetAmmoDef()
 
 #endif
 #endif
+#endif // !defined ( TRIAGE_DLL ) && !defined ( TRIAGE_CLIENT_DLL )

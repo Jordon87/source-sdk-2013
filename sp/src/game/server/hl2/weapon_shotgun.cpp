@@ -31,7 +31,9 @@ class CWeaponShotgun : public CBaseHLCombatWeapon
 public:
 	DECLARE_CLASS( CWeaponShotgun, CBaseHLCombatWeapon );
 
+#if !defined ( TRIAGE_DLL )
 	DECLARE_SERVERCLASS();
+#endif
 
 private:
 	bool	m_bNeedPump;		// When emptied completely
@@ -88,10 +90,12 @@ public:
 	CWeaponShotgun(void);
 };
 
+#if !defined ( TRIAGE_DLL )
 IMPLEMENT_SERVERCLASS_ST(CWeaponShotgun, DT_WeaponShotgun)
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_shotgun, CWeaponShotgun );
+#endif
 PRECACHE_WEAPON_REGISTER(weapon_shotgun);
 
 BEGIN_DATADESC( CWeaponShotgun )

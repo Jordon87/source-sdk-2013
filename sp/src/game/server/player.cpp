@@ -6151,6 +6151,13 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 #ifdef HL2_EPISODIC
 		GiveAmmo( 5,	"Hopwire" );
 #endif		
+#if defined (TRIAGE_DLL)
+		// Additional ammunition.
+		GiveAmmo(255, "Ak47");
+		GiveAmmo(255, "Birdshot");
+		GiveAmmo(255, "BirdshotBlank");
+#endif
+
 		GiveNamedItem( "weapon_smg1" );
 		GiveNamedItem( "weapon_frag" );
 		GiveNamedItem( "weapon_crowbar" );
@@ -6165,6 +6172,16 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 #ifdef HL2_EPISODIC
 		// GiveNamedItem( "weapon_magnade" );
 #endif
+#if defined (TRIAGE_DLL)
+		// Additional weapons.
+		GiveNamedItem("weapon_ak47");
+		GiveNamedItem("weapon_ak47_s");
+		GiveNamedItem("weapon_huntingshotgun");
+		GiveNamedItem("weapon_pistol_t");
+		GiveNamedItem("weapon_pistol_t_s");
+		GiveNamedItem("weapon_smg1_s");
+#endif
+
 		if ( GetHealth() < 100 )
 		{
 			TakeHealth( 25, DMG_GENERIC );

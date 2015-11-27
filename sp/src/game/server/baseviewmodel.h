@@ -12,6 +12,10 @@
 #pragma once
 #endif
 
+#if defined ( TRIAGE_DLL )
+#include "triage_baseviewmodel.h"
+#else
 #include "baseviewmodel_shared.h"
+#endif
 
 #endif // BASEVIEWMODEL_H

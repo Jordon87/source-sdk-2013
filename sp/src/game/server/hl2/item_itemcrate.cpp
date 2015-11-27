@@ -66,8 +66,30 @@ private:
 	COutputEvent m_OnCacheInteraction;
 };
 
+#if defined ( TRIAGE_DLL )
+class CTriage_Item_ItemCrate : public CItem_ItemCrate
+{
+public:
 
+	virtual void OnPhysGunPickup(CBasePlayer *pPhysGunUser, PhysGunPickup_t reason);
+};
+
+void CTriage_Item_ItemCrate::OnPhysGunPickup(CBasePlayer *pPhysGunUser, PhysGunPickup_t reason)
+{
+	BaseClass::OnPhysGunPickup(pPhysGunUser, reason);
+
+	if (reason != PICKED_UP_BY_PLAYER || !pPhysGunUser || pPhysGunUser->GetActiveWeapon())
+		return;
+
+	// if we have no weapons, break the crate.
+	CTakeDamageInfo info(pPhysGunUser, pPhysGunUser, GetHealth(), DMG_GENERIC);
+	Break(pPhysGunUser, info);
+}
+
+LINK_ENTITY_TO_CLASS(item_item_crate, CTriage_Item_ItemCrate);
+#else
 LINK_ENTITY_TO_CLASS(item_item_crate, CItem_ItemCrate);
+#endif
 
 
 //-----------------------------------------------------------------------------

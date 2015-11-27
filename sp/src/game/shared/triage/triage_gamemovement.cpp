@@ -1,0 +1,108 @@
+//========= Copyright Valve Corporation, All rights reserved. ============//
+//
+// Purpose: Triage game movement
+//
+//=============================================================================//
+#include "cbase.h"
+#include "triage_gamemovement.h"
+#include "in_buttons.h"
+#include "utlrbtree.h"
+#include "hl2_shareddefs.h"
+
+// memdbgon must be the last include file in a .cpp file!!!
+#include "tier0/memdbgon.h"
+
+ConVar cl_viewbob_enabled("cl_viewbob_enabled", "1", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+
+ConVar cl_viewbob_amplitude_x_min("cl_viewbob_amplitude_x_min", "0.03", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_x_max("cl_viewbob_amplitude_x_max", "0.04", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_y_min("cl_viewbob_amplitude_y_min", "0.03", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_y_max("cl_viewbob_amplitude_y_max", "0.04", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_z_min("cl_viewbob_amplitude_z_min", "0.05", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_z_max("cl_viewbob_amplitude_z_max", "0.06", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+
+ConVar cl_viewbob_frequency_min("cl_viewbob_frequency_min", "10.0", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_frequency_max("cl_viewbob_frequency_max", "12.0", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+
+ConVar cl_viewbob_roll_min("cl_viewbob_roll_min", "0.1", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_roll_max("cl_viewbob_roll_max", "0.15", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+
+void CTriageGameMovement::WalkMove(void)
+{
+	BaseClass::WalkMove();
+
+	if (ShouldCalcViewbob())
+		CalcViewbob();
+}
+
+bool CTriageGameMovement::ShouldCalcViewbob(void) const
+{
+#if defined ( CLIENT_DLL )
+	if (engine->IsPaused())
+		return false;
+#endif
+	// Do not calculate if no player.
+	if (!player)
+		return false;
+
+	// Do not calculate if the player is in the air.
+	if (!(player->GetFlags() & FL_ONGROUND))
+		return false;
+
+	// Do not calculate if the player is not moving.
+	if (player->GetAbsVelocity().Length2D() <= 0)
+		return false;
+
+	return cl_viewbob_enabled.GetBool();
+}
+
+void CTriageGameMovement::CalcViewbob(void)
+{
+	float speed = player->GetAbsVelocity().Length2D();
+	float maxspeed = mv->m_flClientMaxSpeed;
+
+	Assert(maxspeed != 0.0f);
+
+	float speedprop = speed / maxspeed;
+
+	float pitch, yaw, roll;
+
+	pitch = yaw = roll = 0.0f;
+
+	QAngle angles;
+	angles.Init();
+
+	if ((mv->m_nButtons & IN_MOVELEFT) || (mv->m_nButtons & IN_MOVERIGHT))
+	{
+		roll = RemapValClamped(speedprop, 0, 1, cl_viewbob_roll_min.GetFloat(), cl_viewbob_roll_max.GetFloat());
+
+		roll = (mv->m_nButtons & IN_MOVERIGHT) ? roll : -roll;
+	}
+	else if ((mv->m_nButtons & IN_FORWARD) || (mv->m_nButtons & IN_BACK))
+	{
+		float amplitude_x, amplitude_y, amplitude_z, frequency;
+
+		amplitude_x = RemapValClamped(speedprop, 0, 1, cl_viewbob_amplitude_x_min.GetFloat(), cl_viewbob_amplitude_x_max.GetFloat());
+		amplitude_y = RemapValClamped(speedprop, 0, 1, cl_viewbob_amplitude_y_min.GetFloat(), cl_viewbob_amplitude_y_max.GetFloat());
+		amplitude_z = RemapValClamped(speedprop, 0, 1, cl_viewbob_amplitude_z_min.GetFloat(), cl_viewbob_amplitude_z_max.GetFloat());
+		frequency = RemapValClamped(speedprop, 0, 1, cl_viewbob_frequency_min.GetFloat(), cl_viewbob_frequency_max.GetFloat());
+
+		pitch = sin(gpGlobals->curtime * frequency) * amplitude_x;
+		yaw = sin(gpGlobals->curtime * frequency) * amplitude_y;
+		roll = sin(gpGlobals->curtime * frequency) * amplitude_z;
+	}
+
+	angles.x = pitch;
+	angles.y = yaw;
+	angles.z = roll;
+
+	player->ViewPunch(angles);
+}
+
+#if defined ( TRIAGE_DLL ) || defined ( TRIAGE_CLIENT_DLL ) 
+	// Expose our interface.
+	static CTriageGameMovement g_GameMovement;
+	IGameMovement *g_pGameMovement = ( IGameMovement * )&g_GameMovement;
+
+	EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CGameMovement, IGameMovement,INTERFACENAME_GAMEMOVEMENT, g_GameMovement );
+#endif

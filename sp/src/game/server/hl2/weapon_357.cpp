@@ -39,16 +39,21 @@ public:
 
 	float	WeaponAutoAimScale()	{ return 0.6f; }
 
+#if !defined ( TRIAGE_DLL )
 	DECLARE_SERVERCLASS();
+#endif
 	DECLARE_DATADESC();
 };
 
+#if !defined ( TRIAGE_DLL )
 LINK_ENTITY_TO_CLASS( weapon_357, CWeapon357 );
-
+#endif
 PRECACHE_WEAPON_REGISTER( weapon_357 );
 
+#if !defined ( TRIAGE_DLL )
 IMPLEMENT_SERVERCLASS_ST( CWeapon357, DT_Weapon357 )
 END_SEND_TABLE()
+#endif
 
 BEGIN_DATADESC( CWeapon357 )
 END_DATADESC()

@@ -48,6 +48,7 @@ ConVar rpg_missle_use_custom_detonators( "rpg_missle_use_custom_detonators", "1"
 
 const char *g_pLaserDotThink = "LaserThinkContext";
 
+#if !defined ( TRIAGE_DLL )
 //-----------------------------------------------------------------------------
 // Laser Dot
 //-----------------------------------------------------------------------------
@@ -88,6 +89,7 @@ protected:
 public:
 	CLaserDot			*m_pNext;
 };
+#endif // !defined ( TRIAGE_DLL )
 
 // a list of laser dots to search quickly
 CEntityClassList<CLaserDot> g_LaserDotList;
@@ -1386,10 +1388,12 @@ BEGIN_DATADESC( CWeaponRPG )
 
 END_DATADESC()
 
+#if !defined ( TRIAGE_DLL )
 IMPLEMENT_SERVERCLASS_ST(CWeaponRPG, DT_WeaponRPG)
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_rpg, CWeaponRPG );
+#endif
 PRECACHE_WEAPON_REGISTER(weapon_rpg);
 
 acttable_t	CWeaponRPG::m_acttable[] = 

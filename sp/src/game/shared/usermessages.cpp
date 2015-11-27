@@ -12,6 +12,9 @@
 #include "tier0/memdbgon.h"
 
 void RegisterUserMessages( void );
+#if defined ( TRIAGE_DLL ) || defined ( TRIAGE_CLIENT_DLL )
+void RegisterTriageUserMessages( void );
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Force registration on .dll load
@@ -21,6 +24,10 @@ CUserMessages::CUserMessages()
 {
 	// Game specific registration function;
 	RegisterUserMessages();
+
+#if defined ( TRIAGE_DLL ) || defined ( TRIAGE_CLIENT_DLL )
+	RegisterTriageUserMessages();
+#endif
 }
 
 CUserMessages::~CUserMessages()

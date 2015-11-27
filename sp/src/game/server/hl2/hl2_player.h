@@ -140,7 +140,11 @@ public:
 	void SetFlashlightEnabled( bool bState );
 
 	// Apply a battery
+#if defined ( TRIAGE_DLL )
+	virtual bool ApplyBattery( float powerMultiplier = 1.0 );
+#else
 	bool ApplyBattery( float powerMultiplier = 1.0 );
+#endif
 
 	// Commander Mode for controller NPCs
 	enum CommanderCommand_t
@@ -164,8 +168,13 @@ public:
 
 	// Sprint Device
 	void StartAutoSprint( void );
+#if defined ( TRIAGE_DLL )
+	virtual void StartSprinting( void );
+	virtual void StopSprinting(void);
+#else
 	void StartSprinting( void );
-	void StopSprinting( void );
+	void StopSprinting(void);
+#endif
 	void InitSprinting( void );
 	bool IsSprinting( void ) { return m_fIsSprinting; }
 	bool CanSprint( void );

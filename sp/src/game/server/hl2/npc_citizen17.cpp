@@ -47,7 +47,11 @@
 extern ConVar sk_healthkit;
 extern ConVar sk_healthvial;
 
+#if defined ( TRIAGE_DLL )
+const int MAX_PLAYER_SQUAD = 32;
+#else
 const int MAX_PLAYER_SQUAD = 4;
+#endif
 
 ConVar	sk_citizen_health				( "sk_citizen_health",					"0");
 ConVar	sk_citizen_heal_player			( "sk_citizen_heal_player",				"25");

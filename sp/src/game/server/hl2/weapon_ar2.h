@@ -24,7 +24,9 @@ public:
 
 	CWeaponAR2();
 
+#if !defined ( TRIAGE_DLL )
 	DECLARE_SERVERCLASS();
+#endif
 
 	void	ItemPostFrame( void );
 	void	Precache( void );

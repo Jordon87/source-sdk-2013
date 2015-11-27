@@ -1142,7 +1142,7 @@ bool CHL2GameMovement::CanAccelerate()
 	return true;
 }
 
-
+#if !defined ( TRIAGE_DLL ) && !defined ( TRIAGE_CLIENT_DLL )
 #ifndef PORTAL	// Portal inherits from this but needs to declare it's own global interface
 	// Expose our interface.
 	static CHL2GameMovement g_GameMovement;
@@ -1150,3 +1150,4 @@ bool CHL2GameMovement::CanAccelerate()
 
 	EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CGameMovement, IGameMovement,INTERFACENAME_GAMEMOVEMENT, g_GameMovement );
 #endif
+#endif // !defined ( TRIAGE_DLL ) && !defined ( TRIAGE_CLIENT_DLL )

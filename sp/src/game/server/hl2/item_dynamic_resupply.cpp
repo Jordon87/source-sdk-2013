@@ -603,7 +603,11 @@ void CItem_DynamicResupply::SpawnDynamicItem( CBasePlayer *pPlayer )
 	ComputeAmmoRatios( pMaster, pPlayer, iDebug, pAmmoInfo );
 
 	Vector vecSpawnOrigin = GetAbsOrigin();
+#if defined ( TRIAGE_DLL )
+	bool bHealthSpawned = true;
+#else
 	bool bHealthSpawned = SpawnItemFromRatio( NUM_HEALTH_ITEMS, g_DynamicResupplyHealthItems, iDebug, pHealthInfo, &vecSpawnOrigin );
+#endif
 	bool bAmmoSpawned = SpawnItemFromRatio( NUM_AMMO_ITEMS, g_DynamicResupplyAmmoItems, iDebug, pAmmoInfo, &vecSpawnOrigin );
 	if ( !bHealthSpawned && !bAmmoSpawned )
 	{

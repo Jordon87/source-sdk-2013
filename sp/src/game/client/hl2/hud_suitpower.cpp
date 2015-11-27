@@ -60,6 +60,9 @@ void CHudSuitPower::Reset( void )
 //-----------------------------------------------------------------------------
 bool CHudSuitPower::ShouldDraw()
 {
+#if defined (TRIAGE_CLIENT_DLL )
+	return false;
+#else
 	bool bNeedsDraw = false;
 
 	C_BaseHLPlayer *pPlayer = (C_BaseHLPlayer *)C_BasePlayer::GetLocalPlayer();
@@ -70,6 +73,7 @@ bool CHudSuitPower::ShouldDraw()
 	bNeedsDraw = ( ( pPlayer->m_HL2Local.m_flSuitPower != m_flSuitPower ) || ( m_AuxPowerColor[3] > 0 ) );
 
 	return ( bNeedsDraw && CHudElement::ShouldDraw() );
+#endif
 }
 
 //-----------------------------------------------------------------------------

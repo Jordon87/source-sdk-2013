@@ -31,7 +31,9 @@ public:
 
 	CWeaponSMG1();
 
+#if !defined ( TRIAGE_DLL )
 	DECLARE_SERVERCLASS();
+#endif
 	
 	void	Precache( void );
 	void	AddViewKick( void );
@@ -68,10 +70,12 @@ protected:
 	float	m_flNextGrenadeCheck;
 };
 
+#if !defined ( TRIAGE_DLL )
 IMPLEMENT_SERVERCLASS_ST(CWeaponSMG1, DT_WeaponSMG1)
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_smg1, CWeaponSMG1 );
+#endif
 PRECACHE_WEAPON_REGISTER(weapon_smg1);
 
 BEGIN_DATADESC( CWeaponSMG1 )

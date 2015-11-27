@@ -26,7 +26,9 @@ class CWeaponBugBait : public CBaseHLCombatWeapon
 	DECLARE_CLASS( CWeaponBugBait, CBaseHLCombatWeapon );
 public:
 
+#if !defined ( TRIAGE_DLL )
 	DECLARE_SERVERCLASS();
+#endif
 
 	CWeaponBugBait( void );
 
@@ -67,10 +69,12 @@ protected:
 	EHANDLE		m_hSporeTrail;
 };
 
+#if !defined ( TRIAGE_DLL )
 IMPLEMENT_SERVERCLASS_ST(CWeaponBugBait, DT_WeaponBugBait)
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_bugbait, CWeaponBugBait );
+#endif
 #ifndef HL2MP
 PRECACHE_WEAPON_REGISTER( weapon_bugbait );
 #endif

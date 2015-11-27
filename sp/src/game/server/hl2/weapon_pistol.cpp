@@ -41,8 +41,9 @@ public:
 	DECLARE_CLASS( CWeaponPistol, CBaseHLCombatWeapon );
 
 	CWeaponPistol(void);
-
+#if !defined ( TRIAGE_DLL )
 	DECLARE_SERVERCLASS();
+#endif
 
 	void	Precache( void );
 	void	ItemPostFrame( void );
@@ -113,11 +114,12 @@ private:
 	int		m_nNumShotsFired;
 };
 
-
+#if !defined ( TRIAGE_DLL )
 IMPLEMENT_SERVERCLASS_ST(CWeaponPistol, DT_WeaponPistol)
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_pistol, CWeaponPistol );
+#endif
 PRECACHE_WEAPON_REGISTER( weapon_pistol );
 
 BEGIN_DATADESC( CWeaponPistol )

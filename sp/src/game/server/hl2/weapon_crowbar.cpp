@@ -29,11 +29,15 @@ ConVar    sk_npc_dmg_crowbar		( "sk_npc_dmg_crowbar","0");
 // CWeaponCrowbar
 //-----------------------------------------------------------------------------
 
+#if !defined ( TRIAGE_DLL )
 IMPLEMENT_SERVERCLASS_ST(CWeaponCrowbar, DT_WeaponCrowbar)
 END_SEND_TABLE()
+#endif
 
 #ifndef HL2MP
+#if !defined ( TRIAGE_DLL )
 LINK_ENTITY_TO_CLASS( weapon_crowbar, CWeaponCrowbar );
+#endif
 PRECACHE_WEAPON_REGISTER( weapon_crowbar );
 #endif
 

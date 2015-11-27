@@ -3713,6 +3713,62 @@ void CNPC_AttackHelicopter::Event_Killed( const CTakeDamageInfo &info )
 {
 	if( m_lifeState == LIFE_ALIVE )
 	{
+#if defined ( TRIAGE_DLL )
+		//
+		// BUG Fix:
+		//
+		// Since an RPG was added to prevent players from not being
+		// able to complete the level due to malfunctioning AI, we
+		// remove this RPG if the player is carrying it. This will
+		// bring back game balance, as RPG was never meant to be
+		// used in this section.
+		//
+		// NOTE: This algorithm will only work on first map.
+		//
+		if (FStrEq(STRING(gpGlobals->mapname), "chapter1a"))
+		{
+			CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
+
+			// Only search for a weapon if the player has weapons.
+			if (pPlayer && pPlayer->WeaponCount() > 0)
+			{
+				// Get currently held weapon.
+				CBaseCombatWeapon* pWeapon = pPlayer->GetActiveWeapon();
+
+				Assert(pWeapon);
+
+				const char* szRPGClassname = "weapon_rpg";
+
+				// If the player's current weapon differs from RPG,
+				// begin searching through all weapons.
+				if (!FClassnameIs(pWeapon, szRPGClassname))
+				{
+					bool foundRPG = false;
+
+					// Search for RPG weapon.
+					for (int i = 0; i < pPlayer->WeaponCount() && !foundRPG; i++)
+					{
+						pWeapon = pPlayer->GetWeapon(i);
+
+						if (!pWeapon)
+							continue;
+
+						// if the weapon classname matches, stop searching.
+						if (FClassnameIs(pWeapon, szRPGClassname))
+							foundRPG = true;
+					}
+				}
+
+				// If player has RPG, remove it.
+				if (pWeapon)
+				{
+					pPlayer->Weapon_Drop(pWeapon, NULL, NULL);
+					UTIL_Remove(pWeapon);
+				}
+			}
+		}
+#endif
+
 		m_OnShotDown.FireOutput( this, this );
 	}
 

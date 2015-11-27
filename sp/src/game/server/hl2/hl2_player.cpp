@@ -71,7 +71,11 @@ extern ConVar autoaim_max_dist;
 #define PLAYER_HULL_REDUCTION	0.70
 
 // This switches between the single primary weapon, and multiple weapons with buckets approach (jdw)
+#if defined ( TRIAGE_DLL )
+#define	HL2_SINGLE_PRIMARY_WEAPON_MODE	1
+#else
 #define	HL2_SINGLE_PRIMARY_WEAPON_MODE	0
+#endif
 
 #define TIME_IGNORE_FALL_DAMAGE 10.0
 
@@ -160,9 +164,6 @@ bool g_bCacheLegacyFlashlightStatus = true;
 bool g_bUseLegacyFlashlight;
 bool Flashlight_UseLegacyVersion( void )
 {
-#if defined ( MOP_DLL )
-	return true;
-#else
 	// If this is the first run through, cache off what the answer should be (cannot change during a session)
 	if ( g_bCacheLegacyFlashlightStatus )
 	{
@@ -179,7 +180,6 @@ bool Flashlight_UseLegacyVersion( void )
 
 	// Return the results
 	return g_bUseLegacyFlashlight;
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -295,11 +295,13 @@ void CC_ToggleDuck( void )
 
 static ConCommand toggle_duck("toggle_duck", CC_ToggleDuck, "Toggles duck" );
 
+#if !defined(TRIAGE_DLL)
 #ifndef HL2MP
 #ifndef PORTAL
 LINK_ENTITY_TO_CLASS( player, CHL2_Player );
 #endif
 #endif
+#endif // !defined(TRIAGE_DLL)
 
 PRECACHE_REGISTER(player);
 
@@ -2658,6 +2660,25 @@ void CHL2_Player::Weapon_Equip( CBaseCombatWeapon *pWeapon )
 		Weapon_DropSlot( WEAPON_PRIMARY_SLOT );
 	}
 
+#if defined ( TRIAGE_DLL )
+	else if (pWeapon->GetSlot() == WEAPON_SECONDARY_SLOT)
+	{
+		Weapon_DropSlot(WEAPON_SECONDARY_SLOT);
+	}
+	else if (pWeapon->GetSlot() == WEAPON_MELEE_SLOT)
+	{
+		Weapon_DropSlot(WEAPON_MELEE_SLOT);
+	}
+	else if (pWeapon->GetSlot() == WEAPON_EXPLOSIVE_SLOT)
+	{
+		Weapon_DropSlot(WEAPON_EXPLOSIVE_SLOT);
+	}
+	else if (pWeapon->GetSlot() == WEAPON_TOOL_SLOT)
+	{
+		Weapon_DropSlot(WEAPON_TOOL_SLOT);
+	}
+#endif
+
 #endif
 
 	if( GetActiveWeapon() == NULL )
@@ -2715,7 +2736,11 @@ bool CHL2_Player::BumpWeapon( CBaseCombatWeapon *pWeapon )
 		//Make sure we're not trying to take a new weapon type we already have
 		if ( Weapon_SlotOccupied( pWeapon ) )
 		{
+#if defined ( TRIAGE_DLL )
+			CBaseCombatWeapon *pActiveWeapon = Weapon_GetSlot( pWeapon->GetSlot() );
+#else
 			CBaseCombatWeapon *pActiveWeapon = Weapon_GetSlot( WEAPON_PRIMARY_SLOT );
+#endif
 
 			if ( pActiveWeapon != NULL && pActiveWeapon->HasAnyAmmo() == false && Weapon_CanSwitchTo( pWeapon ) )
 			{
@@ -2891,11 +2916,24 @@ void CHL2_Player::PlayerUse ( void )
 				{
 					Weapon_EquipAmmoOnly( pWeapon );
 				}
+#if defined ( TRIAGE_DLL )
+				else
+				{
+					Assert( GetActiveWeapon() );
+
+					if (GetActiveWeapon()->GetSlot() == pWeapon->GetSlot())
+					{
+						Weapon_DropSlot(pWeapon->GetSlot());
+						Weapon_Equip(pWeapon);
+					}
+				}
+#else
 				else
 				{
 					Weapon_DropSlot( pWeapon->GetSlot() );
 					Weapon_Equip( pWeapon );
 				}
+#endif
 
 				usedSomething = true;
 			}

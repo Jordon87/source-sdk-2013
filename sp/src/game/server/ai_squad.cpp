@@ -657,6 +657,10 @@ void CAI_Squad::UpdateEnemyMemory( CAI_BaseNPC *pUpdater, CBaseEntity *pEnemy, c
 	//Broadcast to all members of the squad
 	for ( int i = 0; i < m_SquadMembers.Count(); i++ )
 	{
+#if defined ( TRIAGE_DLL )
+		if (!m_SquadMembers[i])
+			continue;
+#endif
 		if ( m_SquadMembers[i] != pUpdater )
 		{
 			m_SquadMembers[i]->UpdateEnemyMemory( pEnemy, position, pUpdater );

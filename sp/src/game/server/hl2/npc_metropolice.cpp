@@ -160,7 +160,9 @@ int ACT_MELEE_ATTACK_THRUST;
 int ACT_ACTIVATE_BATON;
 int ACT_DEACTIVATE_BATON;
  
+#if !defined ( TRIAGE_DLL )
 LINK_ENTITY_TO_CLASS( npc_metropolice, CNPC_MetroPolice );
+#endif
 
 BEGIN_DATADESC( CNPC_MetroPolice )
 

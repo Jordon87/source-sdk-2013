@@ -28,8 +28,9 @@ class CWeaponCrowbar : public CBaseHLBludgeonWeapon
 {
 public:
 	DECLARE_CLASS( CWeaponCrowbar, CBaseHLBludgeonWeapon );
-
+#if !defined ( TRIAGE_DLL )
 	DECLARE_SERVERCLASS();
+#endif
 	DECLARE_ACTTABLE();
 
 	CWeaponCrowbar();

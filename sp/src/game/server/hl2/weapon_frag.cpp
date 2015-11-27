@@ -34,7 +34,9 @@ class CWeaponFrag: public CBaseHLCombatWeapon
 {
 	DECLARE_CLASS( CWeaponFrag, CBaseHLCombatWeapon );
 public:
+#if !defined ( TRIAGE_DLL )
 	DECLARE_SERVERCLASS();
+#endif
 
 public:
 	CWeaponFrag();
@@ -86,10 +88,12 @@ acttable_t	CWeaponFrag::m_acttable[] =
 
 IMPLEMENT_ACTTABLE(CWeaponFrag);
 
+#if !defined ( TRIAGE_DLL )
 IMPLEMENT_SERVERCLASS_ST(CWeaponFrag, DT_WeaponFrag)
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_frag, CWeaponFrag );
+#endif
 PRECACHE_WEAPON_REGISTER(weapon_frag);
 
 

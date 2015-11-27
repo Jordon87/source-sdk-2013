@@ -24,6 +24,9 @@
 #include "rumble_shared.h"
 #include "gamestats.h"
 #include "decals.h"
+#if defined ( TRIAGE_DLL )
+#include "weapon_crossbow.h"
+#endif
 
 #ifdef PORTAL
 	#include "portal_util_shared.h"
@@ -35,14 +38,17 @@
 //#define BOLT_MODEL			"models/crossbow_bolt.mdl"
 #define BOLT_MODEL	"models/weapons/w_missile_closed.mdl"
 
+#if !defined ( TRIAGE_DLL )
 #define BOLT_AIR_VELOCITY	2500
 #define BOLT_WATER_VELOCITY	1500
+#endif // !defined ( TRIAGE_DLL )
 
 extern ConVar sk_plr_dmg_crossbow;
 extern ConVar sk_npc_dmg_crossbow;
 
 void TE_StickyBolt( IRecipientFilter& filter, float delay,	Vector vecDirection, const Vector *origin );
 
+#if !defined ( TRIAGE_DLL )
 #define	BOLT_SKIN_NORMAL	0
 #define BOLT_SKIN_GLOW		1
 
@@ -78,6 +84,8 @@ protected:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 };
+#endif // !defined ( TRIAGE_DLL )
+
 LINK_ENTITY_TO_CLASS( crossbow_bolt, CCrossbowBolt );
 
 BEGIN_DATADESC( CCrossbowBolt )
@@ -442,8 +450,9 @@ public:
 	
 	bool	ShouldDisplayHUDHint() { return true; }
 
-
+#if !defined ( TRIAGE_DLL )
 	DECLARE_SERVERCLASS();
+#endif
 	DECLARE_DATADESC();
 
 private:
@@ -478,12 +487,16 @@ private:
 	bool				m_bMustReload;
 };
 
+#if !defined ( TRIAGE_DLL )
 LINK_ENTITY_TO_CLASS( weapon_crossbow, CWeaponCrossbow );
+#endif
 
 PRECACHE_WEAPON_REGISTER( weapon_crossbow );
 
+#if !defined ( TRIAGE_DLL )
 IMPLEMENT_SERVERCLASS_ST( CWeaponCrossbow, DT_WeaponCrossbow )
 END_SEND_TABLE()
+#endif
 
 BEGIN_DATADESC( CWeaponCrossbow )
 
