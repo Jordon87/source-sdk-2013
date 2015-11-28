@@ -183,11 +183,11 @@ void C1187MainMenu::OnCommand(const char *command)
 	}
 	else if (!Q_stricmp(command, "1187_mainmenu_options"))
 	{
-		engine->ClientCmd("gamemenucommand OpenOptionsDialog");
+		engine->ClientCmd("show1187gamesettings");
 	}
 	else if (!Q_stricmp(command, "1187_mainmenu_settings"))
 	{
-		engine->ClientCmd("show1187gamesettings");
+		engine->ClientCmd("gamemenucommand OpenOptionsDialog");
 	}
 	else if (!Q_stricmp(command, "1187_mainmenu_bonusmaps"))
 	{

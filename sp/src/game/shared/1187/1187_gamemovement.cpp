@@ -18,8 +18,12 @@
 
 ConVar cl_viewbob_enabled("cl_viewbob_enabled", "1", FCVAR_CLIENTDLL | FCVAR_CHEAT);
 
-ConVar cl_viewbob_amplitude_min("cl_viewbob_amplitude_min", "0.01", FCVAR_CLIENTDLL | FCVAR_CHEAT);
-ConVar cl_viewbob_amplitude_max("cl_viewbob_amplitude_max", "0.02", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_x_min("cl_viewbob_amplitude_x_min", "0.03", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_x_max("cl_viewbob_amplitude_x_max", "0.04", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_y_min("cl_viewbob_amplitude_y_min", "0.0", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_y_max("cl_viewbob_amplitude_y_max", "0.01", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_z_min("cl_viewbob_amplitude_z_min", "0.05", FCVAR_CLIENTDLL | FCVAR_CHEAT);
+ConVar cl_viewbob_amplitude_z_max("cl_viewbob_amplitude_z_max", "0.06", FCVAR_CLIENTDLL | FCVAR_CHEAT);
 
 ConVar cl_viewbob_frequency_min("cl_viewbob_frequency_min", "10.0", FCVAR_CLIENTDLL | FCVAR_CHEAT);
 ConVar cl_viewbob_frequency_max("cl_viewbob_frequency_max", "12.0", FCVAR_CLIENTDLL | FCVAR_CHEAT);
@@ -112,12 +116,16 @@ void C1187GameMovement::CalcViewbob(void)
 	}
 	else if ((mv->m_nButtons & IN_FORWARD) || (mv->m_nButtons & IN_BACK))
 	{
-		float amplitude, frequency;
+		float amplitude_x, amplitude_y, amplitude_z, frequency;
 
-		amplitude = RemapValClamped(speedprop, 0, 1, cl_viewbob_amplitude_min.GetFloat(), cl_viewbob_amplitude_max.GetFloat());
+		amplitude_x = RemapValClamped(speedprop, 0, 1, cl_viewbob_amplitude_x_min.GetFloat(), cl_viewbob_amplitude_x_max.GetFloat());
+		amplitude_y = RemapValClamped(speedprop, 0, 1, cl_viewbob_amplitude_y_min.GetFloat(), cl_viewbob_amplitude_y_max.GetFloat());
+		amplitude_z = RemapValClamped(speedprop, 0, 1, cl_viewbob_amplitude_z_min.GetFloat(), cl_viewbob_amplitude_z_max.GetFloat());
 		frequency = RemapValClamped(speedprop, 0, 1, cl_viewbob_frequency_min.GetFloat(), cl_viewbob_frequency_max.GetFloat());
 
-		roll = sin(gpGlobals->curtime * frequency) * amplitude;
+		pitch = sin(gpGlobals->curtime * frequency) * amplitude_x;
+		yaw = sin(gpGlobals->curtime * frequency) * amplitude_y;
+		roll = sin(gpGlobals->curtime * frequency) * amplitude_z;
 	}
 
 	angles.x = pitch;

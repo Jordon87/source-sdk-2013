@@ -32,11 +32,7 @@ void CNPC_Mike::SelectModel()
 
 void CNPC_Mike::Spawn(void)
 {
-	RemoveSpawnFlags(SF_CITIZEN_RANDOM_HEAD | SF_CITIZEN_RANDOM_HEAD_MALE | SF_CITIZEN_RANDOM_HEAD_FEMALE);
-
 	BaseClass::Spawn();
 
 	m_iHealth = m_iMaxHealth = g_johnhealth.GetInt();
-
-	SetModel(MIKE_MODEL);
 }

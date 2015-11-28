@@ -34,11 +34,7 @@ void CNPC_Chris::SelectModel()
 
 void CNPC_Chris::Spawn()
 {
-	RemoveSpawnFlags( SF_CITIZEN_RANDOM_HEAD | SF_CITIZEN_RANDOM_HEAD_MALE | SF_CITIZEN_RANDOM_HEAD_FEMALE );
-
 	BaseClass::Spawn();
 
 	m_iHealth = m_iMaxHealth = g_johnhealth.GetInt();
-
-	SetModel(CHRIS_MODEL);
 }

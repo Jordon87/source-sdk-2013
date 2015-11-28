@@ -29,16 +29,23 @@ LINK_ENTITY_TO_CLASS(npc_john, CNPC_John);
 
 void CNPC_John::SelectModel()
 {
-	SetModelName(AllocPooledString(JOHH_MODEL));
+	// HBN reporter use John NPC as entity support.
+	// Every npc_john entity whose name matches 'reporter'
+	// will have their model changed for a different model.
+	if (FStrEq(STRING(GetEntityName()), "reporter"))
+	{
+		SetModelName(AllocPooledString("models/humans/group01/female_03.mdl"));
+	}
+	else
+	{
+		// Setup default John model.
+		SetModelName(AllocPooledString(JOHH_MODEL));
+	}
 }
 
 void CNPC_John::Spawn()
 {
-	RemoveSpawnFlags( SF_CITIZEN_RANDOM_HEAD | SF_CITIZEN_RANDOM_HEAD_MALE | SF_CITIZEN_RANDOM_HEAD_FEMALE );
-
 	BaseClass::Spawn();
 
 	m_iHealth = m_iMaxHealth = g_johnhealth.GetInt();
-
-	SetModel(JOHH_MODEL);
 }

@@ -575,6 +575,17 @@ struct HeadCandidate_t
 
 void CNPC_Citizen::SelectModel()
 {
+#if defined ( ELEVENEIGHTYSEVEN_DLL )
+	if (GetEntityName() != NULL_STRING)
+	{
+		if (FStrEq(STRING(GetEntityName()), "reporter"))
+		{
+			SetModelName(AllocPooledString("models/humans/group01/female_03.mdl"));
+			return;
+		}
+	}
+#endif
+
 	// If making reslists, precache everything!!!
 	static bool madereslists = false;
 
