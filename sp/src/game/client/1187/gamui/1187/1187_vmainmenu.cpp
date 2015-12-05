@@ -276,6 +276,7 @@ void C1187MainMenu::SetMenuButtonState(int button, bool state)
 void C1187MainMenu::UpdateMenuButtons()
 {
 	bool bInGame = engine->IsInGame();
+	bool bInBackgroundMap = engine->IsLevelMainMenuBackground();
 
 	vgui::Button* pButton = NULL;
 
@@ -283,32 +284,32 @@ void C1187MainMenu::UpdateMenuButtons()
 
 	if (pButton)
 	{
-		pButton->SetVisible(bInGame);
-		pButton->SetEnabled(bInGame);
+		pButton->SetVisible(bInGame && !bInBackgroundMap);
+		pButton->SetEnabled(bInGame && !bInBackgroundMap);
 	}
 
 	pButton = m_menuButtons[MAINMENU_RETURNTOMENU];
 
 	if (pButton)
 	{
-		pButton->SetVisible(bInGame);
-		pButton->SetEnabled(bInGame);
+		pButton->SetVisible(bInGame && !bInBackgroundMap);
+		pButton->SetEnabled(bInGame && !bInBackgroundMap);
 	}
 
 	pButton = m_menuButtons[MAINMENU_CRASHCOURSE];
 
 	if (pButton)
 	{
-		pButton->SetVisible(!bInGame);
-		pButton->SetEnabled(!bInGame);
+		pButton->SetVisible(!bInGame || bInBackgroundMap);
+		pButton->SetEnabled(!bInGame || bInBackgroundMap);
 	}
 
 	pButton = m_menuButtons[MAINMENU_SAVEGAME];
 
 	if (pButton)
 	{
-		pButton->SetVisible(bInGame);
-		pButton->SetEnabled(bInGame);
+		pButton->SetVisible(bInGame && !bInBackgroundMap);
+		pButton->SetEnabled(bInGame && !bInBackgroundMap);
 	}
 
 	/*
