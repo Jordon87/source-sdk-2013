@@ -186,6 +186,23 @@ ConVar	sk_npc_dmg_knife("sk_npc_dmg_knife", "0", FCVAR_REPLICATED);
 
 #endif // defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 
+#if defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
+void CElevenEightySeven::LevelInitPreEntity()
+{
+#ifndef CLIENT_DLL
+	// 1187 Rogue train - Check for bonus map name.
+	if (FStrEq(STRING(gpGlobals->mapname), "1187_roguetrain_bonus"))
+	{
+		m_bIsRogueTrain = true;
+	}
+	else
+	{
+		m_bIsRogueTrain = false;
+	}
+#endif // !CLIENT_DLL
+}
+#endif //  defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
+
 #ifdef CLIENT_DLL //{
 
 

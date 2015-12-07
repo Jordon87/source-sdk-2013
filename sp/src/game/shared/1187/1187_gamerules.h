@@ -39,9 +39,22 @@ public:
 	void				IncrementEasterEggs(int value) { m_nEasterEggs += value; }
 	void				DecrementEasterEggs(int value) { m_nEasterEggs -= value; }
 
+#if defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
+	virtual void		LevelInitPreEntity();
+#ifndef CLIENT_DLL
+	bool				IsRogueTrain() const { return m_bIsRogueTrain; }
+#endif
+#endif // defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
+
 private:
 
 	CNetworkVar(int, m_nEasterEggs);
+
+#if defined ( ROGUETRAIN_DLL )
+#ifndef CLIENT_DLL
+	bool m_bIsRogueTrain;
+#endif
+#endif
 
 #ifdef CLIENT_DLL
 

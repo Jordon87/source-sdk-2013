@@ -22,6 +22,12 @@ public:
 	virtual bool HasBuiltInFlashlight(void) { return true; }
 
 	virtual void	MeleeSwing(void);
+
+#if defined ( ROGUETRAIN_DLL )
+#ifndef CLIENT_DLL
+	virtual int				GetIdealSkin() const;
+#endif
+#endif // defined ( ROGUETRAIN_DLL )
 };
 
 IMPLEMENT_SERVERCLASS_ST(C1187WeaponShotgun, DT_1187WeaponShotgun)
@@ -41,3 +47,12 @@ void C1187WeaponShotgun::MeleeSwing(void)
 		pPlayer->ViewPunch(QAngle(-random->RandomFloat(2, 4), 0, 0));
 	}
 }
+
+#if defined ( ROGUETRAIN_DLL )
+#ifndef CLIENT_DLL
+int C1187WeaponShotgun::GetIdealSkin() const
+{
+	return 0;
+}
+#endif // !CLIENT_DLL
+#endif // defined ( ROGUETRAIN_DLL )

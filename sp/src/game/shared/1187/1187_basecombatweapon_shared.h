@@ -58,6 +58,11 @@ public:
 	virtual bool			IsPrimaryAttackAllowed(void);
 	virtual bool			IsSecondaryAttackAllowed(void);
 
+#if defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
+	// Weapon deployment.
+	virtual bool			Deploy(void);
+#endif // defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
+
 	// Subtypes are used to manage multiple weapons of the same type on the player.
 	virtual void			Drop(const Vector &vecVelocity);
 
@@ -153,6 +158,15 @@ public:
 #if defined ( CLIENT_DLL )
 	virtual void			UpdateFlashlight(void);
 #endif
+
+#if defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
+	virtual int				GetSkinOverride() const;
+
+#ifndef CLIENT_DLL
+	virtual void			SelectIdealSkin(void);
+	virtual int				GetIdealSkin() const;
+#endif
+#endif // defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
 
 protected:
 

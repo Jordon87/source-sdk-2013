@@ -6,6 +6,9 @@
 
 #include "cbase.h"
 #include "1187_basecombatweapon.h"
+#if defined ( ROGUETRAIN_DLL )
+#include "1187_gamerules.h"
+#endif
 #include "soundent.h"
 #include "ai_basenpc.h"
 #include "game.h"
@@ -803,3 +806,29 @@ C1187SelectFireMachineGun::C1187SelectFireMachineGun( void )
 	m_fMaxRange2	= 1024;
 	m_iFireMode		= FIREMODE_FULLAUTO;
 }
+
+#if defined ( ROGUETRAIN_DLL )
+
+void CBase1187CombatWeapon::SelectIdealSkin(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if (!pPlayer)
+		return;
+
+	CBaseViewModel* vm = pPlayer->GetViewModel();
+	if (!vm)
+		return;
+
+	vm->m_nSkin = GetIdealSkin();
+}
+
+int	CBase1187CombatWeapon::GetIdealSkin() const
+{
+	CElevenEightySeven* pGamerules = ElevenEightySevenGameRules();
+	if (!pGamerules || !pGamerules->IsRogueTrain())
+		return 0;
+
+	return 1;
+}
+
+#endif // defined ( ROGUETRAIN_DLL )

@@ -210,6 +210,26 @@ void CBase1187CombatWeapon::Drop(const Vector &vecVelocity)
 	DisableIronsights();
 }
 
+#if defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
+//----------------------------------------------------------------------------
+// Purpose:
+//----------------------------------------------------------------------------
+bool CBase1187CombatWeapon::Deploy(void)
+{
+	bool bRet = BaseClass::Deploy();
+
+	if (bRet)
+	{
+#ifndef CLIENT_DLL
+		// Select the appropriate skin for the viewmodel.
+		SelectIdealSkin();
+#endif // !CLIENT_DLL
+	}
+
+	return bRet;
+}
+#endif // defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
+
 //----------------------------------------------------------------------------
 // Purpose:
 //----------------------------------------------------------------------------
@@ -921,3 +941,14 @@ void CBase1187CombatWeapon::ReleaseFlashlight(void)
 	}
 }
 #endif
+
+#if defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
+int	CBase1187CombatWeapon::GetSkinOverride() const
+{
+#ifndef CLIENT_DLL
+	return GetIdealSkin();
+#else
+	return -1;
+#endif
+}
+#endif // defined ( ROGUETRAIN_DLL ) || defined ( ROGUETRAIN_CLIENT_DLL )
