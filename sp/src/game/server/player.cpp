@@ -6132,6 +6132,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		CreateAirboat( this );
 		break;
 
+#if !defined ( HOE_DLL )
 	case 101:
 		gEvilImpulse101 = true;
 
@@ -6173,6 +6174,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		gEvilImpulse101		= false;
 
 		break;
+#endif // !defined ( HOE_DLL )
 
 	case 102:
 		// Gibbage!!!

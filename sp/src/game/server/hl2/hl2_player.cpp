@@ -160,9 +160,6 @@ bool g_bCacheLegacyFlashlightStatus = true;
 bool g_bUseLegacyFlashlight;
 bool Flashlight_UseLegacyVersion( void )
 {
-#if defined ( MOP_DLL )
-	return true;
-#else
 	// If this is the first run through, cache off what the answer should be (cannot change during a session)
 	if ( g_bCacheLegacyFlashlightStatus )
 	{
@@ -179,7 +176,6 @@ bool Flashlight_UseLegacyVersion( void )
 
 	// Return the results
 	return g_bUseLegacyFlashlight;
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -295,11 +291,13 @@ void CC_ToggleDuck( void )
 
 static ConCommand toggle_duck("toggle_duck", CC_ToggleDuck, "Toggles duck" );
 
+#if !defined ( HOE_DLL ) && !defined ( HOE_CLIENT_DLL )
 #ifndef HL2MP
 #ifndef PORTAL
 LINK_ENTITY_TO_CLASS( player, CHL2_Player );
 #endif
 #endif
+#endif // !defined ( HOE_DLL ) && !defined ( HOE_CLIENT_DLL )
 
 PRECACHE_REGISTER(player);
 

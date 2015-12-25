@@ -42,7 +42,11 @@ PRECACHE_REGISTER(item_healthkit);
 void CHealthKit::Spawn( void )
 {
 	Precache();
+#if defined ( HOE_DLL )
+	SetModel( "models/medkit/w_medkit_us.mdl" );
+#else
 	SetModel( "models/items/healthkit.mdl" );
+#endif
 
 	BaseClass::Spawn();
 }
@@ -53,7 +57,11 @@ void CHealthKit::Spawn( void )
 //-----------------------------------------------------------------------------
 void CHealthKit::Precache( void )
 {
+#if defined ( HOE_DLL )
+	PrecacheModel("models/medkit/w_medkit_us.mdl");
+#else
 	PrecacheModel("models/items/healthkit.mdl");
+#endif
 
 	PrecacheScriptSound( "HealthKit.Touch" );
 }

@@ -7,7 +7,12 @@
 #include "cbase.h"
 #include "entitylist.h"
 #include "ai_basenpc.h"
+#if defined ( HOE_DLL )
+#include "hoe/hoe_npc_BaseHuman_companion.h"
+#else
 #include "npc_citizen17.h"
+#endif
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -138,6 +143,11 @@ void CAI_AllyManager::CountAllies( int *pTotal, int *pMedics )
 	{
 		if ( ppAIs[i]->IsAlive() && ppAIs[i]->IsPlayerAlly() )
 		{
+#if defined ( HOE_DLL )
+			// They only count if I can use them.
+			if( ppAIs[i]->HasSpawnFlags(SF_HOE_HUMAN_COMPANION_NOT_COMMANDABLE) )
+				continue;
+#else
 			// Vital allies do not count.
 			if( ppAIs[i]->Classify() == CLASS_PLAYER_ALLY_VITAL )
 				continue;
@@ -145,6 +155,7 @@ void CAI_AllyManager::CountAllies( int *pTotal, int *pMedics )
 			// They only count if I can use them.
 			if( ppAIs[i]->HasSpawnFlags(SF_CITIZEN_NOT_COMMANDABLE) )
 				continue;
+#endif
 			
 			// They only count if I can use them.
 			if( ppAIs[i]->IRelationType( UTIL_GetLocalPlayer() ) != D_LI )
@@ -157,6 +168,21 @@ void CAI_AllyManager::CountAllies( int *pTotal, int *pMedics )
 				  fabsf( ppAIs[i]->GetAbsOrigin().z - vPlayerPos.z ) > 192 ) )
 				continue;
 
+#if defined ( HOE_DLL )
+			if( FClassnameIs( ppAIs[i], "npc_grunt_medic" ) || 
+				FClassnameIs( ppAIs[i], "npc_mikeforce_medic" ) ) 
+			{
+				CHoe_NPC_BaseHuman_Companion*pCompanion = assert_cast<CHoe_NPC_BaseHuman_Companion *>(ppAIs[i]);
+				if (!pCompanion->CanJoinPlayerSquad())
+					continue;
+
+				if ( pCompanion->WasInPlayerSquad() && !pCompanion->IsInPlayerSquad() )
+					continue;
+
+				if ( ppAIs[i]->IsMedic() )
+					(*pMedics)++;
+			}
+#else // !HOE_DLL
 			if( FClassnameIs( ppAIs[i], "npc_citizen" ) ) 
 			{  
 				CNPC_Citizen *pCitizen = assert_cast<CNPC_Citizen *>(ppAIs[i]);
@@ -169,6 +195,7 @@ void CAI_AllyManager::CountAllies( int *pTotal, int *pMedics )
 				if ( ppAIs[i]->HasSpawnFlags( SF_CITIZEN_MEDIC ) )
 					(*pMedics)++;
 			}
+#endif // defined ( HOE_DLL )
 
 			(*pTotal)++;
 		}

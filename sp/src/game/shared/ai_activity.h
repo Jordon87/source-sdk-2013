@@ -2107,6 +2107,29 @@ typedef enum
 	ACT_SPELL_VM_ARM, 
 	ACT_SPELL_VM_FIRE,
 
+#if defined ( HOE_DLL ) || defined ( HOE_CLIENT_DLL )
+	//===========================
+	// Hoe Specific Activities
+	//===========================
+
+	// Chainsaw Animations
+	ACT_CHAINSAW_ATTACK,
+	ACT_CHAINSAW_IDLE,
+	ACT_CHAINSAW_IDLE_HIT,
+	ACT_CHAINSAW_IDLE_OFF,
+	ACT_CHAINSAW_START,
+	ACT_CHAINSAW_START_EMPTY,
+	ACT_CHAINSAW_START_FAIL,
+	ACT_CHAINSAW_START_READY,
+
+	// Tripmine
+	ACT_VM_TRIPMINE_ARM1,
+	ACT_VM_TRIPMINE_GROUND,
+	ACT_VM_TRIPMINE_PLACE,
+	ACT_VM_TRIPMINE_WORLD,
+
+#endif // defined ( HOE_DLL ) || defined ( HOE_CLIENT_DLL )
+
 	// this is the end of the global activities, private per-monster activities start here.
 	LAST_SHARED_ACTIVITY,
 } Activity;

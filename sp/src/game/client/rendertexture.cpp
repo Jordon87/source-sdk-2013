@@ -243,6 +243,20 @@ ITexture *GetTeenyTexture( int which )
 	return s_TeenyTextures[which];
 }
 
+#if defined ( HOE_CLIENT_DLL )
+static CTextureReference s_pScopeTexture;
+ITexture *GetScopeTexture(void)
+{
+	if (!s_pScopeTexture)
+	{
+		s_pScopeTexture.Init(materials->FindTexture("_rt_Scope", TEXTURE_GROUP_RENDER_TARGET));
+		Assert(!IsErrorTexture(s_pScopeTexture));
+		AddReleaseFunc();
+	}
+	return s_pScopeTexture;
+} 
+#endif // defined ( HOE_CLIENT_DLL )
+
 void ReleaseRenderTargets( void )
 {
 	s_pPowerOfTwoFrameBufferTexture.Shutdown();
@@ -252,6 +266,9 @@ void ReleaseRenderTargets( void )
 	s_pQuarterSizedFB0.Shutdown();
 	s_pQuarterSizedFB1.Shutdown();
 	s_pFullFrameDepthTexture.Shutdown();
+#if defined ( HOE_CLIENT_DLL )
+	s_pScopeTexture.Shutdown();
+#endif
 
 	for (int i=0; i<MAX_FB_TEXTURES; ++i)
 		s_pFullFrameFrameBufferTexture[i].Shutdown();

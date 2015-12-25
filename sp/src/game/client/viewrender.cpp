@@ -162,6 +162,9 @@ static ConVar mat_clipz( "mat_clipz", "1" );
 static ConVar r_screenfademinsize( "r_screenfademinsize", "0" );
 static ConVar r_screenfademaxsize( "r_screenfademaxsize", "0" );
 static ConVar cl_drawmonitors( "cl_drawmonitors", "1" );
+#if defined ( HOE_CLIENT_DLL )
+static ConVar cl_drawscopes("cl_drawscopes", "1");
+#endif
 static ConVar r_eyewaterepsilon( "r_eyewaterepsilon", "10.0f", FCVAR_CHEAT );
 
 #ifdef TF_CLIENT_DLL
@@ -2338,6 +2341,13 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		CDebugViewRender::GenerateOverdrawForTesting();
 	}
 
+#if defined ( HOE_CLIENT_DLL )
+	if ( cl_drawscopes.GetBool() && g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 70)
+	{
+		DrawScope(view);
+	}
+#endif // defined ( HOE_CLIENT_DLL )
+
 	render->PopView( GetFrustum() );
 	g_WorldListCache.Flush();
 }
@@ -3175,6 +3185,58 @@ void CViewRender::DrawMonitors( const CViewSetup &cameraView )
 #endif // USE_MONITORS
 }
 
+#if defined ( HOE_CLIENT_DLL )
+void CViewRender::DrawScope(const CViewSetup &viewSet)
+{
+	C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
+
+	if (!localPlayer)
+		return;
+
+	if (!localPlayer->GetActiveWeapon())
+		return;
+
+	if (!localPlayer->GetActiveWeapon()->GetViewModel())
+		return;
+
+	//Copy our current View.
+	CViewSetup scopeView = viewSet;
+
+	//Get our camera render target.
+	ITexture *pRenderTarget = GetScopeTexture();
+
+	if (pRenderTarget == NULL)
+		return;
+
+	if (!pRenderTarget->IsRenderTarget())
+		Msg(" not a render target");
+
+	//Our view information, Origin, View Direction, window size
+	//	location on material, and visual ratios.
+	scopeView.width = pRenderTarget->GetActualWidth();
+	scopeView.height = pRenderTarget->GetActualHeight();
+	scopeView.x = 0;
+	scopeView.y = 0;
+	scopeView.fov = 45;
+	scopeView.m_bOrtho = false;
+
+	scopeView.m_flAspectRatio = 1.0f;
+
+	//Set the view up and output the scene to our RenderTarget (Scope Material).
+	render->Push3DView(scopeView, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, pRenderTarget, GetFrustum());
+
+	SkyboxVisibility_t nSkyboxVisible = SKYBOX_NOT_VISIBLE;
+	int ClearFlags = 0;
+	CSkyboxView *pSkyView = new CSkyboxView(this);
+	if (pSkyView->Setup(scopeView, &ClearFlags, &nSkyboxVisible) != false)
+		AddViewToScene(pSkyView);
+	SafeRelease(pSkyView);
+
+	ViewDrawScene(false, SKYBOX_3DSKYBOX_VISIBLE, scopeView, VIEW_CLEAR_DEPTH, VIEW_MONITOR);
+
+	render->PopView(m_Frustum);
+}
+#endif // HOE_CLIENT_DLL
 
 //-----------------------------------------------------------------------------
 //

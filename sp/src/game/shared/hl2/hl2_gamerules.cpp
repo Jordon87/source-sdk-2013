@@ -1775,6 +1775,7 @@ bool CHalfLife2::ShouldBurningPropsEmitLight()
 // Global functions.
 // ------------------------------------------------------------------------------------ //
 
+#if !defined ( HOE_DLL ) && !defined ( HOE_CLIENT_DLL )
 #ifndef HL2MP
 #ifndef PORTAL
 
@@ -1878,3 +1879,4 @@ CAmmoDef *GetAmmoDef()
 
 #endif
 #endif
+#endif // !defined ( HOE_DLL ) && !defined ( HOE_CLIENT_DLL )

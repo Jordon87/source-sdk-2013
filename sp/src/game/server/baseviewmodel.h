@@ -12,6 +12,10 @@
 #pragma once
 #endif
 
+#if defined ( HOE_DLL ) 
+#include "hoe_baseviewmodel_shared.h"
+#else
 #include "baseviewmodel_shared.h"
+#endif
 
 #endif // BASEVIEWMODEL_H

@@ -112,7 +112,11 @@ public:
 #define TIME_TO_UNDUCK		0.2
 #define TIME_TO_UNDUCK_MS	200.0f
 
+#if defined ( HOE_DLL ) || defined ( HOE_CLIENT_DLL )
+#define MAX_WEAPON_SLOTS		8	// hud item selection slots
+#else
 #define MAX_WEAPON_SLOTS		6	// hud item selection slots
+#endif
 #define MAX_WEAPON_POSITIONS	20	// max number of items within a slot
 #define MAX_ITEM_TYPES			6	// hud item selection slots
 #define MAX_WEAPONS				48	// Max number of weapons available
