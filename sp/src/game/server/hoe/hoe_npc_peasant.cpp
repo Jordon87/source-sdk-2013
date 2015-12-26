@@ -13,46 +13,10 @@
 #include	"ai_basenpc.h"
 #include	"ai_hull.h"
 #include	"ai_baseactor.h"
+#include	"hoe_npc_peasant_defs.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-
-
-#define NPC_PEASANT_FEMALE1_MODEL	"models/peasant/female1.mdl"
-#define NPC_PEASANT_FEMALE2_MODEL	"models/peasant/female2.mdl"
-#define NPC_PEASANT_FEMALE3_MODEL	"models/peasant/female3.mdl"
-#define NPC_PEASANT_MALE1_MODEL		"models/peasant/male1.mdl"
-#define NPC_PEASANT_MALE2_MODEL		"models/peasant/male2.mdl"
-#define NPC_PEASANT_MALE3_MODEL		"models/peasant/male3.mdl"
-
-static const char* g_pszRandomPeasantModels[] =
-{
-	NPC_PEASANT_MALE1_MODEL,
-	NPC_PEASANT_MALE2_MODEL,
-	NPC_PEASANT_MALE3_MODEL,
-	NPC_PEASANT_FEMALE1_MODEL,
-	NPC_PEASANT_FEMALE2_MODEL,
-	NPC_PEASANT_FEMALE3_MODEL,
-};
-
-enum
-{
-	PEASANT_BODY_RANDOM			= -1,
-	PEASANT_BODY_RANDOM_MALE	= -2,
-	PEASANT_BODY_RANDOM_FEMALE	= -3,
-	PEASANT_BODY_MALE1			= 0,
-	PEASANT_BODY_MALE2,
-	PEASANT_BODY_MALE3,
-	PEASANT_BODY_FEMALE1,
-	PEASANT_BODY_FEMALE2,
-	PEASANT_BODY_FEMALE3,
-
-	//
-	// Add new body IDs here...
-	//
-
-	PEASANT_BODY_COUNT, // <-- Last body count.
-};
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -72,9 +36,23 @@ public:
 	bool	UseSemaphore(void);
 
 	int		SelectSchedule(void);
+
+private:
+	static const char* m_pszPeasantModels[];
+};
+
+const char* CHoe_NPC_Peasant::m_pszPeasantModels[] =
+{
+	NPC_PEASANT_MALE1_MODEL,
+	NPC_PEASANT_MALE2_MODEL,
+	NPC_PEASANT_MALE3_MODEL,
+	NPC_PEASANT_FEMALE1_MODEL,
+	NPC_PEASANT_FEMALE2_MODEL,
+	NPC_PEASANT_FEMALE3_MODEL,
 };
 
 LINK_ENTITY_TO_CLASS(npc_peasant, CHoe_NPC_Peasant);
+
 
 //-----------------------------------------------------------------------------
 // Classify - indicates this NPC's place in the 
@@ -237,24 +215,24 @@ void CHoe_NPC_Peasant::SelectModel(void)
 			if (m_nBody < PEASANT_BODY_RANDOM_MALE)
 			{
 				// Select a random female model.
-				szModel = (char*)g_pszRandomPeasantModels[random->RandomInt(PEASANT_BODY_FEMALE1, PEASANT_BODY_FEMALE3)];
+				szModel = (char*)m_pszPeasantModels[random->RandomInt(PEASANT_BODY_FEMALE1, PEASANT_BODY_FEMALE3)];
 			}
 			else
 			{
 				// Select a random male model.
-				szModel = (char*)g_pszRandomPeasantModels[random->RandomInt(PEASANT_BODY_MALE1, PEASANT_BODY_MALE3)];
+				szModel = (char*)m_pszPeasantModels[random->RandomInt(PEASANT_BODY_MALE1, PEASANT_BODY_MALE3)];
 			}
 		}
 		else
 		{
 			// Select a random model.
-			szModel = (char*)g_pszRandomPeasantModels[random->RandomInt(0, PEASANT_BODY_COUNT - 1)];
+			szModel = (char*)m_pszPeasantModels[random->RandomInt(0, PEASANT_BODY_COUNT - 1)];
 		}
 	}
 	else
 	{
 		// This is a pre-selected model, set it correctly.
-		szModel = (char*)g_pszRandomPeasantModels[ m_nBody ];
+		szModel = (char*)m_pszPeasantModels[m_nBody];
 	}
 
 	// If no valid model, set default one.
@@ -268,7 +246,6 @@ void CHoe_NPC_Peasant::SelectModel(void)
 	// Avoid crash.
 	m_nBody = 0;
 }
-
 
 //-----------------------------------------------------------------------------
 // AI Schedules Specific to this NPC

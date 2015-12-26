@@ -19,6 +19,9 @@
 #include "props.h"
 #include "vehicle_choreo_generic_shared.h"
 #include "ai_utils.h"
+#if defined ( HOE_DLL )
+#include "vehicle_choreo_generic.h"
+#endif // defined ( HOE_DLL )
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -64,7 +67,6 @@ static const char *pChoreoGenericFollowerBoneNames[] =
 	"base",
 };
 
-
 //-----------------------------------------------------------------------------
 // Purpose: A KeyValues parse for vehicle sound blocks
 //-----------------------------------------------------------------------------
@@ -78,6 +80,7 @@ private:
 	virtual void SetDefaults( void *pData );
 };
 
+#if !defined ( HOE_DLL )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -94,7 +97,6 @@ protected:
 
 	CPropVehicleChoreoGeneric *GetVehicle( void );
 };
-
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -225,6 +227,7 @@ private:
 	COutputEvent		m_OnOpen;
 	COutputEvent		m_OnClose;
 };
+#endif // !defined ( HOE_DLL )
 
 LINK_ENTITY_TO_CLASS( prop_vehicle_choreo_generic, CPropVehicleChoreoGeneric );
 

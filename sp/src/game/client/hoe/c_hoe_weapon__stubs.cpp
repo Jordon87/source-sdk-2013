@@ -22,5 +22,6 @@ STUB_WEAPON_CLASS(weapon_m21, Hoe_Weapon_M21, C_Hoe_SelectFireMachineGun);
 STUB_WEAPON_CLASS(weapon_m60, Hoe_Weapon_M60, C_Hoe_SelectFireMachineGun);
 STUB_WEAPON_CLASS(weapon_m79, Hoe_Weapon_M79, C_Hoe_BaseCombatWeapon);
 STUB_WEAPON_CLASS(weapon_machete, Hoe_Weapon_Machete, C_Hoe_BaseBludgeonWeapon);
+STUB_WEAPON_CLASS(weapon_rpg7, WeaponRPG, C_Hoe_BaseCombatWeapon);
 STUB_WEAPON_CLASS(weapon_tripmine, Hoe_Weapon_Tripmine, C_Hoe_BaseCombatWeapon);
 
