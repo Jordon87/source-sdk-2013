@@ -53,11 +53,19 @@ public:
 protected:
 	virtual	void	ImpactEffect( trace_t &trace );
 
+#if 1
+protected:
+	virtual bool			ImpactWater(const Vector &start, const Vector &end);
+	virtual void			Swing( int bIsSecondary );
+	virtual void			Hit(trace_t &traceHit, Activity nHitActivity, bool bIsSecondary);
+	virtual Activity		ChooseIntersectionPointAndActivity(trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner, int bIsSecondary);
+#else
 private:
-	bool			ImpactWater( const Vector &start, const Vector &end );
-	void			Swing( int bIsSecondary );
-	void			Hit( trace_t &traceHit, Activity nHitActivity, bool bIsSecondary );
-	Activity		ChooseIntersectionPointAndActivity( trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner );
+	bool			ImpactWater(const Vector &start, const Vector &end);
+	void			Swing(int bIsSecondary);
+	void			Hit(trace_t &traceHit, Activity nHitActivity, bool bIsSecondary);
+	Activity		ChooseIntersectionPointAndActivity(trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner);
+#endif
 };
 
 #endif // HOE_BASEBLUDGEONWEAPON_H

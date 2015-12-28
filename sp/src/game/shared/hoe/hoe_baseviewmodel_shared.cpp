@@ -438,7 +438,8 @@ void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePos
 #endif
 		{
 			// add weapon-specific bob 
-			pWeapon->AddViewmodelBob( this, vmorigin, vmangles );
+			pWeapon->AddViewmodelBob(this, vmorigin, vmangles);
+
 #if defined ( CSTRIKE_DLL )
 			CalcViewModelLag( vmorigin, vmangles, vmangoriginal );
 #endif
@@ -446,11 +447,33 @@ void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePos
 	}
 	// Add model-specific bob even if no weapon associated (for head bob for off hand models)
 	AddViewModelBob( owner, vmorigin, vmangles );
+
+#if 1
+#if !defined ( CSTRIKE_DLL )
+	CHoe_BaseCombatWeapon* pHoeWeapon = ToHoeBaseCombatWeapon(pWeapon);
+	if (pHoeWeapon)
+	{
+		if (!pHoeWeapon->HasIronsights() || !pHoeWeapon->IsIronsighted())
+		{
+			// This was causing weapon jitter when rotating in updated CS:S; original Source had this in above InPrediction block  07/14/10
+			// Add lag
+			CalcViewModelLag(vmorigin, vmangles, vmangoriginal);
+		}
+	}
+	else
+	{
+		// This was causing weapon jitter when rotating in updated CS:S; original Source had this in above InPrediction block  07/14/10
+		// Add lag
+		CalcViewModelLag(vmorigin, vmangles, vmangoriginal);
+	}
+#endif // !defined ( CSTRIKE_DLL )
+#else
 #if !defined ( CSTRIKE_DLL )
 	// This was causing weapon jitter when rotating in updated CS:S; original Source had this in above InPrediction block  07/14/10
 	// Add lag
 	CalcViewModelLag( vmorigin, vmangles, vmangoriginal );
 #endif
+#endif // // defined ( HOE_DLL ) || defined ( HOE_CLIENT_DLL )
 
 #if defined( CLIENT_DLL )
 	if ( !prediction->InPrediction() )

@@ -263,6 +263,9 @@ protected:
 	CHandle<CMissile>	m_hMissile;
 	CHandle<CSprite>	m_hLaserMuzzleSprite;
 	CHandle<CBeam>		m_hLaserBeam;
+#if defined ( HOE_DLL )
+	Vector				m_vecPlayerLaserDot;
+#endif
 };
 
 #endif // WEAPON_RPG_H

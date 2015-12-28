@@ -2175,6 +2175,9 @@ void CHoe_NPC_BaseHuman_Companion::UpdatePlayerSquad()
 		return;
 
 	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	if (!pPlayer)
+		return;
+
 	if ((pPlayer->GetAbsOrigin().AsVector2D() - GetAbsOrigin().AsVector2D()).LengthSqr() < Square(20 * 12))
 		m_flTimeLastCloseToPlayer = gpGlobals->curtime;
 

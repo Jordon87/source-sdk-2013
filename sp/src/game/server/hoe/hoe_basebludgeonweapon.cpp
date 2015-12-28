@@ -180,7 +180,7 @@ void CHoe_BaseBludgeonWeapon::Hit(trace_t &traceHit, Activity nHitActivity, bool
 	ImpactEffect( traceHit );
 }
 
-Activity CHoe_BaseBludgeonWeapon::ChooseIntersectionPointAndActivity(trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner)
+Activity CHoe_BaseBludgeonWeapon::ChooseIntersectionPointAndActivity(trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner, int bIsSecondary)
 {
 	int			i, j, k;
 	float		distance;
@@ -226,7 +226,7 @@ Activity CHoe_BaseBludgeonWeapon::ChooseIntersectionPointAndActivity(trace_t &hi
 	}
 
 
-	return ACT_VM_HITCENTER;
+	return !bIsSecondary ? GetPrimaryAttackActivity() : GetSecondaryAttackActivity();
 }
 
 //-----------------------------------------------------------------------------
@@ -338,7 +338,7 @@ void CHoe_BaseBludgeonWeapon::Swing(int bIsSecondary)
 			}
 			else
 			{
-				nHitActivity = ChooseIntersectionPointAndActivity( traceHit, g_bludgeonMins, g_bludgeonMaxs, pOwner );
+				nHitActivity = ChooseIntersectionPointAndActivity(traceHit, g_bludgeonMins, g_bludgeonMaxs, pOwner, bIsSecondary);
 			}
 		}
 	}

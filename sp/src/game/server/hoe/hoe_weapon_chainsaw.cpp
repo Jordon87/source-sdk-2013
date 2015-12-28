@@ -18,14 +18,21 @@
 #include "npcevent.h"
 #include "ai_basenpc.h"
 #include "weapon_crowbar.h"
+#include "gamestats.h"
+#include "rumble_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#define CHAINSAW_HULL_DIM		16
+
+static const Vector g_chainsawMins(-CHAINSAW_HULL_DIM, -CHAINSAW_HULL_DIM, -CHAINSAW_HULL_DIM);
+static const Vector g_chainsawMaxs(CHAINSAW_HULL_DIM, CHAINSAW_HULL_DIM, CHAINSAW_HULL_DIM);
+
 extern ConVar  sk_chainsaw_dmg;
 
 //-----------------------------------------------------------------------------
-// CHoe_Weapon_Machete
+// CHoe_Weapon_Chainsaw
 //-----------------------------------------------------------------------------
 
 class CHoe_Weapon_Chainsaw : public CHoe_BaseBludgeonWeapon
@@ -36,33 +43,74 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_ACTTABLE();
 
+	DECLARE_DATADESC();
+
 	CHoe_Weapon_Chainsaw();
 
+
+	bool		Deploy(void);
+	bool		Holster(CBaseCombatWeapon *pSwitchingTo);
 	void		WeaponIdle(void);
 
 	Activity	GetPrimaryAttackActivity(void)		{ return ACT_CHAINSAW_ATTACK; }
+	Activity	GetSecondaryAttackActivity(void)	{ return ACT_CHAINSAW_IDLE_HIT; }
+
 	Activity	GetPrimaryMissActivity(void)		{ return ACT_CHAINSAW_ATTACK; }
+	Activity	GetSecondaryMissActivity(void)		{ return ACT_CHAINSAW_IDLE_HIT; }
 
 	float		GetRange(void)			{ return	CROWBAR_RANGE; }
-	float		GetFireRate(void)		{ return	GetViewModelSequenceDuration(); }
+	float		GetFireRate(void)		{ return	0.1f; }
 
 	void		AddViewKick(void);
 	float		GetDamageForActivity(Activity hitActivity);
 
 	virtual int WeaponMeleeAttack1Condition(float flDot, float flDist);
-	void		SecondaryAttack(void)	{ return; }
+	void		PrimaryAttack(void);
+	void		SecondaryAttack(void);
 
 	// Animation event
 	virtual void Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
 
+	void		ItemPostFrame(void);
+
+protected:
+
+	void			Swing(int bIsSecondary);
+
 private:
 	// Animation event handlers
 	void HandleAnimEventMeleeHit(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
+
+	enum StartState { START_NONE = 0, START_READY, START_FAIL, START_SUCCESS, START_EMPTY, START_POST_EMPTY, START_POST_SUCCESS };
+
+	bool m_bEngineOn;
+	bool m_bInSwing;
+	bool m_bDidHit;
+	float m_flNextHitTime;
+	float m_flNextRumbleTime;
+	float m_flNextIdleSoundTime;
+
+	static bool m_bFirstStart;
+
+	int m_iStartState;
 };
 
 //-----------------------------------------------------------------------------
 // CHoe_Weapon_Chainsaw
 //-----------------------------------------------------------------------------
+
+bool CHoe_Weapon_Chainsaw::m_bFirstStart = false;
+
+BEGIN_DATADESC(CHoe_Weapon_Chainsaw)
+	DEFINE_FIELD(m_iStartState, FIELD_INTEGER),
+	DEFINE_FIELD(m_bEngineOn, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_bInSwing, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_bDidHit, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_flNextHitTime, FIELD_TIME),
+	DEFINE_FIELD(m_flNextRumbleTime, FIELD_TIME),
+	DEFINE_FIELD(m_flNextIdleSoundTime, FIELD_TIME),
+	//DEFINE_FIELD(m_bFirstStart, FIELD_BOOLEAN),
+END_DATADESC()
 
 IMPLEMENT_SERVERCLASS_ST(CHoe_Weapon_Chainsaw, DT_Hoe_Weapon_Chainsaw)
 END_SEND_TABLE()
@@ -84,6 +132,13 @@ IMPLEMENT_ACTTABLE(CHoe_Weapon_Chainsaw);
 //-----------------------------------------------------------------------------
 CHoe_Weapon_Chainsaw::CHoe_Weapon_Chainsaw(void)
 {
+	m_iStartState = START_NONE;
+	m_bEngineOn = false;
+	m_bInSwing = false;
+	m_bDidHit = false;
+	m_flNextHitTime = 0.0f;
+	m_flNextRumbleTime = 0.0f;
+	m_flNextIdleSoundTime = 0.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -93,6 +148,9 @@ CHoe_Weapon_Chainsaw::CHoe_Weapon_Chainsaw(void)
 //-----------------------------------------------------------------------------
 float CHoe_Weapon_Chainsaw::GetDamageForActivity(Activity hitActivity)
 {
+	if (hitActivity == ACT_CHAINSAW_IDLE_HIT)
+		return sk_chainsaw_dmg.GetFloat() * 0.25f;
+
 	return sk_chainsaw_dmg.GetFloat();
 }
 
@@ -232,14 +290,304 @@ void CHoe_Weapon_Chainsaw::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCo
 	}
 }
 
+bool CHoe_Weapon_Chainsaw::Deploy(void)
+{
+	bool bRet = BaseClass::Deploy();
+
+	if (bRet)
+	{
+		m_bEngineOn = false;
+		m_bInSwing = false;
+		m_bDidHit = false;
+		m_iStartState = START_NONE;
+	}
+
+	return bRet;
+}
+
+bool CHoe_Weapon_Chainsaw::Holster(CBaseCombatWeapon *pSwitchingTo)
+{
+	bool bRet = BaseClass::Holster(pSwitchingTo);
+
+	if (bRet)
+	{
+		m_bEngineOn = false;
+		m_bInSwing = false;
+		m_bDidHit = false;
+		m_iStartState = START_NONE;
+	}
+
+	return bRet;
+}
+
 //=========================================================
 void CHoe_Weapon_Chainsaw::WeaponIdle(void)
 {
 	BaseClass::WeaponIdle();
 
-	//Idle again if we've finished
-	if (HasWeaponIdleTimeElapsed())
+	if (m_bEngineOn)
 	{
-		SendWeaponAnim(ACT_VM_IDLE);
+		if (gpGlobals->curtime > m_flNextIdleSoundTime)
+		{
+			WeaponSound( SPECIAL2 );
+
+			m_flNextIdleSoundTime = gpGlobals->curtime + 0.8f;
+		}
+
+		if (gpGlobals->curtime > m_flNextHitTime)
+		{
+			Swing(true);
+			m_flNextHitTime = gpGlobals->curtime + 0.1f;
+		}
+
+		if (gpGlobals->curtime > m_flNextRumbleTime)
+		{
+			UTIL_ScreenShake(GetAbsOrigin(), 1.0, 96, 0.5f, 750, SHAKE_START);
+			m_flNextRumbleTime = gpGlobals->curtime + 0.25f;
+		}
+	}
+
+	if (m_bDidHit)
+	{
+		if (GetActivity() != ACT_CHAINSAW_IDLE_HIT || HasWeaponIdleTimeElapsed())
+		{
+			SendWeaponAnim(ACT_CHAINSAW_IDLE_HIT);
+		}
+	}
+	//Idle again if we've finished
+	else if (HasWeaponIdleTimeElapsed())
+	{	
+		int iAnim = 0;
+
+		if (m_bEngineOn)
+		{
+			iAnim = ACT_CHAINSAW_IDLE;
+		}
+		else
+		{
+			iAnim = ACT_CHAINSAW_IDLE_OFF;
+		}
+
+		SendWeaponAnim(iAnim);
+	}
+}
+
+void CHoe_Weapon_Chainsaw::PrimaryAttack(void)
+{
+	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
+	// play 'attack' animation.
+	pOwner->SetAnimation( PLAYER_ATTACK1 );
+
+	// Play attack sequence.
+	SendWeaponAnim( ACT_CHAINSAW_ATTACK );
+
+	if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) > 0 && m_bEngineOn)
+	{
+		// Send attack sound.
+		WeaponSound(SINGLE);
+
+		m_iPrimaryAttacks++;
+
+		gamestats->Event_WeaponFired(pOwner, true, GetClassname());
+
+		m_bInSwing = true;
+	}
+
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+}
+
+void CHoe_Weapon_Chainsaw::SecondaryAttack(void)
+{
+	if (!m_bEngineOn)
+	{
+		m_iStartState = START_READY;
+	}
+	else
+	{
+		m_iStartState = START_POST_EMPTY;
+
+		m_bEngineOn = false;
+
+		SendWeaponAnim( ACT_CHAINSAW_IDLE_OFF );
+
+		SetCycle( 0 );
+
+		m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + 0.3f;
+	}
+}
+
+void CHoe_Weapon_Chainsaw::ItemPostFrame(void)
+{
+	if (m_iStartState != START_NONE)
+	{
+		if (m_iStartState == START_READY)
+		{
+			m_iStartState = START_SUCCESS;
+
+			SendWeaponAnim(ACT_CHAINSAW_START_READY);
+
+			m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+		}
+		else if (IsViewModelSequenceFinished())
+		{
+			switch (m_iStartState)
+			{
+			case START_FAIL:
+			{
+				m_iStartState = START_EMPTY;
+
+				SendWeaponAnim(ACT_CHAINSAW_START_FAIL);
+
+				WeaponSound(SPECIAL1);
+
+				m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+			}
+			break;
+
+			case START_SUCCESS:
+			{
+				m_iStartState = START_POST_SUCCESS;
+
+				SendWeaponAnim(ACT_CHAINSAW_START);
+
+				WeaponSound(WPN_DOUBLE);
+
+				m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+			}
+			break;
+
+			case START_EMPTY:
+			{
+				m_iStartState = START_POST_EMPTY;
+
+				SendWeaponAnim(ACT_CHAINSAW_START_EMPTY);
+
+				m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetViewModelSequenceDuration();
+			}
+			break;
+
+			case START_POST_EMPTY:
+			{
+				m_iStartState = START_NONE;
+
+				m_bEngineOn = false;
+			}
+			break;
+
+			case START_POST_SUCCESS:
+			{
+				m_iStartState = START_NONE;
+
+				m_bEngineOn = true;
+			}
+			break;
+
+			default:
+				DevMsg("Warning: invalid chainsaw start state!\n");
+				break;
+			}
+		}
+
+		return;
+	}
+	else if (m_bInSwing)
+	{
+		if (IsViewModelSequenceFinished())
+		{
+			m_bInSwing = false;
+		}
+		else
+		{
+			if (gpGlobals->curtime > m_flNextHitTime)
+			{
+				Swing(false);
+				m_flNextHitTime = gpGlobals->curtime + GetFireRate();
+			}
+		}
+
+		return;
+	}
+	else
+	{
+		BaseClass::ItemPostFrame();
+
+		// Reset all hit data.
+		m_bDidHit = false;
+	}
+}
+
+void CHoe_Weapon_Chainsaw::Swing(int bIsSecondary)
+{
+	trace_t traceHit;
+
+	// Try a ray
+	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
+	pOwner->RumbleEffect(RUMBLE_CROWBAR_SWING, 0, RUMBLE_FLAG_RESTART);
+
+	Vector swingStart = pOwner->Weapon_ShootPosition();
+	Vector forward;
+
+	forward = pOwner->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT, GetRange());
+
+	Vector swingEnd = swingStart + forward * GetRange();
+	UTIL_TraceLine(swingStart, swingEnd, MASK_SHOT_HULL, pOwner, COLLISION_GROUP_NONE, &traceHit);
+	Activity nHitActivity = !bIsSecondary ? ACT_CHAINSAW_ATTACK : ACT_CHAINSAW_IDLE_HIT;
+
+	// Like bullets, bludgeon traces have to trace against triggers.
+	CTakeDamageInfo triggerInfo(GetOwner(), GetOwner(), GetDamageForActivity(nHitActivity), DMG_CLUB);
+	triggerInfo.SetDamagePosition(traceHit.startpos);
+	triggerInfo.SetDamageForce(forward);
+	TraceAttackToTriggers(triggerInfo, traceHit.startpos, traceHit.endpos, forward);
+
+	if (traceHit.fraction == 1.0)
+	{
+		float bludgeonHullRadius = 1.732f * CHAINSAW_HULL_DIM;  // hull is +/- 16, so use cuberoot of 2 to determine how big the hull is from center to the corner point
+
+		// Back off by hull "radius"
+		swingEnd -= forward * bludgeonHullRadius;
+
+		UTIL_TraceHull(swingStart, swingEnd, g_chainsawMins, g_chainsawMaxs, MASK_SHOT_HULL, pOwner, COLLISION_GROUP_NONE, &traceHit);
+		if (traceHit.fraction < 1.0 && traceHit.m_pEnt)
+		{
+			Vector vecToTarget = traceHit.m_pEnt->GetAbsOrigin() - swingStart;
+			VectorNormalize(vecToTarget);
+
+			float dot = vecToTarget.Dot(forward);
+
+			// YWB:  Make sure they are sort of facing the guy at least...
+			if (dot < 0.70721f)
+			{
+				// Force amiss
+				traceHit.fraction = 1.0f;
+			}
+			else
+			{
+				nHitActivity = ChooseIntersectionPointAndActivity(traceHit, g_chainsawMins, g_chainsawMaxs, pOwner, bIsSecondary);
+			}
+		}
+	}
+
+	// -------------------------
+	//	Miss
+	// -------------------------
+	if (traceHit.fraction == 1.0f)
+	{
+		// We want to test the first swing again
+		Vector testEnd = swingStart + forward * GetRange();
+
+		// See if we happened to hit water
+		ImpactWater(swingStart, testEnd);
+	}
+	else
+	{
+		Hit(traceHit, nHitActivity, bIsSecondary ? true : false);
+
+		m_bDidHit = true;
 	}
 }

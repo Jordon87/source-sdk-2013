@@ -1409,7 +1409,9 @@ BEGIN_DATADESC( CWeaponRPG )
 	DEFINE_FIELD( m_hLaserMuzzleSprite, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hLaserBeam,			FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bHideGuiding,		FIELD_BOOLEAN ),
-
+#if defined ( HOE_DLL )
+	DEFINE_FIELD(m_vecPlayerLaserDot, FIELD_POSITION_VECTOR),
+#endif
 END_DATADESC()
 
 #if defined ( HOE_DLL )
@@ -1661,6 +1663,18 @@ void CWeaponRPG::PrimaryAttack( void )
 		m_hMissile->SetGracePeriod( 0.3 );
 	}
 
+#if defined ( HOE_DLL )
+	UTIL_TraceLine(vecEye, vecEye + vForward * MAX_TRACE_LENGTH, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
+	if (tr.fraction != 1.0)
+	{
+		m_vecPlayerLaserDot = tr.endpos;
+	}
+	else
+	{
+		m_vecPlayerLaserDot = vec3_origin;
+	}
+#endif
+
 	DecrementAmmo( GetOwner() );
 
 	// Register a muzzleflash for the AI
@@ -1794,7 +1808,15 @@ void CWeaponRPG::ItemPostFrame( void )
 		}
 	}
 
-#if !defined ( HOE_DLL )
+#if defined ( HOE_DLL )
+	Vector muzzlePoint = GetOwner()->Weapon_ShootPosition();
+	Vector vecDir = (m_vecPlayerLaserDot - muzzlePoint);
+	VectorNormalize( vecDir );
+	vecDir = muzzlePoint + ( vecDir * MAX_TRACE_LENGTH );
+
+	//Move the laser
+	UpdateLaserPosition( muzzlePoint, vecDir );
+#else
 	//Move the laser
 	UpdateLaserPosition();
 	UpdateLaserEffects();
@@ -2023,7 +2045,11 @@ void CWeaponRPG::CreateLaserPointer( void )
 	if ( m_hLaserDot != NULL )
 		return;
 
+#if defined ( HOE_DLL )
+	m_hLaserDot = CLaserDot::Create( GetAbsOrigin(), GetOwnerEntity(), false );
+#else
 	m_hLaserDot = CLaserDot::Create( GetAbsOrigin(), GetOwnerEntity() );
+#endif
 	m_hLaserDot->TurnOff();
 
 	UpdateLaserPosition();
@@ -2333,11 +2359,7 @@ CLaserDot *CLaserDot::Create( const Vector &origin, CBaseEntity *pOwner, bool bV
 
 	pLaserDot->SetName( AllocPooledString("TEST") );
 
-#if defined ( HOE_DLL )
-	pLaserDot->SetTransparency( kRenderGlow, 255, 255, 255, 0, kRenderFxNoDissipation );
-#else
 	pLaserDot->SetTransparency( kRenderGlow, 255, 255, 255, 255, kRenderFxNoDissipation );
-#endif
 	pLaserDot->SetScale( 0.5f );
 
 	pLaserDot->SetOwnerEntity( pOwner );
