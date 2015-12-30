@@ -24,6 +24,9 @@
 
 extern ConVar g_debug_doors;
 
+#ifdef HOE_DLL
+#else
+
 struct opendata_t
 {
 	Vector vecStandPos;		// Where the NPC should stand.
@@ -271,5 +274,6 @@ inline bool CBasePropDoor::IsOpener(CBaseEntity *pEnt)
 {
 	return ( GetActivator() == pEnt );
 }
+#endif
 
 #endif // BASEPROPDOOR_H

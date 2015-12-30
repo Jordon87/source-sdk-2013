@@ -12,11 +12,7 @@
 #pragma once
 #endif
 
-#if defined ( HOE_DLL )
-#include "hoe_basecombatweapon.h"
-#else
 #include "basehlcombatweapon.h"
-#endif
 #include "Sprite.h"
 #include "npcevent.h"
 #include "beam_shared.h"
@@ -173,17 +169,9 @@ CAPCMissile *FindAPCMissileInCone( const Vector &vecOrigin, const Vector &vecDir
 //-----------------------------------------------------------------------------
 // RPG
 //-----------------------------------------------------------------------------
-#if defined ( HOE_DLL )
-class CWeaponRPG : public CHoe_BaseCombatWeapon
-#else
 class CWeaponRPG : public CBaseHLCombatWeapon
-#endif
 {
-#if defined ( HOE_DLL )
-	DECLARE_CLASS(CWeaponRPG, CHoe_BaseCombatWeapon);
-#else
 	DECLARE_CLASS( CWeaponRPG, CBaseHLCombatWeapon );
-#endif
 public:
 
 	CWeaponRPG();
@@ -263,9 +251,6 @@ protected:
 	CHandle<CMissile>	m_hMissile;
 	CHandle<CSprite>	m_hLaserMuzzleSprite;
 	CHandle<CBeam>		m_hLaserBeam;
-#if defined ( HOE_DLL )
-	Vector				m_vecPlayerLaserDot;
-#endif
 };
 
 #endif // WEAPON_RPG_H

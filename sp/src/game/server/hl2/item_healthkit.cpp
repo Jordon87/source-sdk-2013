@@ -42,11 +42,15 @@ PRECACHE_REGISTER(item_healthkit);
 void CHealthKit::Spawn( void )
 {
 	Precache();
-#if defined ( HOE_DLL )
-	SetModel( "models/medkit/w_medkit_us.mdl" );
-#else
+#ifdef HOE_DLL
+	if (m_nBody == 0)
+		SetModel("models/medkit/w_medkit_US.mdl");
+	else
+		SetModel("models/medkit/w_medkit_NVA.mdl");
+	m_nBody = 0;
+#else // HOE_DLL
 	SetModel( "models/items/healthkit.mdl" );
-#endif
+#endif // HOE_DLL
 
 	BaseClass::Spawn();
 }
@@ -57,11 +61,12 @@ void CHealthKit::Spawn( void )
 //-----------------------------------------------------------------------------
 void CHealthKit::Precache( void )
 {
-#if defined ( HOE_DLL )
-	PrecacheModel("models/medkit/w_medkit_us.mdl");
-#else
+#ifdef HOE_DLL
+	PrecacheModel("models/medkit/w_medkit_US.mdl");
+	PrecacheModel("models/medkit/w_medkit_NVA.mdl");
+#else // HOE_DLL
 	PrecacheModel("models/items/healthkit.mdl");
-#endif
+#endif // HOE_DLL
 
 	PrecacheScriptSound( "HealthKit.Touch" );
 }
@@ -320,7 +325,11 @@ void CWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 	// if there is no juice left, turn it off
 	if (m_iJuice <= 0)
 	{
-		m_nState = 1;			
+		m_nState = 1;
+#ifdef HOE_DLL
+		// FIXME: OutRemainingHealth output should call an env_texturetoggle entity but this is easier
+		SetTextureFrameIndex(1);
+#endif
 		Off();
 	}
 
@@ -397,7 +406,11 @@ void CWallHealth::Recharge(void)
 {
 	EmitSound( "WallHealth.Recharge" );
 	m_iJuice = sk_healthcharger.GetFloat();
-	m_nState = 0;			
+	m_nState = 0;
+#ifdef HOE_DLL
+	// FIXME: OutRemainingHealth output should call an env_texturetoggle entity but this is easier
+	SetTextureFrameIndex(0);
+#endif
 	SetThink( NULL );
 }
 

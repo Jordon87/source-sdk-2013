@@ -8419,12 +8419,20 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 
 	case NPC_EVENT_OPEN_DOOR:
 		{
+#ifdef HOE_DLL
+			CBaseEntity *pEnt = (CBaseEntity *)GetNavigator()->GetPath()->GetCurWaypoint()->GetEHandleData();
+			IDoor *pDoor = dynamic_cast<IDoor *>(pEnt);
+			if (pDoor != NULL)
+			{
+				OpenDoorNow(pDoor);
+			}
+#else
 			CBasePropDoor *pDoor = (CBasePropDoor *)(CBaseEntity *)GetNavigator()->GetPath()->GetCurWaypoint()->GetEHandleData();
 			if (pDoor != NULL)
 			{
 				OpenPropDoorNow( pDoor );
 			}
-	
+#endif
 			break;
 		}
 
@@ -12123,6 +12131,222 @@ float CAI_BaseNPC::CalcYawSpeed( void )
 	return -1.0f;
 }
 
+#ifdef HOE_DLL
+
+bool CAI_BaseNPC::OnCalcBaseMove(AILocalMoveGoal_t *pMoveGoal,
+	float distClear,
+	AIMoveResult_t *pResult)
+{
+	if (pMoveGoal->directTrace.pObstruction)
+	{
+		CBaseEntity *pEnt = pMoveGoal->directTrace.pObstruction;
+		IDoor *pDoor = dynamic_cast<IDoor *>(pEnt);
+		if (pDoor && OnUpcomingDoor(pMoveGoal, pDoor, distClear, pResult))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CAI_BaseNPC::OnObstructionPreSteer(AILocalMoveGoal_t *pMoveGoal,
+	float distClear,
+	AIMoveResult_t *pResult)
+{
+	if (pMoveGoal->directTrace.pObstruction)
+	{
+		CBaseEntity *pEnt = pMoveGoal->directTrace.pObstruction;
+		IDoor *pDoor = dynamic_cast<IDoor *>(pEnt);
+		if (pDoor && OnObstructingDoor(pMoveGoal, pDoor, distClear, pResult))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CAI_BaseNPC::OnObstructingDoor(AILocalMoveGoal_t *pMoveGoal,
+	IDoor *pDoorIface,
+	float distClear,
+	AIMoveResult_t *pResult)
+{
+	if (pMoveGoal->maxDist < distClear)
+		return false;
+
+	IDoorAccessor *pDoor = pDoorIface->GetDoorAccessor();
+
+	// By default, NPCs don't know how to open doors
+	if (pDoor->IsDoorClosed() || pDoor->IsDoorClosing())
+	{
+		if (distClear < 0.1)
+		{
+			*pResult = AIMR_BLOCKED_ENTITY;
+		}
+		else
+		{
+			pMoveGoal->maxDist = distClear;
+			*pResult = AIMR_OK;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : pMoveGoal - 
+//			pDoor - 
+//			distClear - 
+//			default - 
+//			spawn - 
+//			oldorg - 
+//			pfPosition - 
+//			neworg - 
+// Output : Returns true if movement is solved, false otherwise.
+//-----------------------------------------------------------------------------
+
+bool CAI_BaseNPC::OnUpcomingDoor(AILocalMoveGoal_t *pMoveGoal,
+	IDoor *pDoorIface,
+	float distClear,
+	AIMoveResult_t *pResult)
+{
+	IDoorAccessor *pDoor = pDoorIface->GetDoorAccessor();
+
+	if ((pMoveGoal->flags & AILMG_TARGET_IS_GOAL) && pMoveGoal->maxDist < distClear)
+		return false;
+
+	if (pMoveGoal->maxDist + GetHullWidth() * .25 < distClear)
+		return false;
+
+	CBaseEntity *pDoorEnt = pDoor->GetEntity();
+	Assert(pDoorEnt);
+
+	if (pDoorEnt == m_hOpeningDoor)
+	{
+		if (pDoor->IsNPCOpening(this))
+		{
+			// We're in the process of opening the door, don't be blocked by it.
+			pMoveGoal->maxDist = distClear;
+			*pResult = AIMR_OK;
+			return true;
+		}
+		m_hOpeningDoor = NULL;
+	}
+
+	if ((CapabilitiesGet() & bits_CAP_DOORS_GROUP) && !pDoor->IsDoorLocked(this) && (pDoor->IsDoorClosed() || pDoor->IsDoorClosing()))
+	{
+		AI_Waypoint_t *pOpenDoorRoute = NULL;
+
+		opendata_t opendata;
+		pDoor->GetNPCOpenData(this, opendata);
+
+		// dvs: FIXME: local route might not be sufficient
+		pOpenDoorRoute = GetPathfinder()->BuildLocalRoute(
+			GetLocalOrigin(),
+			opendata.vecStandPos,
+			NULL,
+			bits_WP_TO_DOOR | bits_WP_DONT_SIMPLIFY,
+			NO_NODE,
+			bits_BUILD_GROUND | bits_BUILD_IGNORE_NPCS,
+			0.0);
+
+		if (pOpenDoorRoute)
+		{
+			if (AIIsDebuggingDoors(this))
+			{
+				NDebugOverlay::Cross3D(opendata.vecStandPos + Vector(0, 0, 1), 32, 255, 255, 255, false, 1.0);
+				Msg("Opening door!\n");
+			}
+
+			// Attach the door to the waypoint so we open it when we get there.
+			// dvs: FIXME: this is kind of bullshit, I need to find the exact waypoint to open the door
+			//		should I just walk the path until I find it?
+			pOpenDoorRoute->m_hData = pDoorEnt;
+
+			GetNavigator()->GetPath()->PrependWaypoints(pOpenDoorRoute);
+
+			m_hOpeningDoor = pDoorEnt;
+			pMoveGoal->maxDist = distClear;
+			*pResult = AIMR_CHANGE_TYPE;
+
+			return true;
+		}
+		else
+			AIDoorDebugMsg(this, "Failed create door route!\n");
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: Called by the navigator to initiate the opening of a prop_door
+//			that is in our way.
+//-----------------------------------------------------------------------------
+void CAI_BaseNPC::OpenDoorBegin(IDoor *pDoor)
+{
+	// dvs: not quite working, disabled for now.
+	//opendata_t opendata;
+	//pDoor->GetNPCOpenData(this, opendata);
+	//
+	//if (HaveSequenceForActivity(opendata.eActivity))
+	//{
+	//	SetIdealActivity(opendata.eActivity);
+	//}
+	//else
+	{
+		// We don't have an appropriate sequence, just open the door magically.
+		OpenDoorNow(pDoor);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: Called when we are trying to open a prop_door and it's time to start
+//			the door moving. This is called either in response to an anim event
+//			or as a fallback when we don't have an appropriate open activity.
+//-----------------------------------------------------------------------------
+void CAI_BaseNPC::OpenDoorNow(IDoor *pDoorIface)
+{
+	IDoorAccessor *pDoor = pDoorIface->GetDoorAccessor();
+
+	// Start the door moving.
+	pDoor->NPCOpenDoor(this);
+
+	// Wait for the door to finish opening before trying to move through the doorway.
+	m_flMoveWaitFinished = gpGlobals->curtime + pDoor->GetOpenInterval();
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: Called when the door we were trying to open becomes fully open.
+// Input  : pDoor - 
+//-----------------------------------------------------------------------------
+void CAI_BaseNPC::OnDoorFullyOpen(IDoor *pDoor)
+{
+	// We're done with the door.
+	m_hOpeningDoor = NULL;
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: Called when the door we were trying to open becomes blocked before opening.
+// Input  : pDoor - 
+//-----------------------------------------------------------------------------
+void CAI_BaseNPC::OnDoorBlocked(IDoor *pDoor)
+{
+	// dvs: FIXME: do something so that we don't loop forever trying to open this door
+	//		not clearing out the door handle will cause the NPC to invalidate the connection
+	// We're done with the door.
+	//m_hOpeningDoor = NULL;
+}
+
+#else // HOE_DLL
+
 bool CAI_BaseNPC::OnCalcBaseMove( AILocalMoveGoal_t *pMoveGoal,
 										float distClear,
 										AIMoveResult_t *pResult )
@@ -12327,6 +12551,7 @@ void CAI_BaseNPC::OnDoorBlocked(CBasePropDoor *pDoor)
 	//m_hOpeningDoor = NULL;
 }
 
+#endif // HOE_DLL
 
 //-----------------------------------------------------------------------------
 // Purpose: Template NPCs are marked as templates by the level designer. They

@@ -436,10 +436,9 @@ private:
 	bool			DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_PointCamera *pCameraEnt, const CViewSetup &cameraView, C_BasePlayer *localPlayer, 
 						int x, int y, int width, int height );
 
-#if defined ( HOE_CLIENT_DLL )
-	// Drawing scopes
-	void	DrawScope(const CViewSetup &cameraView);
-#endif
+#ifdef HOE_DLL
+	void			DrawScope(const CViewSetup &cameraView);
+#endif // HOE_DLL
 
 	// Drawing primitives
 	bool			ShouldDrawViewModel( bool drawViewmodel );

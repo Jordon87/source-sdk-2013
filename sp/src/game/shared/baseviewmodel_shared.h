@@ -11,10 +11,6 @@
 #pragma once
 #endif
 
-#if defined ( HOE_DLL ) || defined ( HOE_CLIENT_DLL )
-#include "hoe_baseviewmodel_shared.h"
-#else
-
 #include "predictable_entity.h"
 #include "utlvector.h"
 #include "baseplayer_shared.h"
@@ -210,7 +206,5 @@ private:
 	typedef CHandle<CVGuiScreen>	ScreenHandle_t;
 	CUtlVector<ScreenHandle_t>	m_hScreens;
 };
-
-#endif // defined ( HOE_DLL ) || defined ( HOE_CLIENT_DLL )
 
 #endif // BASEVIEWMODEL_SHARED_H

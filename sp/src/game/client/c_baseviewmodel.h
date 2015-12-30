@@ -12,12 +12,8 @@
 #pragma once
 #endif
 
-#if defined ( HOE_CLIENT_DLL )
-#include "c_hoe_baseviewmodel.h"
-#else
 #include "c_baseanimating.h"
 #include "utlvector.h"
 #include "baseviewmodel_shared.h"
-#endif // defined ( HOE_CLIENT_DLL )
 
 #endif // C_BASEVIEWMODEL_H

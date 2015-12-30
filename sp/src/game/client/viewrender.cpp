@@ -76,6 +76,9 @@
 
 // Projective textures
 #include "C_Env_Projected_Texture.h"
+#ifdef HOE_DLL
+#include "hoe/scope_rendertarget.h"
+#endif // HOE_DLL
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -162,9 +165,6 @@ static ConVar mat_clipz( "mat_clipz", "1" );
 static ConVar r_screenfademinsize( "r_screenfademinsize", "0" );
 static ConVar r_screenfademaxsize( "r_screenfademaxsize", "0" );
 static ConVar cl_drawmonitors( "cl_drawmonitors", "1" );
-#if defined ( HOE_CLIENT_DLL )
-static ConVar cl_drawscopes("cl_drawscopes", "1");
-#endif
 static ConVar r_eyewaterepsilon( "r_eyewaterepsilon", "10.0f", FCVAR_CHEAT );
 
 #ifdef TF_CLIENT_DLL
@@ -1968,6 +1968,13 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		}
 	#endif
 
+#ifdef HOE_DLL
+		if (g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 70)
+		{
+			DrawScope(view);
+		}
+#endif // HOE_DLL
+
 		g_bRenderingView = true;
 
 		// Must be first 
@@ -2340,13 +2347,6 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 	{
 		CDebugViewRender::GenerateOverdrawForTesting();
 	}
-
-#if defined ( HOE_CLIENT_DLL )
-	if ( cl_drawscopes.GetBool() && g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 70)
-	{
-		DrawScope(view);
-	}
-#endif // defined ( HOE_CLIENT_DLL )
 
 	render->PopView( GetFrustum() );
 	g_WorldListCache.Flush();
@@ -3185,19 +3185,24 @@ void CViewRender::DrawMonitors( const CViewSetup &cameraView )
 #endif // USE_MONITORS
 }
 
-#if defined ( HOE_CLIENT_DLL )
+#ifdef HOE_DLL
 void CViewRender::DrawScope(const CViewSetup &viewSet)
 {
-	C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
+#if 1
+	if (ScopeRenderTarget == NULL)
+		return;
 
+	if (ScopeRenderTarget->IsScopeTextureActive() == false)
+		return;
+#else
+	C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
 	if (!localPlayer)
 		return;
-
 	if (!localPlayer->GetActiveWeapon())
 		return;
-
 	if (!localPlayer->GetActiveWeapon()->GetViewModel())
 		return;
+#endif
 
 	//Copy our current View.
 	CViewSetup scopeView = viewSet;
@@ -3217,26 +3222,23 @@ void CViewRender::DrawScope(const CViewSetup &viewSet)
 	scopeView.height = pRenderTarget->GetActualHeight();
 	scopeView.x = 0;
 	scopeView.y = 0;
-	scopeView.fov = 45;
+	scopeView.fov = ScopeRenderTarget->GetScopeTextureFOV();
 	scopeView.m_bOrtho = false;
 
 	scopeView.m_flAspectRatio = 1.0f;
 
 	//Set the view up and output the scene to our RenderTarget (Scope Material).
-	render->Push3DView(scopeView, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, pRenderTarget, GetFrustum());
+	Frustum frustum;
+	render->Push3DView(scopeView, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, pRenderTarget, frustum/*GetFrustum()*/);
+	bool bDrew3dSkybox = false;	// bDrew3dSkybox = true turns the skybox OFF. DO NOT SET IT TO TRUE.
+	SkyboxVisibility_t nSkyboxVisible = SKYBOX_3DSKYBOX_VISIBLE;
+	int nClearFlags = 0;
+	view_id_t viewID = VIEW_MONITOR;
+	ViewDrawScene(bDrew3dSkybox, nSkyboxVisible, scopeView, nClearFlags, viewID);
 
-	SkyboxVisibility_t nSkyboxVisible = SKYBOX_NOT_VISIBLE;
-	int ClearFlags = 0;
-	CSkyboxView *pSkyView = new CSkyboxView(this);
-	if (pSkyView->Setup(scopeView, &ClearFlags, &nSkyboxVisible) != false)
-		AddViewToScene(pSkyView);
-	SafeRelease(pSkyView);
-
-	ViewDrawScene(false, SKYBOX_3DSKYBOX_VISIBLE, scopeView, VIEW_CLEAR_DEPTH, VIEW_MONITOR);
-
-	render->PopView(m_Frustum);
+	render->PopView(frustum);
 }
-#endif // HOE_CLIENT_DLL
+#endif // HOE_DLL
 
 //-----------------------------------------------------------------------------
 //

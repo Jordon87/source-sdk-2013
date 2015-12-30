@@ -73,6 +73,9 @@ public:
 	CNetworkVar( float, m_flScale );
 	float		m_flDuration;
 	float		m_flNextDamage;
+#ifdef HOE_DLL
+	int			m_iFlareGravity;
+#endif
 	
 	CSoundPatch	*m_pBurnSound;
 	bool		m_bFading;

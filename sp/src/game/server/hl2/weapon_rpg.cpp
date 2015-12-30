@@ -41,11 +41,6 @@
 
 #define	RPG_SPEED	1500
 
-#if defined ( HOE_DLL )
-#define RPG_MISSILE_MODEL		"models/RPG7/rpg7rocket/rpg7rocket.mdl"
-#define RPG_MISSILE2_MODEL		"models/RPG7/rpg7rocket_nam/rpg7rocket.mdl"
-#endif
-
 static ConVar sk_apc_missile_damage("sk_apc_missile_damage", "15");
 ConVar rpg_missle_use_custom_detonators( "rpg_missle_use_custom_detonators", "1" );
 
@@ -146,14 +141,9 @@ CMissile::~CMissile()
 //-----------------------------------------------------------------------------
 void CMissile::Precache( void )
 {
-#if defined ( HOE_DLL )
-	PrecacheModel(RPG_MISSILE_MODEL);
-	PrecacheModel(RPG_MISSILE2_MODEL);
-#else
 	PrecacheModel( "models/weapons/w_missile.mdl" );
 	PrecacheModel( "models/weapons/w_missile_launch.mdl" );
 	PrecacheModel( "models/weapons/w_missile_closed.mdl" );
-#endif
 }
 
 
@@ -167,11 +157,7 @@ void CMissile::Spawn( void )
 	Precache();
 
 	SetSolid( SOLID_BBOX );
-#if defined ( HOE_DLL )
-	SetModel(RPG_MISSILE2_MODEL);
-#else
 	SetModel("models/weapons/w_missile_launch.mdl");
-#endif
 	UTIL_SetSize( this, -Vector(4,4,4), Vector(4,4,4) );
 
 	SetTouch( &CMissile::MissileTouch );
@@ -246,11 +232,7 @@ void CMissile::DumbFire( void )
 	SetThink( NULL );
 	SetMoveType( MOVETYPE_FLY );
 
-#if defined ( HOE_DLL )
-	SetModel(RPG_MISSILE2_MODEL);
-#else
 	SetModel("models/weapons/w_missile.mdl");
-#endif
 	UTIL_SetSize( this, vec3_origin, vec3_origin );
 
 	EmitSound( "Missile.Ignite" );
@@ -454,11 +436,7 @@ void CMissile::CreateSmokeTrail( void )
 void CMissile::IgniteThink( void )
 {
 	SetMoveType( MOVETYPE_FLY );
-#if defined ( HOE_DLL )
-	SetModel(RPG_MISSILE2_MODEL);
-#else
 	SetModel("models/weapons/w_missile.mdl");
-#endif
 	UTIL_SetSize( this, vec3_origin, vec3_origin );
  	RemoveSolidFlags( FSOLID_NOT_SOLID );
 
@@ -1012,11 +990,7 @@ CAPCMissile::~CAPCMissile()
 void CAPCMissile::Init()
 {
 	SetMoveType( MOVETYPE_FLY );
-#if defined ( HOE_DLL )
-	SetModel(RPG_MISSILE2_MODEL);
-#else
 	SetModel("models/weapons/w_missile.mdl");
-#endif
 	UTIL_SetSize( this, vec3_origin, vec3_origin );
 	CreateSmokeTrail();
 	SetTouch( &CAPCMissile::APCMissileTouch );
@@ -1409,24 +1383,14 @@ BEGIN_DATADESC( CWeaponRPG )
 	DEFINE_FIELD( m_hLaserMuzzleSprite, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hLaserBeam,			FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bHideGuiding,		FIELD_BOOLEAN ),
-#if defined ( HOE_DLL )
-	DEFINE_FIELD(m_vecPlayerLaserDot, FIELD_POSITION_VECTOR),
-#endif
+
 END_DATADESC()
 
-#if defined ( HOE_DLL )
 IMPLEMENT_SERVERCLASS_ST(CWeaponRPG, DT_WeaponRPG)
-END_SEND_TABLE()
-
-LINK_ENTITY_TO_CLASS( weapon_rpg7, CWeaponRPG );
-PRECACHE_WEAPON_REGISTER(weapon_rpg7);
-#else
-MPLEMENT_SERVERCLASS_ST(CWeaponRPG, DT_WeaponRPG)
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_rpg, CWeaponRPG );
 PRECACHE_WEAPON_REGISTER(weapon_rpg);
-#endif
 
 acttable_t	CWeaponRPG::m_acttable[] = 
 {
@@ -1454,11 +1418,7 @@ CWeaponRPG::CWeaponRPG()
 {
 	m_bReloadsSingly = true;
 	m_bInitialStateUpdate= false;
-#if defined ( HOE_DLL )
-	m_bHideGuiding = true;
-#else
 	m_bHideGuiding = false;
-#endif
 	m_bGuiding = false;
 
 	m_fMinRange1 = m_fMinRange2 = 40*12;
@@ -1663,18 +1623,6 @@ void CWeaponRPG::PrimaryAttack( void )
 		m_hMissile->SetGracePeriod( 0.3 );
 	}
 
-#if defined ( HOE_DLL )
-	UTIL_TraceLine(vecEye, vecEye + vForward * MAX_TRACE_LENGTH, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
-	if (tr.fraction != 1.0)
-	{
-		m_vecPlayerLaserDot = tr.endpos;
-	}
-	else
-	{
-		m_vecPlayerLaserDot = vec3_origin;
-	}
-#endif
-
 	DecrementAmmo( GetOwner() );
 
 	// Register a muzzleflash for the AI
@@ -1808,19 +1756,9 @@ void CWeaponRPG::ItemPostFrame( void )
 		}
 	}
 
-#if defined ( HOE_DLL )
-	Vector muzzlePoint = GetOwner()->Weapon_ShootPosition();
-	Vector vecDir = (m_vecPlayerLaserDot - muzzlePoint);
-	VectorNormalize( vecDir );
-	vecDir = muzzlePoint + ( vecDir * MAX_TRACE_LENGTH );
-
-	//Move the laser
-	UpdateLaserPosition( muzzlePoint, vecDir );
-#else
 	//Move the laser
 	UpdateLaserPosition();
 	UpdateLaserEffects();
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2045,11 +1983,7 @@ void CWeaponRPG::CreateLaserPointer( void )
 	if ( m_hLaserDot != NULL )
 		return;
 
-#if defined ( HOE_DLL )
-	m_hLaserDot = CLaserDot::Create( GetAbsOrigin(), GetOwnerEntity(), false );
-#else
 	m_hLaserDot = CLaserDot::Create( GetAbsOrigin(), GetOwnerEntity() );
-#endif
 	m_hLaserDot->TurnOff();
 
 	UpdateLaserPosition();
