@@ -848,6 +848,21 @@ void CPropCombineBall::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup
 	}
 	else
 	{
+#if defined ( CALAMITY_DLL )
+		//
+		// HL2: Calamity
+		//
+		// Fix a bug where punting combine balls would make the game crash.
+		// Simply destroy it.
+		//
+		if (FStrEq(STRING(gpGlobals->mapname), "sp_c14_5") && 
+			GetSpawner() && FStrEq(STRING(GetSpawner()->GetEntityName()), "spawner_ballspawner1"))
+		{
+			DoExplosion();
+			return;
+		}
+#endif
+
 		Vector vecVelocity;
 		VPhysicsGetObject()->GetVelocity( &vecVelocity, NULL );
 
