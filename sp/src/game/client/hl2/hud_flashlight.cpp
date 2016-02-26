@@ -30,6 +30,10 @@ public:
 	CHudFlashlight( const char *pElementName );
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 
+#if defined ( PRECURSOR_CLIENT_DLL )
+	virtual bool ShouldDraw(void) { return false; }
+#endif // defined ( PRECURSOR_CLIENT_DLL )
+
 protected:
 	virtual void Paint();
 
