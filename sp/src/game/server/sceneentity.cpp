@@ -3345,17 +3345,17 @@ bool CSceneEntity::ShouldNetwork() const
 
 CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallback *pCallback )
 {
-#if defined ( MOP_DLL )
-	DevMsg(2, "Blocking load of scene from '%s'\n", filename);
+#if defined ( COMATOSE_DLL )
+	DevMsg( 2, "Blocking load of scene from '%s'\n", filename );
 
 	char loadfile[MAX_PATH];
 	Q_strncpy( loadfile, filename, sizeof( loadfile ) );
 	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
 	Q_FixSlashes( loadfile );
-
+ 
 	void *pBuffer = 0;
 	CChoreoScene *pScene = NULL;
-
+ 
 	int fileSize = filesystem->ReadFileEx( loadfile, "MOD", &pBuffer, true );
 	if (fileSize)
 	{
@@ -3379,14 +3379,14 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 			pScene = NULL;
 		}
 	}
-
-	if (pScene)
+ 
+	if(pScene)
 	{
-		pScene->SetPrintFunc(LocalScene_Printf);
-		pScene->SetEventCallbackInterface(pCallback);
+		pScene->SetPrintFunc( LocalScene_Printf );
+		pScene->SetEventCallbackInterface( pCallback );
 	}
-
-	FreeSceneFileMemory(pBuffer);
+ 
+	FreeSceneFileMemory( pBuffer );
 	return pScene;
 #else
 	DevMsg( 2, "Blocking load of scene from '%s'\n", filename );
@@ -3421,7 +3421,7 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 
 	FreeSceneFileMemory( pBuffer );
 	return pScene;
-#endif
+#endif // defined ( COMATOSE_DLL )
 }
 
 CChoreoScene *BlockingLoadScene( const char *filename )
