@@ -160,7 +160,7 @@ bool g_bCacheLegacyFlashlightStatus = true;
 bool g_bUseLegacyFlashlight;
 bool Flashlight_UseLegacyVersion( void )
 {
-#if defined ( MOP_DLL )
+#if defined ( SCHOOLADVENTURES_DLL )
 	return true;
 #else
 	// If this is the first run through, cache off what the answer should be (cannot change during a session)
@@ -179,7 +179,7 @@ bool Flashlight_UseLegacyVersion( void )
 
 	// Return the results
 	return g_bUseLegacyFlashlight;
-#endif
+#endif // defined ( SCHOOLADVENTURES_DLL )
 }
 
 //-----------------------------------------------------------------------------

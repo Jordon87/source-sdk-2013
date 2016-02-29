@@ -335,6 +335,9 @@ BEGIN_DATADESC( CNPC_Citizen )
 	DEFINE_KEYFIELD(	m_bNotifyNavFailBlocked,	FIELD_BOOLEAN, "notifynavfailblocked" ),
 	DEFINE_KEYFIELD(	m_bNeverLeavePlayerSquad,	FIELD_BOOLEAN, "neverleaveplayersquad" ),
 	DEFINE_KEYFIELD(	m_iszDenyCommandConcept,	FIELD_STRING, "denycommandconcept" ),
+#if defined ( SCHOOLADVENTURES_DLL )
+	DEFINE_FIELD( 		m_bInvulnerable, 			FIELD_BOOLEAN ),
+#endif // defined ( SCHOOLADVENTURES_DLL )
 
 	DEFINE_OUTPUT(		m_OnJoinedPlayerSquad,	"OnJoinedPlayerSquad" ),
 	DEFINE_OUTPUT(		m_OnLeftPlayerSquad,	"OnLeftPlayerSquad" ),
@@ -356,6 +359,11 @@ BEGIN_DATADESC( CNPC_Citizen )
 #if HL2_EPISODIC
 	DEFINE_INPUTFUNC( FIELD_VOID,   "ThrowHealthKit", InputForceHealthKitToss ),
 #endif
+
+#if defined ( SCHOOLADVENTURES_DLL )
+	DEFINE_INPUTFUNC( FIELD_VOID,   "BecomeInvulnerable",	InputBecomeInvulnerable ),
+	DEFINE_INPUTFUNC( FIELD_VOID,   "BecomeVulnerable",		InputBecomeVulnerable ),
+#endif // defined ( SCHOOLADVENTURES_DLL )
 
 	DEFINE_USEFUNC( CommanderUse ),
 	DEFINE_USEFUNC( SimpleUse ),
@@ -480,6 +488,10 @@ void CNPC_Citizen::Spawn()
 
 	m_bShouldPatrol = false;
 	m_iHealth = sk_citizen_health.GetFloat();
+
+#if defined ( SCHOOLADVENTURES_DLL )
+	m_bInvulnerable = false;
+#endif // defined ( SCHOOLADVENTURES_DLL )
 	
 	// Are we on a train? Used in trainstation to have NPCs on trains.
 	if ( GetMoveParent() && FClassnameIs( GetMoveParent(), "func_tracktrain" ) )
@@ -2265,6 +2277,11 @@ int CNPC_Citizen::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		Scorch( CITIZEN_SCORCH_RATE, CITIZEN_SCORCH_FLOOR );
 	}
 
+#if defined ( SCHOOLADVENTURES_DLL )
+	if ( m_bInvulnerable )
+		return 0;
+#endif
+
 	CTakeDamageInfo newInfo = info;
 
 	if( IsInSquad() && (info.GetDamageType() & DMG_BLAST) && info.GetInflictor() )
@@ -3832,6 +3849,22 @@ void CNPC_Citizen::InputSpeakIdleResponse( inputdata_t &inputdata )
 {
 	SpeakIfAllowed( TLK_ANSWER, NULL, true );
 }
+
+#if defined ( SCHOOLADVENTURES_DLL )
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CNPC_Citizen::InputBecomeInvulnerable(inputdata_t &input)
+{
+	m_bInvulnerable = true;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CNPC_Citizen::InputBecomeVulnerable(inputdata_t &input)
+{
+	m_bInvulnerable = false;
+}
+#endif // defined ( SCHOOLADVENTURES_DLL )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

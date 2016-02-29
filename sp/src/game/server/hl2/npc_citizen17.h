@@ -240,6 +240,10 @@ public:
 	void			InputSetAmmoResupplierOn( inputdata_t &inputdata );
 	void			InputSetAmmoResupplierOff( inputdata_t &inputdata );
 	void			InputSpeakIdleResponse( inputdata_t &inputdata );
+#if defined ( SCHOOLADVENTURES_DLL )
+	void			InputBecomeInvulnerable(inputdata_t &inputdata);
+	void			InputBecomeVulnerable(inputdata_t &inputdata);
+#endif // defined ( SCHOOLADVENTURES_DLL )
 
 	//---------------------------------
 	//	Sounds & speech
@@ -336,6 +340,10 @@ private:
 	bool					m_bNeverLeavePlayerSquad; // Don't leave the player squad unless killed, or removed via Entity I/O. 
 	
 	//-----------------------------------------------------
+
+#if defined ( SCHOOLADVENTURES_DLL )
+	bool					m_bInvulnerable;
+#endif // defined ( SCHOOLADVENTURES_DLL )
 	
 	DECLARE_DATADESC();
 #ifdef _XBOX
