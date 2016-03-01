@@ -804,16 +804,15 @@ CChoreoStringPool g_ChoreoStringPool;
 
 CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 {
-#if defined ( MOP_CLIENT_DLL )
-
+#if defined ( CLAUSTROPHOBIA_CLIENT_DLL )
 	char loadfile[MAX_PATH];
 	Q_strncpy( loadfile, filename, sizeof( loadfile ) );
 	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
 	Q_FixSlashes( loadfile );
-
+ 
 	void *pBuffer = 0;
 	CChoreoScene *pScene = NULL;
-
+ 
 	int fileSize = filesystem->ReadFileEx( loadfile, "MOD", &pBuffer, true );
 	if (fileSize)
 	{
@@ -825,15 +824,15 @@ CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 		fileSize = scenefilecache->GetSceneBufferSize( loadfile );
 		if ( fileSize <= 0 )
 			return NULL;
-
+ 
 		pBuffer = new char[ fileSize ];
 		if ( !scenefilecache->GetSceneData( filename, (byte *)pBuffer, fileSize ) )
 		{
 			delete[] pBuffer;
 			return NULL;
 		}
-
-
+ 
+ 
 		if ( IsBufferBinaryVCD( (char*)pBuffer, fileSize ) )
 		{
 			pScene = new CChoreoScene( this );
@@ -846,17 +845,16 @@ CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 			}
 		}
 	}
-
+ 
 	if(pScene)
 	{
 		pScene->SetPrintFunc( Scene_Printf );
 		pScene->SetEventCallbackInterface( this );
 	}
-
+ 
 	delete[] pBuffer;
 	return pScene;
 #else
-
 	char loadfile[ 512 ];
 	Q_strncpy( loadfile, filename, sizeof( loadfile ) );
 	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
@@ -899,7 +897,7 @@ CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 
 	delete[] pBuffer;
 	return pScene;
-#endif
+#endif // defined ( CLAUSTROPHOBIA_CLIENT_DLL )
 }
 
 
