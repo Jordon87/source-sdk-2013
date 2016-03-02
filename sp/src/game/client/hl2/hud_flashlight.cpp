@@ -127,6 +127,7 @@ void CHudFlashlight::Paint()
 	clrFlashlight = ( enabledChunks < ( chunkCount / 4 ) ) ? gHUD.m_clrCaution : gHUD.m_clrNormal;
 	clrFlashlight[3] = ( bIsOn ) ? 255: 32;
 
+#if !defined ( NOESCAPE_CLIENT_DLL )
 	// Pick the right character given our current state
 	wchar_t pState = ( bIsOn ) ? WCHAR_FLASHLIGHT_ON : WCHAR_FLASHLIGHT_OFF;
 
@@ -134,6 +135,7 @@ void CHudFlashlight::Paint()
 	surface()->DrawSetTextColor( clrFlashlight );
 	surface()->DrawSetTextPos( m_IconX, m_IconY );
 	surface()->DrawUnicodeChar( pState );
+#endif
 
 	// Don't draw the progress bar is we're fully charged
 	if ( bIsOn == false && chunkCount == enabledChunks )
