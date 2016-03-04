@@ -10,6 +10,10 @@
 #include "saverestore_utlvector.h"
 #include "triggers.h"
 
+#if defined ( DAYHARD_DLL )
+#include "ai_basenpc.h"
+#endif // defined ( DAYHARD_DLL )
+
 //-----------------------------------------------------------------------------
 // Weapon-dissolve trigger; all weapons in this field (sans the physcannon) are destroyed!
 //-----------------------------------------------------------------------------
@@ -466,6 +470,15 @@ void CTriggerPhysicsTrap::Touch( CBaseEntity *pOther )
 #endif
 
 	pAnim->Dissolve( NULL, gpGlobals->curtime, false, m_nDissolveType );
+
+#if defined ( DAYHARD_DLL )
+	if (FStrEq(STRING(gpGlobals->mapname), "dayHARDpart3") && pAnim->IsNPC() && FClassnameIs(pAnim, "npc_antlionguard"))
+	{
+		CAI_BaseNPC* pNPC = assert_cast<CAI_BaseNPC*>(pAnim);
+
+		pNPC->m_OnDeath.FireOutput( this, this );
+	}
+#endif // defined ( DAYHARD_DLL )
 }
 
 //-----------------------------------------------------------------------------

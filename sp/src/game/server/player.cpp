@@ -7602,6 +7602,12 @@ void CStripWeapons::StripWeapons(inputdata_t &data, bool stripSuit)
 	if ( pPlayer )
 	{
 		pPlayer->RemoveAllItems( stripSuit );
+
+#if defined ( DAYHARD_DLL )
+		CBaseViewModel *pViewModel = pPlayer->GetViewModel(0);
+		if (pViewModel)
+			pViewModel->AddEffects(EF_NODRAW);
+#endif
 	}
 }
 
