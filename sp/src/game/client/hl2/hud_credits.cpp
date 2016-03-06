@@ -452,6 +452,11 @@ void CHudCredits::DrawLogo( void )
 
 	if ( Q_strlen( m_szLogo2 ) > 0 )
 	{
+#if defined ( ABYSS_CLIENT_DLL )
+		m_hTFont = vgui::scheme()->GetIScheme( scheme )->GetFont( "CreditsIntroSubLogo" );
+		surface()->DrawSetTextFont( m_hTFont );
+#endif // defined ( ABYSS_CLIENT_DLL )
+
 		g_pVGuiLocalize->ConvertANSIToUnicode( m_szLogo2, unicode, sizeof( unicode ) );
 
 		iStringWidth = GetStringPixelWidth( unicode, m_hTFont ); 
