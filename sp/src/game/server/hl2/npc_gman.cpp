@@ -42,6 +42,10 @@ public:
 	bool	CreateBehaviors( void );
 	int		SelectSchedule( void );
 
+#if defined ( OFFSHORE_DLL )
+	int		OnTakeDamage_Alive(const CTakeDamageInfo& info) { return 0; }
+#endif // defined ( OFFSHORE_DLL )
+
 private:
 	CAI_FollowBehavior	m_FollowBehavior;
 };

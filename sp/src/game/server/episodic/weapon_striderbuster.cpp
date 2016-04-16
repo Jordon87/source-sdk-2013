@@ -270,7 +270,11 @@ void CWeaponStriderBuster::Spawn( void )
 //-----------------------------------------------------------------------------
 void CWeaponStriderBuster::Activate( void )
 {	
+#if defined ( OFFSHORE_DLL )
+	g_iszVehicle = AllocPooledString( "prop_vehicle_jeep_episodic" );
+#else
 	g_iszVehicle = AllocPooledString( "prop_vehicle_jeep" );
+#endif // defined ( OFFSHORE_DLL )
 	BaseClass::Activate();
 }
 

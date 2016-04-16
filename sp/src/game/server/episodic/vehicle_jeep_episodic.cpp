@@ -314,7 +314,11 @@ LINK_ENTITY_TO_CLASS( info_target_vehicle_transition, CInfoTargetVehicleTransiti
 //	CPropJeepEpisodic
 //
 
+#if defined ( OFFSHORE_DLL )
+LINK_ENTITY_TO_CLASS( prop_vehicle_jeep_episodic, CPropJeepEpisodic );
+#else
 LINK_ENTITY_TO_CLASS( prop_vehicle_jeep, CPropJeepEpisodic );
+#endif // defined ( OFFSHORE_DLL )
 
 BEGIN_DATADESC( CPropJeepEpisodic )
 
