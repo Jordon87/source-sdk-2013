@@ -240,6 +240,9 @@ public:
 	void			InputSetAmmoResupplierOn( inputdata_t &inputdata );
 	void			InputSetAmmoResupplierOff( inputdata_t &inputdata );
 	void			InputSpeakIdleResponse( inputdata_t &inputdata );
+#if defined ( THELIGHTHOUSE_DLL )
+	void			InputIgnorePlayerPushing( inputdata_t &inputdata );
+#endif
 
 	//---------------------------------
 	//	Sounds & speech
@@ -336,7 +339,7 @@ private:
 	bool					m_bNeverLeavePlayerSquad; // Don't leave the player squad unless killed, or removed via Entity I/O. 
 	
 	//-----------------------------------------------------
-	
+
 	DECLARE_DATADESC();
 #ifdef _XBOX
 protected:

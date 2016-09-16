@@ -357,6 +357,10 @@ BEGIN_DATADESC( CNPC_Citizen )
 	DEFINE_INPUTFUNC( FIELD_VOID,   "ThrowHealthKit", InputForceHealthKitToss ),
 #endif
 
+#if defined ( THELIGHTHOUSE_DLL )
+	DEFINE_INPUTFUNC( FIELD_BOOLEAN, "IgnorePlayerPushing",	InputIgnorePlayerPushing ),
+#endif
+
 	DEFINE_USEFUNC( CommanderUse ),
 	DEFINE_USEFUNC( SimpleUse ),
 
@@ -3832,6 +3836,16 @@ void CNPC_Citizen::InputSpeakIdleResponse( inputdata_t &inputdata )
 {
 	SpeakIfAllowed( TLK_ANSWER, NULL, true );
 }
+
+#if defined ( THELIGHTHOUSE_DLL )
+void CNPC_Citizen::InputIgnorePlayerPushing(inputdata_t &inputdata)
+{
+	if (inputdata.value.Bool() != false)
+		AddSpawnFlags(SF_NPC_NO_PLAYER_PUSHAWAY);
+	else
+		RemoveSpawnFlags(SF_NPC_NO_PLAYER_PUSHAWAY);
+}
+#endif
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
