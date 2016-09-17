@@ -222,6 +222,22 @@ Vector CTriggerWeaponDissolve::GetConduitPoint( CBaseEntity *pTarget )
 //-----------------------------------------------------------------------------
 void CTriggerWeaponDissolve::DissolveThink( void )
 {
+#if defined ( NEXT_DLL )
+	//
+	// On level next_04, let the player keep one weapon.
+	//
+	if (FStrEq(STRING(gpGlobals->mapname), "next_04") && GetEntityName() != NULL_STRING && FStrEq(STRING(GetEntityName()), "weapon_dissolve"))
+	{
+		if (m_pWeapons.Count() == 1)
+		{
+			CBaseCombatWeapon *pWeapon = m_pWeapons[0];
+
+			if (pWeapon && !FClassnameIs(pWeapon, "weapon_physcannon"))
+				m_pWeapons.Purge();
+		}
+	}
+#endif
+
 	int	numWeapons = m_pWeapons.Count();
 
 	// Dissolve all the items within the volume
