@@ -6581,9 +6581,15 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 	}
 	else
 	{
+#if defined ( DWDDLL )
+		// Don't let the player touch the item unless unobstructed
+		if ( !UTIL_ItemCanBeTouchedByPlayer( pWeapon, this ) && !gEvilImpulse101 )
+			return false;
+#else
 		// Don't let the player fetch weapons through walls (use MASK_SOLID so that you can't pickup through windows)
 		if( pWeapon->FVisible( this, MASK_SOLID ) == false && !(GetFlags() & FL_NOTARGET) )
 			return false;
+#endif
 	}
 	
 	// ----------------------------------------

@@ -428,7 +428,11 @@ void CHudCredits::DrawLogo( void )
 	}
 	else
 	{
+#if defined ( DWD_CLIENT_DLL )
+		Q_snprintf( szLogoFont, sizeof( szLogoFont ), "CreditsIntroLogo" );
+#else
 		Q_snprintf( szLogoFont, sizeof( szLogoFont ), "WeaponIcons" );
+#endif
 	}
 
 	vgui::HScheme scheme = vgui::scheme()->GetScheme( "ClientScheme" );
