@@ -160,6 +160,9 @@ bool g_bCacheLegacyFlashlightStatus = true;
 bool g_bUseLegacyFlashlight;
 bool Flashlight_UseLegacyVersion( void )
 {
+#if defined ( REBELLION_DLL )
+	return true;
+#else
 	// If this is the first run through, cache off what the answer should be (cannot change during a session)
 	if ( g_bCacheLegacyFlashlightStatus )
 	{
@@ -176,6 +179,7 @@ bool Flashlight_UseLegacyVersion( void )
 
 	// Return the results
 	return g_bUseLegacyFlashlight;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1103,6 +1107,42 @@ void CHL2_Player::PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper)
 	BaseClass::PlayerRunCommand( ucmd, moveHelper );
 }
 
+#if defined ( REBELLION_DLL )
+bool CHL2_Player::CheckIfPlayerCanReceiveCrowbar()
+{
+	static const char* mapsOnWhichToGiveCrowbar[] =
+	{
+		"02",
+		"03_1",
+		"03_2"
+	};
+
+	for (int i = 0; i < ARRAYSIZE(mapsOnWhichToGiveCrowbar); i++)
+	{
+		if (FStrEq(STRING(gpGlobals->mapname), mapsOnWhichToGiveCrowbar[i]))
+			return true;
+	}
+
+	return false;
+}
+
+void CHL2_Player::GiveCrowbarToPlayer()
+{
+	bool playerHasCrowbar = false;
+	CBaseCombatWeapon* weapon = NULL;
+
+	for (int i = 0; i < WeaponCount() && !playerHasCrowbar; i++)
+	{
+		weapon = GetWeapon(i);
+		if (weapon && FClassnameIs(weapon, "weapon_crowbar"))
+			playerHasCrowbar = true;
+	}
+
+	if (!playerHasCrowbar)
+		GiveNamedItem("weapon_crowbar");
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: Sets HL2 specific defaults.
 //-----------------------------------------------------------------------------
@@ -1142,6 +1182,11 @@ void CHL2_Player::Spawn(void)
 	GetPlayerProxy();
 
 	SetFlashlightPowerDrainScale( 1.0f );
+
+#if defined ( REBELLION_DLL )
+	if (CheckIfPlayerCanReceiveCrowbar())
+		GiveCrowbarToPlayer();
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -3280,6 +3325,11 @@ void CHL2_Player::OnRestore()
 {
 	BaseClass::OnRestore();
 	m_pPlayerAISquad = g_AI_SquadManager.FindCreateSquad(AllocPooledString(PLAYER_SQUADNAME));
+
+#if defined ( REBELLION_DLL )
+	if (CheckIfPlayerCanReceiveCrowbar())
+		GiveCrowbarToPlayer();
+#endif
 }
 
 //---------------------------------------------------------

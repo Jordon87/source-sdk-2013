@@ -92,6 +92,11 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
+#if defined ( REBELLION_DLL )
+	bool				CheckIfPlayerCanReceiveCrowbar();
+	void				GiveCrowbarToPlayer();
+#endif
+
 	virtual void		CreateCorpse( void ) { CopyToBodyQue( this ); };
 
 	virtual void		Precache( void );
