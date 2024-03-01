@@ -2381,6 +2381,9 @@ void CNPC_BaseZombie::ReleaseHeadcrab( const Vector &vecOrigin, const Vector &ve
 	CAI_BaseNPC		*pCrab;
 	Vector vecSpot = vecOrigin;
 
+	if (m_fIsHeadless)
+		return;
+
 	// Until the headcrab is a bodygroup, we have to approximate the
 	// location of the head with magic numbers.
 	if( !m_fIsTorso )

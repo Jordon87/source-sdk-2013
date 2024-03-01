@@ -292,5 +292,64 @@ private:
 	float m_flNextHopTime;		// Keeps us from hopping too often due to damage.
 };
 
+class CBurstHeadcrab : public CBaseHeadcrab
+{
+	DECLARE_CLASS(CBurstHeadcrab, CBaseHeadcrab);
+
+public:
+	void Eject(const QAngle& vecAngles, float flVelocityScale, CBaseEntity* pEnemy);
+	void EjectTouch(CBaseEntity* pOther);
+
+	//
+	// CBaseHeadcrab implementation.
+	//
+	void TouchDamage(CBaseEntity* pOther);
+	void Touch(CBaseEntity* pOther);
+	void BiteSound(void);
+	void AttackSound(void);
+
+	//
+	// CAI_BaseNPC implementation.
+	//
+	virtual void PrescheduleThink(void);
+	virtual void BuildScheduleTestBits(void);
+	virtual int SelectSchedule(void);
+	virtual int TranslateSchedule(int scheduleType);
+
+	virtual Activity NPC_TranslateActivity(Activity eNewActivity);
+	virtual void HandleAnimEvent(animevent_t* pEvent);
+	virtual float MaxYawSpeed(void);
+
+	virtual int	GetSoundInterests(void) { return (BaseClass::GetSoundInterests() | SOUND_DANGER | SOUND_BULLET_IMPACT); }
+
+	bool IsHeavyDamage(const CTakeDamageInfo& info);
+
+	virtual void PainSound(const CTakeDamageInfo& info);
+	virtual void DeathSound(const CTakeDamageInfo& info);
+	virtual void IdleSound(void);
+	virtual void AlertSound(void);
+	virtual void ImpactSound(void);
+	virtual void TelegraphSound(void);
+
+	//
+	// CBaseEntity implementation.
+	//
+	virtual void Precache(void);
+	virtual void Spawn(void);
+
+	DEFINE_CUSTOM_AI;
+	DECLARE_DATADESC();
+
+private:
+
+
+	void JumpFlinch(const Vector* pvecAwayFromPos);
+	void Panic(float flDuration);
+
+	bool m_bPanicState;
+	float m_flPanicStopTime;
+	float m_flNextHopTime;		// Keeps us from hopping too often due to damage.
+};
+
 
 #endif // NPC_HEADCRAB_H

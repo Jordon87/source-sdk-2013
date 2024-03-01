@@ -166,10 +166,8 @@ private:
 	Vector				 m_vPositionCharged;
 };
 
-#if !defined ( ELEVENEIGHTYSEVEN_DLL )
 LINK_ENTITY_TO_CLASS( npc_zombie, CZombie );
 LINK_ENTITY_TO_CLASS( npc_zombie_torso, CZombie );
-#endif
 
 //---------------------------------------------------------
 //---------------------------------------------------------
@@ -268,19 +266,19 @@ void CZombie::Spawn( void )
 	if( FClassnameIs( this, "npc_zombie" ) )
 	{
 		m_fIsTorso = false;
+		m_fIsHeadless = true;
 	}
 	else
 	{
 		// This was placed as an npc_zombie_torso
 		m_fIsTorso = true;
+		m_fIsHeadless = false;
 	}
-
-	m_fIsHeadless = false;
 
 #ifdef HL2_EPISODIC
 	SetBloodColor( BLOOD_COLOR_ZOMBIE );
 #else
-	SetBloodColor( BLOOD_COLOR_GREEN );
+	SetBloodColor( BLOOD_COLOR_RED );
 #endif // HL2_EPISODIC
 
 	m_iHealth			= sk_zombie_health.GetFloat();
