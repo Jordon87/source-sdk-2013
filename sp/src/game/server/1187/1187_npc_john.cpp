@@ -71,7 +71,7 @@ public:
 	void Event_KilledOther(CBaseEntity* pVictim, const CTakeDamageInfo& info);
 	int  OnTakeDamage_Alive(const CTakeDamageInfo& info);
 	void Touch(CBaseEntity* pOther);
-	void DeathSound(const CTakeDamageInfo& info);;
+	void DeathSound(const CTakeDamageInfo& info);
 
 	virtual void CallingForHelpScene(char *sceneName);
 	virtual bool IsDownDisabled(void);
