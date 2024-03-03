@@ -745,7 +745,10 @@ private:
 	// Various schedule selections based on NPC_STATE
 	int					SelectIdleSchedule();
 	int					SelectAlertSchedule();
+public:
+	// Made public as John's NPC calls for the CAI_BaseNPC's function
 	int					SelectCombatSchedule();
+private:
 	virtual int			SelectDeadSchedule();
 	int					SelectScriptSchedule();
 	int					SelectInteractionSchedule();
