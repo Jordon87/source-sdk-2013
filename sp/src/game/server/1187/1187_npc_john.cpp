@@ -60,6 +60,7 @@ public:
 	void Precache(void);
 	void Spawn(void);
 	Class_T	Classify(void);
+	void TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator);
 	bool IgnorePlayerPushing(void);
 	void StartTask(const Task_t* pTask);
 	bool IsValidEnemy(CBaseEntity* pEnemy);
@@ -70,6 +71,7 @@ public:
 	void Event_KilledOther(CBaseEntity* pVictim, const CTakeDamageInfo& info);
 	int  OnTakeDamage_Alive(const CTakeDamageInfo& info);
 	void Touch(CBaseEntity* pOther);
+	void DeathSound(const CTakeDamageInfo& info);;
 
 	virtual void CallingForHelpScene(char *sceneName);
 	virtual bool IsDownDisabled(void);
@@ -247,6 +249,14 @@ void CNPC_John::Spawn()
 Class_T CNPC_John::Classify(void)
 {
 	return CLASS_PLAYER_ALLY_VITAL;
+}
+
+void CNPC_John::TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator)
+{
+	BaseClass::TraceAttack(info, vecDir, ptr, pAccumulator);
+
+	// FIXME: hack until some way of removing decals after healing
+	m_fNoDamageDecal = true;
 }
 
 bool CNPC_John::IgnorePlayerPushing(void)
@@ -610,6 +620,12 @@ void CNPC_John::Touch(CBaseEntity* pOther)
 			}
 		}
 	}
+}
+
+void CNPC_John::DeathSound(const CTakeDamageInfo& info)
+{
+	SentenceStop();
+	EmitSound("npc_john.die");
 }
 
 void CNPC_John::CallingForHelpScene(char* sceneName)
