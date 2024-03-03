@@ -55,7 +55,7 @@ class CNPC_John : public CNPC_PlayerCompanion
 	DECLARE_DATADESC();
 public:
 
-	virtual void SelectModel(void);
+	void SelectModel(void);
 
 	void Precache(void);
 	void Spawn(void);
@@ -204,6 +204,8 @@ void CNPC_John::Spawn()
 	}
 
 	BaseClass::Spawn();
+	SetSolid(SOLID_BBOX);
+	AddSolidFlags(FSOLID_NOT_STANDABLE);
 	SetMoveType(MOVETYPE_STEP);
 
 	CapabilitiesAdd(bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP | bits_CAP_MOVE_GROUND);
@@ -230,7 +232,7 @@ void CNPC_John::Spawn()
 	m_flSpeakAgain = gpGlobals->curtime + 1.0f;
 
 	m_FollowBehavior.SetFollowTarget(UTIL_GetLocalPlayer());
-	m_FollowBehavior.SetParameters(AIF_SIMPLE);
+	m_FollowBehavior.SetParameters(AIF_SIDEKICK);
 
 	AddEFlags(EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION);
 
@@ -401,15 +403,15 @@ void CNPC_John::Think(void)
 			const char* CallforHelp2 = CallingForHelp();
 			SetExpression(CallforHelp2);
 		}
-
+	
 		m_flBleed = gpGlobals->curtime + 1.0f;
-
+	
 		trace_t tr;
 		Vector vecAbsStart, vecAbsEnd;
-
+	
 		vecAbsStart = GetAbsOrigin() + Vector(0, 0, 8);
 		vecAbsEnd = GetAbsOrigin() - Vector(0, 0, 24);
-
+	
 		UTIL_TraceLine(vecAbsStart, vecAbsEnd, MASK_SOLID_BRUSHONLY, this, NULL, &tr);
 		UTIL_BloodDecalTrace(&tr, BLOOD_COLOR_RED);
 	}
@@ -432,6 +434,8 @@ void CNPC_John::Think(void)
 	{
 		MeleeAttack();
 	}
+
+	BaseClass::Think();
 }
 
 void CNPC_John::Event_KilledOther(CBaseEntity* pVictim, const CTakeDamageInfo& info)
