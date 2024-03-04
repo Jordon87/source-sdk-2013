@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-//	CLIENT_EPISODIC.VPC
+//	CLIENT_HL2.VPC
 //
 //	Project Script
 //-----------------------------------------------------------------------------
@@ -8,13 +8,14 @@ $Macro SRCDIR		"..\.."
 $Macro GAMENAME 	"1187" [$SOURCESDK]
 
 $Include "$SRCDIR\game\client\client_base.vpc"
+$Include "$SRCDIR\game\protobuf_include.vpc"
 
 $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	".\1187;.\1187\vgui;.\hl2;.\hl2\elements;$SRCDIR\game\shared\hl2;$SRCDIR\game\shared\1187;..\..\public;$BASE"
-		$PreprocessorDefinitions		"$BASE;HL2_CLIENT_DLL;ELEVENEIGHTYSEVEN_DLL;ELEVENEIGHTYSEVEN_CLIENT_DLL"
+		$AdditionalIncludeDirectories	".\hl2;.\hl2\elements;$SRCDIR\game\shared\hl2;$BASE"
+		$PreprocessorDefinitions		"$BASE;HL2_CLIENT_DLL"
 	}
 }
 
@@ -74,6 +75,8 @@ $Project "Client (1187)"
 			$File	"hl2\c_weapon_physcannon.cpp"
 			$File	"hl2\c_weapon_stunstick.cpp"
 			$File	"$SRCDIR\game\shared\hl2\citadel_effects_shared.h"
+			$File	"hl2\clientmode_hlnormal.cpp"
+			$File	"hl2\clientmode_hlnormal.h"
 			$File	"death.cpp"
 			$File	"$SRCDIR\game\shared\hl2\env_headcrabcanister_shared.cpp"
 			$File	"$SRCDIR\game\shared\hl2\env_headcrabcanister_shared.h"
@@ -81,88 +84,33 @@ $Project "Client (1187)"
 			$File	"hl2\fx_bugbait.cpp"
 			$File	"hl2\fx_hl2_impacts.cpp"
 			$File	"hl2\fx_hl2_tracers.cpp"
+			$File	"hl2\hl2_clientmode.cpp"
 			$File	"$SRCDIR\game\shared\hl2\hl2_gamerules.cpp"
 			$File	"$SRCDIR\game\shared\hl2\hl2_gamerules.h"
 			$File	"$SRCDIR\game\shared\hl2\hl2_shareddefs.h"
 			$File	"$SRCDIR\game\shared\hl2\hl2_usermessages.cpp"
 			$File	"$SRCDIR\game\shared\hl2\hl_gamemovement.cpp"
 			$File	"$SRCDIR\game\shared\hl2\hl_gamemovement.h"
+			$File	"hl2\hl_in_main.cpp"
+			$File	"hl2\hl_prediction.cpp"
+			$File	"hl2\hud_ammo.cpp"
 			$File	"hl2\hud_battery.cpp"
 			$File	"hl2\hud_blood.cpp"
 			$File	"hl2\hud_credits.cpp"
 			$File	"hl2\hud_damageindicator.cpp"
+			$File	"hl2\hud_flashlight.cpp"
 			$File	"hl2\hud_health.cpp"
-			$File	"hl2\hud_poisondamageindicator.cpp"			
+			$File	"hl2\hud_poisondamageindicator.cpp"
 			$File	"hud_posture.cpp"
 			$File	"hl2\hud_quickinfo.cpp"
+			$File	"hud_squadstatus.cpp"
 			$File	"hl2\hud_suitpower.cpp"
 			$File	"hl2\hud_suitpower.h"
+			$File	"hl2\hud_weaponselection.cpp"
 			$File	"hl2\hud_zoom.cpp"
 			$File	"hl2\shieldproxy.cpp"
-			$File	"episodic\c_vort_charge_token.cpp"
-			$File	"1187\1187_clientmode.cpp"
-			$File	"1187\1187_gamesettings_config.h"
-			$File	"1187\1187_hud_ammo.cpp"
-			$File	"1187\1187_hud_easteregg.cpp"
-			$File	"1187\1187_hud_key.cpp"
-			$File	"1187\1187_hud_squadstatus.cpp"
-			$File	"1187\1187_hud_weaponselection.cpp"
-			$File	"1187\1187_in_main.cpp"
-			$File	"1187\1187_prediction.cpp"
-			$File	"1187\clientmode_1187normal.cpp"
-			$File	"1187\clientmode_1187normal.h"
-			$File	"1187\c_1187_basecombatweapon.cpp"
-			$File	"1187\c_1187_basecombatweapon.h"
-			$File	"1187\c_1187_baseviewmodel.cpp"
-			$File	"1187\c_1187_baseviewmodel.h"
-			$File	"1187\c_1187_npc_vortigaunt_enhanced.cpp"
-			$File	"1187\c_1187_player.cpp"
-			$File	"1187\c_1187_player.h"
-			$File	"1187\c_1187_playerlocaldata.cpp"
-			$File	"1187\c_1187_playerlocaldata.h"
-			$File	"1187\c_1187_weapon_beretta.cpp"
-			$File	"1187\c_1187_weapon_shotgun.cpp"
-			$File	"1187\c_weapon__stubs_1187.cpp"
-			$File	"1187\vgui_rootpanel_1187.cpp"
-			$File	"vdc\tne_RenderTargets.cpp"
-			$File	"vdc\tne_RenderTargets.h"
-			$File	"$SRCDIR\game\shared\1187\1187_basecombatweapon_shared.cpp"
-			$File	"$SRCDIR\game\shared\1187\1187_basecombatweapon_shared.h"
-			$File	"$SRCDIR\game\shared\1187\1187_baseviewmodel_shared.cpp"
-			$File	"$SRCDIR\game\shared\1187\1187_baseviewmodel_shared.h"
-			$File	"$SRCDIR\game\shared\1187\1187_gamemovement.cpp"
-			$File	"$SRCDIR\game\shared\1187\1187_gamemovement.h"
-			$File	"$SRCDIR\game\shared\1187\1187_gamerules.cpp"
-			$File	"$SRCDIR\game\shared\1187\1187_gamerules.h"
-			$File	"$SRCDIR\game\shared\1187\1187_movedata.h"
-			$File	"$SRCDIR\game\shared\1187\1187_player_shared.h"
-			$File	"$SRCDIR\game\shared\1187\1187_usermessages.cpp"
-			$File	"$SRCDIR\game\shared\1187\1187_weapon_parse.cpp"
-			$File	"$SRCDIR\game\shared\1187\1187_weapon_parse.h"
-			$File	"$SRCDIR\game\shared\1187\1187_weapon_parse_default.cpp"
-		}
-		
-		$Folder	"1187 GameUI"
-		{
-			$File	"1187\gamui\1187_betaframe.cpp"
-			$File	"1187\gamui\1187_betaframe.h"
-			$File	"1187\gamui\1187_gamesettingsdialog.cpp"
-			$File	"1187\gamui\1187_gamesettingsdialog.h"
-			$File	"1187\gamui\1187\1187_vimagebutton.cpp"
-			$File	"1187\gamui\1187\1187_vimagebutton.h"
-			$File	"1187\gamui\1187\1187_vmainmenu.cpp"
-			$File	"1187\gamui\1187\1187_vmainmenu.h"
-		}
-		
-		$Folder	"1187 VGUI"
-		{		
-			$File	"1187\vgui\1187_beta.cpp"
-			$File	"1187\vgui\1187_beta.h"
-			$File	"1187\vgui\1187_gamesettings.cpp"
-			$File	"1187\vgui\1187_gamesettings.h"
-			$File	"1187\vgui\1187_mainmenu.cpp"
-			$File	"1187\vgui\1187_mainmenu.h"
+			$File	"hl2\vgui_rootpanel_hl2.cpp"
+			$File 	"episodic\c_vort_charge_token.cpp"
 		}
 	}
-	
 }
