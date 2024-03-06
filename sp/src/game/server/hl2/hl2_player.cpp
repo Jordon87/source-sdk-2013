@@ -428,6 +428,14 @@ void CHL2_Player::Precache( void )
 {
 	BaseClass::Precache();
 
+	PrecacheModel("models/Weapons/w_1187fp.mdl");
+	PrecacheModel("models/Weapons/w_grenade.mdl");
+
+	UTIL_PrecacheOther("npc_grenade_frag");
+
+	PrecacheScriptSound("WeaponFrag.Throw");
+	PrecacheScriptSound("WeaponFrag.Roll");
+
 	PrecacheScriptSound( "HL2Player.SprintNoPower" );
 	PrecacheScriptSound( "HL2Player.SprintStart" );
 	PrecacheScriptSound( "HL2Player.UseDeny" );
@@ -646,6 +654,7 @@ void CHL2_Player::PreThink(void)
 	}
 
 	VPROF_SCOPE_BEGIN( "CHL2_Player::PreThink-Speed" );
+	CameraMovement();
 	HandleSpeedChanges();
 #ifdef HL2_EPISODIC
 	HandleArmorReduction();
@@ -1117,6 +1126,9 @@ void CHL2_Player::Spawn(void)
 #endif
 #endif
 
+	SetModel("models/Weapons/w_1187fp.mdl");
+	SetBodygroup(0,0);
+
 	BaseClass::Spawn();
 
 	//
@@ -1144,6 +1156,8 @@ void CHL2_Player::Spawn(void)
 	GetPlayerProxy();
 
 	SetFlashlightPowerDrainScale( 1.0f );
+
+	Msg("1187: Map is: %s", gpGlobals->mapname);
 }
 
 //-----------------------------------------------------------------------------
@@ -2251,6 +2265,46 @@ void CHL2_Player::OnSquadMemberKilled( inputdata_t &data )
 	user.MakeReliable();
 	UserMessageBegin( user, "SquadMemberDied" );
 	MessageEnd();
+}
+
+void CHL2_Player::CameraMovement()
+{
+	if (GetViewEntity())
+	{
+		if (ClassMatches("point_viewcontrol"))
+		{
+			engine->ClientCommand(this->edict(), "camhack_control 1");
+		}
+		else
+		{
+			engine->ClientCommand(this->edict(), "camhack_control 0");
+		}
+	}
+
+	if (m_nButtons & IN_MOVELEFT)
+		engine->ClientCommand(this->edict(), "camhack_left 1");
+	else
+		engine->ClientCommand(this->edict(), "camhack_left 0");
+
+	if (m_nButtons & IN_MOVERIGHT)
+		engine->ClientCommand(this->edict(), "camhack_right 1");
+	else
+		engine->ClientCommand(this->edict(), "camhack_right 0");
+
+	if (m_nButtons & IN_FORWARD)
+		engine->ClientCommand(this->edict(), "camhack_forward 1");
+	else
+		engine->ClientCommand(this->edict(), "camhack_forward 0");
+
+	if (m_nButtons & IN_BACK)
+		engine->ClientCommand(this->edict(), "camhack_back 1");
+	else
+		engine->ClientCommand(this->edict(), "camhack_back 0");
+
+	if (m_nButtons & IN_SPEED)
+		engine->ClientCommand(this->edict(), "camhack_speed 1");
+	else
+		engine->ClientCommand(this->edict(), "camhack_speed 0");
 }
 
 //-----------------------------------------------------------------------------

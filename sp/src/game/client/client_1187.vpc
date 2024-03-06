@@ -111,6 +111,11 @@ $Project "Client (1187)"
 			$File	"hl2\shieldproxy.cpp"
 			$File	"hl2\vgui_rootpanel_hl2.cpp"
 			$File 	"episodic\c_vort_charge_token.cpp"
+			$File 	"1187\vgui\1187_mainmenu.cpp"
+			$File 	"1187\vgui\1187_mainmenu.h"
+			$File 	"1187\vgui\vgui_imagebutton.cpp"
+			$File 	"1187\vgui\vgui_imagebutton.h"
+			$File 	"1187\loadingscreenproxy.cpp"
 		}
 	}
 }

@@ -122,6 +122,20 @@ ConVar demo_fov_override( "demo_fov_override", "0", FCVAR_CLIENTDLL | FCVAR_DONT
 ConVar cl_meathook_neck_pivot_ingame_up( "cl_meathook_neck_pivot_ingame_up", "7.0" );
 ConVar cl_meathook_neck_pivot_ingame_fwd( "cl_meathook_neck_pivot_ingame_fwd", "3.0" );
 
+ConVar cl_viewclamp("cl_viewclamp", "6", FCVAR_ARCHIVE);
+ConVar cl_viewroll("cl_viewroll", "15", FCVAR_ARCHIVE);
+ConVar cl_viewrealism("cl_viewrealism", "1", FCVAR_ARCHIVE);
+ConVar cl_viewdebug("cl_viewdebug", "0");
+
+ConVar camhack_speed("camhack_speed", "0", FCVAR_HIDDEN);
+ConVar camhack_left("camhack_left", "0", FCVAR_HIDDEN);
+ConVar camhack_right("camhack_right", "0", FCVAR_HIDDEN);
+ConVar camhack_forward("camhack_forward", "0", FCVAR_HIDDEN);
+ConVar camhack_back("camhack_back", "0", FCVAR_HIDDEN);
+ConVar camhack_control("camhack_control", "0");
+
+ConVar cl_righthand("cl_righthand", "1", FCVAR_ARCHIVE);
+
 void RecvProxy_LocalVelocityX( const CRecvProxyData *pData, void *pStruct, void *pOut );
 void RecvProxy_LocalVelocityY( const CRecvProxyData *pData, void *pStruct, void *pOut );
 void RecvProxy_LocalVelocityZ( const CRecvProxyData *pData, void *pStruct, void *pOut );
@@ -1367,6 +1381,128 @@ void C_BasePlayer::CreateWaterEffects( void )
 //-----------------------------------------------------------------------------
 void C_BasePlayer::OverrideView( CViewSetup *pSetup )
 {
+	if (!cl_viewrealism.GetInt() || camhack_control.GetInt())
+		return;
+
+	C_BaseCombatWeapon* pWeapon = GetActiveWeapon();
+
+	QAngle playerangles;
+
+	playerangles = pSetup->angles;
+
+	if (pWeapon)
+	{
+		if (GetViewModel(0))
+		{
+			C_BaseViewModel* pViewModel = GetViewModel(0);
+
+			int iPlayerEyes;
+
+			iPlayerEyes = pViewModel->LookupAttachment("1187eyefix");
+
+			if (iPlayerEyes != -1)
+			{
+				C_BaseViewModel* vm = GetViewModel(0);
+
+				Vector origin(0,0,0);
+				vm->GetAttachment(iPlayerEyes, origin, playerangles);
+			}
+		}
+	}
+
+	float targetz, valuez, speedz;
+
+	if (camhack_right.GetInt() && (GetAbsVelocity().Length() > 90.0f))
+	{
+		targetz = cl_viewclamp.GetFloat();
+		speedz = cl_viewroll.GetFloat() * gpGlobals->frametime;
+		valuez = unk_0xfe4;
+	}
+	else if (camhack_left.GetInt() && (GetAbsVelocity().Length() > 90.0f))
+	{
+		targetz = -cl_viewclamp.GetFloat();
+		speedz = cl_viewroll.GetFloat() * gpGlobals->frametime;
+		valuez = unk_0xfe4;
+	}
+	else
+	{
+		targetz = 0.0f;
+		speedz = cl_viewroll.GetFloat() * gpGlobals->frametime;
+		valuez = unk_0xfe4;
+	}
+
+	unk_0xfe4 = Approach(targetz, valuez, speedz);
+
+	float targetx, valuex, speedx;
+
+	if (camhack_speed.GetFloat() && camhack_forward.GetFloat() && (GetAbsVelocity().Length() > 300.0f))
+	{
+		targetx = -cl_viewclamp.GetFloat();
+		speedx = cl_viewroll.GetFloat() * 0.5f * gpGlobals->frametime;
+		valuex = unk_0xfe0;
+	}
+	else if (camhack_speed.GetFloat() && camhack_back.GetFloat() && (GetAbsVelocity().Length() > 300.0f))
+	{
+		targetx = cl_viewclamp.GetFloat();
+		speedx = cl_viewroll.GetFloat() * 0.5f * gpGlobals->frametime;
+		valuex = unk_0xfe0;
+	}
+	else
+	{
+		targetx = 0.0f;
+		speedx = cl_viewroll.GetFloat() * 0.5f * gpGlobals->frametime;
+		valuex = unk_0xfe0;
+	}
+
+	unk_0xfe0 = Approach(targetx, valuex, speedx);
+
+	float targety, valuey, speedy;
+
+	if (camhack_left.GetInt() && (GetAbsVelocity().Length() > 300.0f))
+	{
+		targety = -cl_viewclamp.GetFloat();
+		speedy = cl_viewroll.GetFloat() * 0.5f * gpGlobals->frametime;
+		valuey = unk_0xfdc;
+	}
+	else
+	{
+		if (!camhack_right.GetInt())
+		{
+			goto LABEL;
+		}
+
+		if (GetAbsVelocity().Length() <= 300.0f)
+		{
+			goto LABEL;
+		}
+	}
+
+LABEL:
+	if (camhack_back.GetInt() && camhack_left.GetInt() && (GetAbsVelocity().Length() > 90.0f))
+	{
+		targety = -cl_viewclamp.GetFloat();
+		speedy = cl_viewroll.GetFloat() * 0.5f * gpGlobals->frametime;
+		valuey = unk_0xfdc;
+	}
+	else if (camhack_forward.GetInt() && camhack_right.GetInt() && (GetAbsVelocity().Length() > 90.0f))
+	{
+		targety = cl_viewclamp.GetFloat();
+		speedy = cl_viewroll.GetFloat() * 0.5f * gpGlobals->frametime;
+		valuey = unk_0xfdc;
+	}
+	else
+	{
+		targety = 0.0f;
+		speedy = cl_viewroll.GetFloat() * 0.5f * gpGlobals->frametime;
+		valuey = unk_0xfdc;
+	}
+
+	unk_0xfdc = Approach(targety, valuey, speedy);
+
+	pSetup->angles.x = playerangles.x + unk_0xfe0;
+	pSetup->angles.y = playerangles.y + unk_0xfdc;
+	pSetup->angles.z = playerangles.z + unk_0xfe4;
+
 }
 
 bool C_BasePlayer::ShouldInterpolate()

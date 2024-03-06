@@ -368,6 +368,8 @@ private:
 	
 	friend class CHL2GameMovement;
 
+	void CameraMovement();
+
 #if defined ( ELEVENEIGHTYSEVEN_DLL )
 	friend class C1187_Player;
 #endif
