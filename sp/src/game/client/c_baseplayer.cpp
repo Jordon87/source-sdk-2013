@@ -1382,34 +1382,21 @@ void C_BasePlayer::CreateWaterEffects( void )
 void C_BasePlayer::OverrideView( CViewSetup *pSetup )
 {
 	if (!cl_viewrealism.GetInt() || camhack_control.GetInt())
-		return;
-
-	C_BaseCombatWeapon* pWeapon = GetActiveWeapon();
-
-	QAngle playerangles;
-
-	playerangles = pSetup->angles;
-
-	if (pWeapon)
 	{
-		if (GetViewModel(0))
-		{
-			C_BaseViewModel* pViewModel = GetViewModel(0);
-
-			int iPlayerEyes;
-
-			iPlayerEyes = pViewModel->LookupAttachment("1187eyefix");
-
-			if (iPlayerEyes != -1)
-			{
-				C_BaseViewModel* vm = GetViewModel(0);
-
-				Vector origin(0,0,0);
-				vm->GetAttachment(iPlayerEyes, origin, playerangles);
-			}
-		}
+		return;
 	}
 
+//	if (GetActiveWeapon() && GetViewModel(0))
+//	{
+//		int iPlayerEyes = GetViewModel(0)->LookupAttachment("1187eyefix");
+//
+//		if (iPlayerEyes)
+//		{
+//			Vector origin(0,0,0);
+//			GetViewModel(0)->GetAttachment(iPlayerEyes, origin, pSetup->angles);
+//		}
+//	}
+//
 	float targetz, valuez, speedz;
 
 	if (camhack_right.GetInt() && (GetAbsVelocity().Length() > 90.0f))
@@ -1499,9 +1486,9 @@ LABEL:
 
 	unk_0xfdc = Approach(targety, valuey, speedy);
 
-	pSetup->angles.x = playerangles.x + unk_0xfe0;
-	pSetup->angles.y = playerangles.y + unk_0xfdc;
-	pSetup->angles.z = playerangles.z + unk_0xfe4;
+	pSetup->angles.x += unk_0xfe0;
+	pSetup->angles.y += unk_0xfdc;
+	pSetup->angles.z += unk_0xfe4;
 
 }
 

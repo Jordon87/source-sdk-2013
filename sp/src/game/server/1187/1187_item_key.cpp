@@ -10,33 +10,37 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-class C1187ItemKey : public CItem
+class CItem_Key : public CItem
 {
-	DECLARE_CLASS(C1187ItemKey, CItem);
+	DECLARE_CLASS(CItem_Key, CItem);
 public:
 	void Spawn(void)
 	{
 		Precache();
-		SetModel("models/1187_keycard/1187_keycard.mdl");
+		SetModel("models/lostcoast/fisherman/Keys.mdl");
 		BaseClass::Spawn();
 	}
 
 	void Precache(void)
 	{
-		PrecacheModel("models/1187_keycard/1187_keycard.mdl");
+		PrecacheModel("models/lostcoast/fisherman/Keys.mdl");
+		PrecacheScriptSound("Key.Pickup");
 	}
 
 	bool MyTouch(CBasePlayer *pPlayer)
 	{
 		CSingleUserRecipientFilter user(pPlayer);
 		user.MakeReliable();
-		UserMessageBegin(user, "HintKeyDisplay");
-			WRITE_BYTE(1);	// So that the message has a size.
+		UserMessageBegin(user, "ItemPickup");
+			WRITE_STRING(GetClassname());
 		MessageEnd();
+
+		CPASAttenuationFilter filter(pPlayer, "Key.Pickup");
+		EmitSound(filter, pPlayer->entindex(), "Key.Pickup");
 
 		UTIL_Remove(this);
 		return true;
 	}
 };
 
-LINK_ENTITY_TO_CLASS(item_key, C1187ItemKey);
+LINK_ENTITY_TO_CLASS(item_key, CItem_Key);

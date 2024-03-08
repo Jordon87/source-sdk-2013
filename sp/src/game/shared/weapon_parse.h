@@ -106,6 +106,10 @@ public:
 	int						iAmmo2Type;
 	bool					m_bMeleeWeapon;		// Melee weapons can always "fire" regardless of ammo.
 
+	Vector					vecIronsightPosOffset;
+	QAngle					angIronsightAngOffset;
+	float					flIronsightFOVOffset;
+
 	// This tells if the weapon was built right-handed (defaults to true).
 	// This helps cl_righthand make the decision about whether to flip the model or not.
 	bool					m_bBuiltRightHanded;

@@ -274,6 +274,8 @@ float CWeaponShotgun::GetFireRate()
 //-----------------------------------------------------------------------------
 bool CWeaponShotgun::StartReload( void )
 {
+	DisableIronsights();
+
 	CBaseCombatCharacter *pOwner  = GetOwner();
 	
 	if ( pOwner == NULL )

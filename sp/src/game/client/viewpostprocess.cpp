@@ -2698,6 +2698,7 @@ ConVar mat_motion_blur_falling_intensity( "mat_motion_blur_falling_intensity", "
 //ConVar mat_motion_blur_roll_intensity( "mat_motion_blur_roll_intensity", "1.0" );
 ConVar mat_motion_blur_rotation_intensity( "mat_motion_blur_rotation_intensity", "1.0" );
 ConVar mat_motion_blur_strength( "mat_motion_blur_strength", "1.0" );
+ConVar cl_sprintblur("cl_sprintblur","1");
 
 void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h )
 {
@@ -2946,6 +2947,17 @@ void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h 
 		else
 		{
 			s_flNoRotationalMotionBlurUntil = 0.0f;
+		}
+
+		C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+
+		if (cl_sprintblur.GetInt() && pPlayer->GetAbsVelocity().Length2D() > 300.0 )
+//		{
+//			g_vMotionBlurValues[2] = VectorLength(vCurrentForwardVec) * 58.0f;
+//		}
+//		else
+		{
+			g_vMotionBlurValues[2] = fabs(vCurrentForwardVec[2]) * VectorLength(vCurrentForwardVec);
 		}
 
 		//====================================//

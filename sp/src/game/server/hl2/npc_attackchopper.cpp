@@ -379,7 +379,7 @@ public:
 	virtual void	StopLoopingSounds();
 
 	int		BloodColor( void ) { return DONT_BLEED; }
-	Class_T Classify ( void ) { return CLASS_COMBINE_GUNSHIP; }
+	Class_T Classify ( void ) { return CLASS_CITIZEN_PASSIVE; }
 	virtual int	OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
 	virtual int OnTakeDamage( const CTakeDamageInfo &info );
@@ -544,7 +544,7 @@ private:
 	float GetMaxFiringDistance();
 
 	// Make sure we don't hit too many times
-	void FireBullets( const FireBulletsInfo_t &info );
+	void FireBullets(const FireBulletsInfo_t& info) { return CBaseEntity::FireBullets(info); }
 
 	// Is it "fair" to drop this bomb?
 	bool IsBombDropFair( const Vector &vecBombStartPos, const Vector &vecVelocity );
@@ -955,7 +955,7 @@ void CNPC_AttackHelicopter::Precache( void )
 		UTIL_PrecacheOther( "grenade_helicopter" );
 		UTIL_PrecacheOther( "env_fire_trail" );
 		Chopper_PrecacheChunks( this );
-		PrecacheModel("models/combine_soldier.mdl");
+		PrecacheModel("models/mercenary/merc_03.mdl");
 	}
 
 	PrecacheScriptSound("NPC_AttackHelicopter.ChargeGun");
@@ -1336,7 +1336,7 @@ void CNPC_AttackHelicopter::Activate( void )
 //-----------------------------------------------------------------------------
 const char *CNPC_AttackHelicopter::GetTracerType( void ) 
 {
-	return "HelicopterTracer"; 
+	return "Tracer"; 
 }
 
 
@@ -1947,43 +1947,43 @@ void CNPC_AttackHelicopter::AimCloseToTargetButMiss( CBaseEntity *pTarget, float
 }
 
 
-//-----------------------------------------------------------------------------
-// Make sure we don't hit too many times
-//-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::FireBullets( const FireBulletsInfo_t &info )
-{
-	// Use this to count the number of hits in a burst
-	bool bIsPlayer = GetEnemy() && GetEnemy()->IsPlayer();
-	if ( !bIsPlayer )
-	{
-		BaseClass::FireBullets( info );
-		return;
-	}
-
-	if ( !GetEnemyVehicle() && !IsDeadlyShooting() )
-	{
-		if ( m_nBurstHits >= m_nMaxBurstHits )
-		{
-			FireBulletsInfo_t actualInfo = info;
-			actualInfo.m_pAdditionalIgnoreEnt = GetEnemy();
-			BaseClass::FireBullets( actualInfo );
-			return;
-		}
-	}
-
-	CBasePlayer *pPlayer = assert_cast<CBasePlayer*>(GetEnemy());
-
-	int nPrevHealth = pPlayer->GetHealth();
-	int nPrevArmor = pPlayer->ArmorValue();
-
-	BaseClass::FireBullets( info );
-
-	if (( pPlayer->GetHealth() < nPrevHealth ) || ( pPlayer->ArmorValue() < nPrevArmor ))
-	{
-		++m_nBurstHits;
-	}
-}
-
+////-----------------------------------------------------------------------------
+//// Make sure we don't hit too many times
+////-----------------------------------------------------------------------------
+//void CNPC_AttackHelicopter::FireBullets( const FireBulletsInfo_t &info )
+//{
+//	// Use this to count the number of hits in a burst
+//	bool bIsPlayer = GetEnemy() && GetEnemy()->IsPlayer();
+//	if ( !bIsPlayer )
+//	{
+//		BaseClass::FireBullets( info );
+//		return;
+//	}
+//
+//	if ( !GetEnemyVehicle() && !IsDeadlyShooting() )
+//	{
+//		if ( m_nBurstHits >= m_nMaxBurstHits )
+//		{
+//			FireBulletsInfo_t actualInfo = info;
+//			actualInfo.m_pAdditionalIgnoreEnt = GetEnemy();
+//			BaseClass::FireBullets( actualInfo );
+//			return;
+//		}
+//	}
+//
+//	CBasePlayer *pPlayer = assert_cast<CBasePlayer*>(GetEnemy());
+//
+//	int nPrevHealth = pPlayer->GetHealth();
+//	int nPrevArmor = pPlayer->ArmorValue();
+//
+//	BaseClass::FireBullets( info );
+//
+//	if (( pPlayer->GetHealth() < nPrevHealth ) || ( pPlayer->ArmorValue() < nPrevArmor ))
+//	{
+//		++m_nBurstHits;
+//	}
+//}
+//
 
 //------------------------------------------------------------------------------
 // Purpose :
@@ -3459,7 +3459,7 @@ void CNPC_AttackHelicopter::DropCorpse( int nDamage )
 	vecForceVector.z = 0.5;
 	vecForceVector *= forceScale;
 
-	CBaseEntity *pGib = CreateRagGib( "models/combine_soldier.mdl", GetAbsOrigin(), GetAbsAngles(), vecForceVector );
+	CBaseEntity *pGib = CreateRagGib( "models/mercenary/merc_03.mdl", GetAbsOrigin(), GetAbsAngles(), vecForceVector );
 	if ( pGib )
 	{
 		pGib->SetOwnerEntity( this );
@@ -3492,7 +3492,7 @@ int CNPC_AttackHelicopter::OnTakeDamage( const CTakeDamageInfo &info )
 	// We don't take blast damage from anything but the airboat or missiles (or myself!)
 	if( info.GetInflictor() != this )
 	{
-		if ( ( ( info.GetDamageType() & DMG_AIRBOAT ) == 0 ) && 
+		if ( ( ( info.GetDamageType() & DMG_BLAST ) == 0 ) && 
 			( info.GetInflictor()->Classify() != CLASS_MISSILE ) && 
 			( info.GetAttacker()->Classify() != CLASS_MISSILE ) )
 			return 0;
@@ -3503,34 +3503,7 @@ int CNPC_AttackHelicopter::OnTakeDamage( const CTakeDamageInfo &info )
 		if ( GetHealth() < info.GetDamage() )
 			return 0;
 	}
-
-	// helicopter takes extra damage from its own grenades
-	CGrenadeHelicopter *pGren = dynamic_cast<CGrenadeHelicopter *>(info.GetInflictor());
-	if ( pGren && info.GetAttacker() && info.GetAttacker()->IsPlayer() )
-	{
-		CTakeDamageInfo fudgedInfo = info;
-
-		float damage;
-		if( g_pGameRules->IsSkillLevel(SKILL_EASY) )
-		{
-			damage = GetMaxHealth() / sk_helicopter_num_bombs1.GetFloat();
-		}
-		else if( g_pGameRules->IsSkillLevel(SKILL_HARD) )
-		{
-			damage = GetMaxHealth() / sk_helicopter_num_bombs3.GetFloat();
-		}
-		else // Medium, or unspecified
-		{
-			damage = GetMaxHealth() / sk_helicopter_num_bombs2.GetFloat();
-		}
-		damage = ceilf( damage );
-		fudgedInfo.SetDamage( damage );
-		fudgedInfo.SetMaxDamage( damage );
-
-		return BaseClass::OnTakeDamage( fudgedInfo );
-	}
-
-	return BaseClass::OnTakeDamage( info );
+	return BaseClass::OnTakeDamage(info);
 }
 
 

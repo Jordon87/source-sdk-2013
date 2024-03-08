@@ -255,6 +255,7 @@ $Project "Server (1187)"
 			$File	"1187\1187_npc_houndeye.cpp"
 			$File	"1187\1187_npc_armouredzombie.cpp"
 			$File	"1187\1187_npc_burstzombie.cpp"
+			$File	"1187\1187_item_key.cpp"
 
 			$Folder	"Unused"
 			{

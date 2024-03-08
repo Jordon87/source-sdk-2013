@@ -69,6 +69,9 @@ bool ToolFramework_SetupEngineMicrophone( Vector &origin, QAngle &angles );
 
 
 extern ConVar default_fov;
+extern ConVar cl_viewrealism;
+extern ConVar camhack_control;
+
 extern bool g_bRenderingScreenshot;
 
 #if !defined( _X360 )
@@ -1217,6 +1220,49 @@ void CViewRender::Render( vrect_t *rect )
 			    }
 		    }
 	    }
+
+//--------------------------------
+// Handle camera anims
+// 
+// NOTE: This is a newer method of handling the weapons camera bones. 
+// trying to put this sort of thing would make it glitchy in
+// "c_baseplayer.cpp", sooo i used the newest method.
+// 
+//--------------------------------
+
+		if (pPlayer)
+		{
+			if (pPlayer->GetActiveWeapon() && pPlayer->GetViewModel(0))
+			{
+				int attachment = pPlayer->GetViewModel(0)->LookupAttachment("viewbone");
+				if (attachment != -1)
+				{
+					int rootBone = pPlayer->GetViewModel(0)->LookupAttachment("1187eyefix");
+					Vector cameraOrigin = Vector(0, 0, 0);
+					QAngle cameraAngles = QAngle(0, 0, 0);
+					Vector rootOrigin = Vector(0, 0, 0);
+					QAngle rootAngles = QAngle(0, 0, 0);
+
+					pPlayer->GetViewModel(0)->GetAttachmentLocal(attachment, cameraOrigin, cameraAngles);
+					if (rootBone != -1)
+					{
+						pPlayer->GetViewModel(0)->GetAttachmentLocal(rootBone, rootOrigin, rootAngles);
+						cameraOrigin -= rootOrigin;
+						cameraAngles -= rootAngles;
+					}
+					if (cl_viewrealism.GetInt())
+					{
+						view.angles += cameraAngles;
+						view.origin += cameraOrigin;
+					}
+					else
+					{
+						view.angles;
+						view.origin;
+					}
+				}
+			}
+		}
 
 	    // Determine if we should draw view model ( client mode override )
 	    bool drawViewModel = g_pClientMode->ShouldDrawViewModel();

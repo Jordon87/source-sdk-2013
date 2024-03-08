@@ -23,7 +23,9 @@
 #include <KeyValues.h>
 #include "filesystem.h"
 #include "matsys_controls/matsyscontrols.h"
-#include "1187/vgui/1187_mainmenu.h" // Menu Panel to your includes, at the top.
+#include "1187/vgui/1187_mainmenu.h"
+#include "1187/vgui/1187_options.h"
+#include "1187/vgui/1187_manual.h"
 
 #ifdef SIXENSE
 #include "sixense/in_sixense.h"
@@ -218,6 +220,8 @@ void VGui_CreateGlobalPanels( void )
 
 	VPANEL GameUiDll = enginevgui->GetPanel(PANEL_GAMEUIDLL); // in the same function.
 	SMenu->Create(GameUiDll);
+	SOptions->Create(toolParent);
+	SManual->Create(toolParent);
 
 	// Debugging or related tool
 	fps->Create( toolParent );
@@ -270,6 +274,8 @@ void VGui_Shutdown()
 	netgraphpanel->Destroy();
 	debugoverlaypanel->Destroy();
 	SMenu->Destroy();
+	SOptions->Destroy();
+	SManual->Destroy();
 #if defined( TRACK_BLOCKING_IO )
 	iopanel->Destroy();
 #endif

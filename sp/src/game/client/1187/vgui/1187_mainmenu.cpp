@@ -37,7 +37,7 @@ public:
 
 	virtual void OnCommand(const char* command);
 
-	virtual void OnThink();
+	virtual void OnTick();
 
 	virtual bool BackgroundMap();
 
@@ -89,7 +89,7 @@ CMainMenuPanel::CMainMenuPanel(vgui::VPANEL parent) : BaseClass(NULL, "1187MainM
 
 	vgui::ivgui()->AddTickSignal(GetVPanel(), 500);
 
-	SetVisible(true);
+	SetVisible(false);
 	SetSizeable(false);
 	SetMoveable(false);
 	SetMinimizeToSysTrayButtonVisible(false);
@@ -225,7 +225,7 @@ void CMainMenuPanel::OnCommand(const char* command)
 		Msg("The Fuck? \n");
 }
 
-void CMainMenuPanel::OnThink()
+void CMainMenuPanel::OnTick()
 {
 	if (unk_0x1e4)
 	{
@@ -309,14 +309,14 @@ CMainMenuPanel::~CMainMenuPanel()
 // Class
 // Change CSMenu to CModMenu if you want. Salient is the name of the source mod, 
 // hence SMenu. If you change CSMenu, change ISMenu too where they all appear.
-class CSMenu : public ISMenu
+class C1187Menu : public I1187Menu
 {
 private:
 	CMainMenuPanel* MainMenu;
 	vgui::VPANEL m_hParent;
 
 public:
-	CSMenu(void)
+	C1187Menu(void)
 	{
 		MainMenu = NULL;
 	}
@@ -338,5 +338,5 @@ public:
 
 };
 
-static CSMenu g_SMenu;
-ISMenu* SMenu = (ISMenu*)&g_SMenu;
+static C1187Menu g_SMenu;
+I1187Menu* SMenu = (I1187Menu*)&g_SMenu;
