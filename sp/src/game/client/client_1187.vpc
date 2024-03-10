@@ -119,6 +119,7 @@ $Project "Client (1187)"
 			$File 	"1187\vgui\vgui_imagebutton.cpp"
 			$File 	"1187\vgui\vgui_imagebutton.h"
 			$File 	"1187\loadingscreenproxy.cpp"
+			$File 	"1187\fx_zombie.cpp"
 		}
 	}
 }

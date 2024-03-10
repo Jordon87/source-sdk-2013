@@ -58,6 +58,30 @@ private:
 
 extern CAntlionGibManager s_AntlionGibManager;
 
+
+class CZombieGibManager : public CAutoGameSystemPerFrame
+{
+public:
+	CZombieGibManager(char const* name) : CAutoGameSystemPerFrame(name)
+	{
+	}
+
+	// Methods of IGameSystem
+	virtual void Update(float frametime);
+	virtual void LevelInitPreEntity(void);
+
+	void	AddGib(C_BaseEntity* pEntity);
+	void	RemoveGib(C_BaseEntity* pEntity);
+
+private:
+	typedef CHandle<C_BaseEntity> CGibHandle;
+	CUtlLinkedList< CGibHandle > m_LRU;
+
+};
+
+
+extern CZombieGibManager s_ZombieGibManager;
+
 #endif
 
 
