@@ -2698,6 +2698,7 @@ ConVar mat_motion_blur_falling_intensity( "mat_motion_blur_falling_intensity", "
 //ConVar mat_motion_blur_roll_intensity( "mat_motion_blur_roll_intensity", "1.0" );
 ConVar mat_motion_blur_rotation_intensity( "mat_motion_blur_rotation_intensity", "1.0" );
 ConVar mat_motion_blur_strength( "mat_motion_blur_strength", "1.0" );
+ConVar cl_ironsightblur("cl_ironsightblur","1");
 ConVar cl_sprintblur("cl_sprintblur","1");
 
 void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h )
@@ -2958,6 +2959,20 @@ void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h 
 //		else
 		{
 			g_vMotionBlurValues[2] = fabs(vCurrentForwardVec[2]) * VectorLength(vCurrentForwardVec);
+		}
+
+		if (pPlayer->GetActiveWeapon())
+		{
+			if (cl_ironsightblur.GetInt())
+			{
+				if (pPlayer->GetActiveWeapon()->IsIronsighted())
+				{
+					g_vMotionBlurValues[0] = 0.0f;
+					g_vMotionBlurValues[1] = 0.0f;
+					g_vMotionBlurValues[2] = 0.03f;
+					g_vMotionBlurValues[3] = 0.0f;
+				}
+			}
 		}
 
 		//====================================//

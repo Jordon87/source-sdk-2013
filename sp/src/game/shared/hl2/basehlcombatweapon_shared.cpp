@@ -8,6 +8,7 @@
 #include "basehlcombatweapon_shared.h"
 
 #include "hl2_player_shared.h"
+#include "in_buttons.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -35,6 +36,7 @@ END_NETWORK_TABLE()
 BEGIN_DATADESC( CBaseHLCombatWeapon )
 
 	DEFINE_FIELD( m_bLowered,			FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_bWall,			FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flRaiseTime,		FIELD_TIME ),
 	DEFINE_FIELD( m_flHolsterTime,		FIELD_TIME ),
 	DEFINE_FIELD( m_iPrimaryAttacks,	FIELD_INTEGER ),
@@ -117,6 +119,7 @@ bool CBaseHLCombatWeapon::Ready( void )
 //-----------------------------------------------------------------------------
 bool CBaseHLCombatWeapon::Deploy( void )
 {
+	DisableIronsights();
 	// If we should be lowered, deploy in the lowered position
 	// We have to ask the player if the last time it checked, the weapon was lowered
 	if ( GetOwner() && GetOwner()->IsPlayer() )
@@ -183,11 +186,58 @@ bool CBaseHLCombatWeapon::WeaponShouldBeLowered( void )
 	return false;
 }
 
+bool CBaseHLCombatWeapon::SprintingEffect(void)
+{
+	CHL2_Player* pOwner = assert_cast<CHL2_Player*>(GetOwner());
+
+	if (GetIdealActivity() != ACT_VM_SPRINT_IDLE
+		&& GetIdealActivity() != ACT_VM_IDLE
+		&& GetIdealActivity() != ACT_VM_SPRINT_ENTER
+		&& GetIdealActivity() != ACT_VM_SPRINT_LEAVE)
+	{
+		return false;
+	}
+	
+	if (!pOwner)
+		return false;
+
+	if (!pOwner->IsSprinting())
+		return false;
+
+	if ((pOwner->m_nButtons & IN_SPEED) == 0 || (pOwner->m_nButtons & IN_FORWARD) == 0 || pOwner->GetWaterLevel() == 3)
+		return false;
+
+	DisableIronsights();
+	return true;
+}
+
+bool CBaseHLCombatWeapon::FUN_1026e700(void)
+{
+	if (GetIdealActivity() != ACT_FIRE_LOOP || GetIdealActivity() != ACT_VM_IDLE || GetIdealActivity() != ACT_FIRE_START || GetIdealActivity() != ACT_FIRE_END)
+		IsIronsighted();
+	return false;
+}
+
+bool CBaseHLCombatWeapon::FUN_1026e590(void)
+{
+	if (SelectWeightedSequence(ACT_FIRE_LOOP) == -1)
+		return false;
+
+	m_bWall = true;
+	return true;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Allows the weapon to choose proper weapon idle animation
 //-----------------------------------------------------------------------------
 void CBaseHLCombatWeapon::WeaponIdle( void )
 {
+	if (SprintingEffect())
+	{
+		if (GetActivity() != ACT_VM_SPRINT_IDLE && GetActivity() != ACT_VM_SPRINT_ENTER && GetActivity() != ACT_TRANSITION || HasWeaponIdleTimeElapsed())
+			SendWeaponAnim(ACT_VM_SPRINT_IDLE);
+	}
+
 	//See if we should idle high or low
 	if ( WeaponShouldBeLowered() )
 	{
@@ -210,6 +260,11 @@ void CBaseHLCombatWeapon::WeaponIdle( void )
 		{
 			// Keep idling low
 			SendWeaponAnim( ACT_VM_IDLE_LOWERED );
+		}
+		else if (FUN_1026e700())
+		{
+			if (GetActivity() != ACT_FIRE_LOOP && GetActivity() != ACT_FIRE_START && GetActivity() != ACT_TRANSITION || HasWeaponIdleTimeElapsed())
+				SendWeaponAnim(ACT_FIRE_LOOP);
 		}
 	}
 	else

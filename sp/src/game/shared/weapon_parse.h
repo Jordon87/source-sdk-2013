@@ -105,6 +105,7 @@ public:
 	int						iAmmoType;
 	int						iAmmo2Type;
 	bool					m_bMeleeWeapon;		// Melee weapons can always "fire" regardless of ammo.
+	float					m_flMeleeDamage;
 
 	Vector					vecIronsightPosOffset;
 	QAngle					angIronsightAngOffset;

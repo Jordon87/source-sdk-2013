@@ -1587,138 +1587,16 @@ typedef struct
 // this list gets searched for the first partial match, so some are out of order
 static TITLECOMMENT gTitleComments[] =
 {
-#ifdef HL1_DLL
-	{ "t0a0", "#T0A0TITLE" },
-	{ "c0a0", "#HL1_Chapter1_Title" },
-	{ "c1a0", "#HL1_Chapter2_Title" },
-	{ "c1a1", "#HL1_Chapter3_Title" },
-	{ "c1a2", "#HL1_Chapter4_Title" },
-	{ "c1a3", "#HL1_Chapter5_Title" },
-	{ "c1a4", "#HL1_Chapter6_Title" },
-	{ "c2a1", "#HL1_Chapter7_Title" },
-	{ "c2a2", "#HL1_Chapter8_Title" },
-	{ "c2a3", "#HL1_Chapter9_Title" },
-	{ "c2a4d", "#HL1_Chapter11_Title" },	// These must appear before "C2A4" so all other map names starting with C2A4 get that title
-	{ "c2a4e", "#HL1_Chapter11_Title" },
-	{ "c2a4f", "#HL1_Chapter11_Title" },
-	{ "c2a4g", "#HL1_Chapter11_Title" },
-	{ "c2a4", "#HL1_Chapter10_Title" },
-	{ "c2a5", "#HL1_Chapter12_Title" },
-	{ "c3a1", "#HL1_Chapter13_Title" },
-	{ "c3a2", "#HL1_Chapter14_Title" },
-	{ "c4a1a", "#HL1_Chapter17_Title"  },	// Order is important, see above
-	{ "c4a1b", "#HL1_Chapter17_Title"  },
-	{ "c4a1c", "#HL1_Chapter17_Title"  },
-	{ "c4a1d", "#HL1_Chapter17_Title"  },
-	{ "c4a1e", "#HL1_Chapter17_Title"  },
-	{ "c4a1", "#HL1_Chapter15_Title" },
-	{ "c4a2", "#HL1_Chapter16_Title"  },
-	{ "c4a3", "#HL1_Chapter18_Title"  },
-	{ "c5a1", "#HL1_Chapter19_Title"  },
-#elif defined PORTAL
-	{ "testchmb_a_00",			"#Portal_Chapter1_Title"  },
-	{ "testchmb_a_01",			"#Portal_Chapter1_Title"  },
-	{ "testchmb_a_02",			"#Portal_Chapter2_Title"  },
-	{ "testchmb_a_03",			"#Portal_Chapter2_Title"  },
-	{ "testchmb_a_04",			"#Portal_Chapter3_Title"  },
-	{ "testchmb_a_05",			"#Portal_Chapter3_Title"  },
-	{ "testchmb_a_06",			"#Portal_Chapter4_Title"  },
-	{ "testchmb_a_07",			"#Portal_Chapter4_Title"  },
-	{ "testchmb_a_08_advanced",	"#Portal_Chapter5_Title"  },
-	{ "testchmb_a_08",			"#Portal_Chapter5_Title"  },
-	{ "testchmb_a_09_advanced",	"#Portal_Chapter6_Title"  },
-	{ "testchmb_a_09",			"#Portal_Chapter6_Title"  },
-	{ "testchmb_a_10_advanced",	"#Portal_Chapter7_Title"  },
-	{ "testchmb_a_10",			"#Portal_Chapter7_Title"  },
-	{ "testchmb_a_11_advanced",	"#Portal_Chapter8_Title"  },
-	{ "testchmb_a_11",			"#Portal_Chapter8_Title"  },
-	{ "testchmb_a_13_advanced",	"#Portal_Chapter9_Title"  },
-	{ "testchmb_a_13",			"#Portal_Chapter9_Title"  },
-	{ "testchmb_a_14_advanced",	"#Portal_Chapter10_Title"  },
-	{ "testchmb_a_14",			"#Portal_Chapter10_Title"  },
-	{ "testchmb_a_15",			"#Portal_Chapter11_Title"  },
-	{ "escape_",				"#Portal_Chapter11_Title"  },
-	{ "background2",			"#Portal_Chapter12_Title"  },
-#else
-	{ "intro", "#HL2_Chapter1_Title" },
-
-	{ "d1_trainstation_05", "#HL2_Chapter2_Title" },
-	{ "d1_trainstation_06", "#HL2_Chapter2_Title" },
-	
-	{ "d1_trainstation_", "#HL2_Chapter1_Title" },
-
-	{ "d1_canals_06", "#HL2_Chapter4_Title" },
-	{ "d1_canals_07", "#HL2_Chapter4_Title" },
-	{ "d1_canals_08", "#HL2_Chapter4_Title" },
-	{ "d1_canals_09", "#HL2_Chapter4_Title" },
-	{ "d1_canals_1", "#HL2_Chapter4_Title" },
-	
-	{ "d1_canals_0", "#HL2_Chapter3_Title" },
-
-	{ "d1_eli_", "#HL2_Chapter5_Title" },
-
-	{ "d1_town_", "#HL2_Chapter6_Title" },
-
-	{ "d2_coast_09", "#HL2_Chapter8_Title" },
-	{ "d2_coast_1", "#HL2_Chapter8_Title" },
-	{ "d2_prison_01", "#HL2_Chapter8_Title" },
-
-	{ "d2_coast_", "#HL2_Chapter7_Title" },
-
-	{ "d2_prison_06", "#HL2_Chapter9a_Title" },
-	{ "d2_prison_07", "#HL2_Chapter9a_Title" },
-	{ "d2_prison_08", "#HL2_Chapter9a_Title" },
-
-	{ "d2_prison_", "#HL2_Chapter9_Title" },
-
-	{ "d3_c17_01", "#HL2_Chapter9a_Title" },
-	{ "d3_c17_09", "#HL2_Chapter11_Title" },
-	{ "d3_c17_1", "#HL2_Chapter11_Title" },
-
-	{ "d3_c17_", "#HL2_Chapter10_Title" },
-
-	{ "d3_citadel_", "#HL2_Chapter12_Title" },
-
-	{ "d3_breen_", "#HL2_Chapter13_Title" },
-	{ "credits", "#HL2_Chapter14_Title" },
-
-	{ "ep1_citadel_00", "#episodic_Chapter1_Title" },
-	{ "ep1_citadel_01", "#episodic_Chapter1_Title" },
-	{ "ep1_citadel_02b", "#episodic_Chapter1_Title" },
-	{ "ep1_citadel_02", "#episodic_Chapter1_Title" },
-	{ "ep1_citadel_03", "#episodic_Chapter2_Title" },
-	{ "ep1_citadel_04", "#episodic_Chapter2_Title" },
-	{ "ep1_c17_00a", "#episodic_Chapter3_Title" },
-	{ "ep1_c17_00", "#episodic_Chapter3_Title" },
-	{ "ep1_c17_01", "#episodic_Chapter4_Title" },
-	{ "ep1_c17_02b", "#episodic_Chapter4_Title" },
-	{ "ep1_c17_02", "#episodic_Chapter4_Title" },
-	{ "ep1_c17_05", "#episodic_Chapter5_Title" },
-	{ "ep1_c17_06", "#episodic_Chapter5_Title" },
-
-	{ "ep2_outland_01a", "#ep2_Chapter1_Title" },
-	{ "ep2_outland_01", "#ep2_Chapter1_Title" },
-	{ "ep2_outland_02", "#ep2_Chapter2_Title" },
-	{ "ep2_outland_03", "#ep2_Chapter2_Title" },
-	{ "ep2_outland_04", "#ep2_Chapter2_Title" },
-	{ "ep2_outland_05", "#ep2_Chapter3_Title" },
-	
-	{ "ep2_outland_06a", "#ep2_Chapter4_Title" },
-	{ "ep2_outland_06", "#ep2_Chapter3_Title" },
-
-	{ "ep2_outland_07", "#ep2_Chapter4_Title" },
-	{ "ep2_outland_08", "#ep2_Chapter4_Title" },
-	{ "ep2_outland_09", "#ep2_Chapter5_Title" },
-	
-	{ "ep2_outland_10a", "#ep2_Chapter5_Title" },
-	{ "ep2_outland_10", "#ep2_Chapter5_Title" },
-
-	{ "ep2_outland_11a", "#ep2_Chapter6_Title" },
-	{ "ep2_outland_11", "#ep2_Chapter6_Title" },
-	
-	{ "ep2_outland_12a", "#ep2_Chapter7_Title" },
-	{ "ep2_outland_12", "#ep2_Chapter6_Title" },
-#endif
+	{ "1187d1", "#1187_Chapter1_Title" },
+	{ "1187d2", "#1187_Chapter2_Title" },
+	{ "1187d3", "#1187_Chapter3_Title" },
+	{ "1187d4", "#1187_Chapter4_Title" },
+	{ "1187d5", "#1187_Chapter5_Title" },
+	{ "1187d6", "#1187_Chapter6_Title" },
+	{ "1187d7", "#1187_Chapter7_Title" },
+	{ "1187d8", "#1187_Chapter8_Title" },
+	{ "1187d9", "#1187_Chapter9_Title" },
+	{ "1187d10", "#1187_ChapterFinal_Title" },
 };
 
 #ifdef _XBOX

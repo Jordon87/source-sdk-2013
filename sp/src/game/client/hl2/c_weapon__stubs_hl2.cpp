@@ -36,6 +36,7 @@ STUB_WEAPON_CLASS( weapon_357, Weapon357, C_BaseHLCombatWeapon );
 #endif // !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL ) && !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 STUB_WEAPON_CLASS( weapon_crossbow, WeaponCrossbow, C_BaseHLCombatWeapon );
 STUB_WEAPON_CLASS( weapon_slam, Weapon_SLAM, C_BaseHLCombatWeapon );
+STUB_WEAPON_CLASS( weapon_m4, WeaponM4, C_HLSelectFireMachineGun);
 #if !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL ) && !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 STUB_WEAPON_CLASS( weapon_crowbar, WeaponCrowbar, C_BaseHLBludgeonWeapon );
 #endif // !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL ) && !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )

@@ -273,6 +273,9 @@ public:
 	virtual void			PrimaryAttack( void );						// do "+ATTACK"
 	virtual void			SecondaryAttack( void ) { return; }			// do "+ATTACK2"
 
+
+	virtual void			PrimaryMeleeAttack( void );
+
 	// Firing animations
 	virtual Activity		GetPrimaryAttackActivity( void );
 	virtual Activity		GetSecondaryAttackActivity( void );
@@ -287,8 +290,8 @@ public:
 	virtual float			GetFireRate( void );
 	virtual int				GetMinBurst() { return 1; }
 	virtual int				GetMaxBurst() { return 1; }
-	virtual float			GetMinRestTime() { return 0.3; }
-	virtual float			GetMaxRestTime() { return 0.6; }
+	virtual float			GetMinRestTime() { return 0.1; }
+	virtual float			GetMaxRestTime() { return 0.2; }
 	virtual int				GetRandomBurst() { return random->RandomInt( GetMinBurst(), GetMaxBurst() ); }
 	virtual void			WeaponSound( WeaponSound_t sound_type, float soundtime = 0.0f );
 	virtual void			StopWeaponSound( WeaponSound_t sound_type );

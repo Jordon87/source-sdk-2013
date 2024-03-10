@@ -2198,7 +2198,6 @@ void CBaseCombatWeapon::WeaponIdle( void )
 	}
 }
 
-
 //=========================================================
 Activity CBaseCombatWeapon::GetPrimaryAttackActivity( void )
 {
@@ -2460,6 +2459,63 @@ void CBaseCombatWeapon::PrimaryAttack( void )
 
 	//Add our view kick in
 	AddViewKick();
+}
+
+void CBaseCombatWeapon::PrimaryMeleeAttack(void)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (!pPlayer)
+	{
+		return;
+	}
+
+	Vector vecSrc = pPlayer->Weapon_ShootPosition();
+	Vector forward;
+
+	pPlayer->EyeVectors(&forward, NULL, NULL);
+
+	Vector vecEnd = vecSrc + forward * 76.0f;
+
+	trace_t tr;
+	UTIL_TraceLine(vecSrc, vecEnd, MASK_SHOT_HULL, pPlayer, COLLISION_GROUP_NONE, &tr);
+
+
+	if (tr.m_pEnt)
+	{
+#if !defined( CLIENT_DLL )
+		CTakeDamageInfo info(GetOwner(), GetOwner(), GetWpnData().m_flMeleeDamage, DMG_CLUB);
+		CalculateExplosiveDamageForce(&info, forward, tr.endpos);
+		tr.m_pEnt->DispatchTraceAttack(info, forward, &tr);
+		ApplyMultiDamage();
+		TraceAttackToTriggers(info, tr.startpos, tr.endpos, forward);
+#endif
+		UTIL_ScreenShake(pPlayer->GetAbsOrigin(), 15.0f, 15.0f, 0.5f, 256.0f, SHAKE_START, 0);
+
+		if (tr.m_pEnt && tr.m_pEnt->IsWorld())
+		{
+			WeaponSound(MELEE_HIT_WORLD);
+		}
+		else
+		{
+			WeaponSound(MELEE_HIT);
+		}
+	}
+	else
+	{
+		WeaponSound(SINGLE);
+	}
+
+	UTIL_ImpactTrace(&tr, DMG_CLUB);
+
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
+	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
+
+	QAngle weaponangle;
+	weaponangle.x = random->RandomFloat(10.0f, 18.0f);
+	weaponangle.y = random->RandomFloat(-6.0f, 6.0f);
+	weaponangle.z = 0.0f;
+	pPlayer->ViewPunch(weaponangle);
 }
 
 //-----------------------------------------------------------------------------

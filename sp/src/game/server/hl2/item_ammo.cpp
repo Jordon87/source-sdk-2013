@@ -209,10 +209,10 @@ LINK_ENTITY_TO_CLASS(item_ammo_ar2, CItem_BoxLRounds);
 // ========================================================================
 //	>> LargeBoxLRounds
 // ========================================================================
-class CItem_LargeBoxLRounds : public CItem
+class CItem_BoxM4Rounds : public CItem
 {
 public:
-	DECLARE_CLASS( CItem_LargeBoxLRounds, CItem );
+	DECLARE_CLASS(CItem_BoxM4Rounds, CItem );
 
 	void Spawn( void )
 	{ 
@@ -226,7 +226,7 @@ public:
 	}
 	bool MyTouch( CBasePlayer *pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_AR2_LARGE, "AR2"))
+		if (ITEM_GiveAmmo( pPlayer, 120.0f, "M4"))
 		{
 			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
@@ -237,8 +237,9 @@ public:
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_large_box_lrounds, CItem_LargeBoxLRounds);
-LINK_ENTITY_TO_CLASS(item_ammo_ar2_large, CItem_LargeBoxLRounds);
+LINK_ENTITY_TO_CLASS(item_ammo_m4, CItem_BoxM4Rounds);
+LINK_ENTITY_TO_CLASS(item_large_box_lrounds, CItem_BoxM4Rounds);
+LINK_ENTITY_TO_CLASS(item_ammo_ar2_large, CItem_BoxM4Rounds);
 
 
 // ========================================================================

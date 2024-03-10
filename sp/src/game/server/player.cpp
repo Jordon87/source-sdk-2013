@@ -6142,6 +6142,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveAmmo( 255,	"AR2");
 		GiveAmmo( 5,	"AR2AltFire");
 		GiveAmmo( 255,	"SMG1");
+		GiveAmmo( 255,	"M4");
 		GiveAmmo( 255,	"Buckshot");
 		GiveAmmo( 3,	"smg1_grenade");
 		GiveAmmo( 3,	"rpg_round");

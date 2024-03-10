@@ -2326,6 +2326,23 @@ void CHL2_Player::CameraMovement()
 		engine->ClientCommand(this->edict(), "camhack_speed 0");
 }
 
+void CC_ToggleIronSights()
+{
+	CBasePlayer* pPlayer = UTIL_GetCommandClient();
+
+	if (pPlayer)
+	{
+		if (pPlayer->GetActiveWeapon())
+		{
+			if (pPlayer->GetActiveWeapon()->m_bIsIronsighted)
+				pPlayer->GetActiveWeapon()->DisableIronsights();
+			else
+				pPlayer->GetActiveWeapon()->EnableIronsights();
+		}
+	}
+}
+static ConCommand toggle_ironsight("toggle_ironsight", CC_ToggleIronSights);
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -4003,3 +4020,4 @@ void CLogicPlayerProxy::InputSuppressCrosshair( inputdata_t &inputdata )
 	pPlayer->SuppressCrosshair( true );
 }
 #endif // PORTAL
+

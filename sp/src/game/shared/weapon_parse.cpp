@@ -411,6 +411,7 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 	m_bBuiltRightHanded = ( pKeyValuesData->GetInt( "BuiltRightHanded", 1 ) != 0 ) ? true : false;
 	m_bAllowFlipping = ( pKeyValuesData->GetInt( "AllowFlipping", 1 ) != 0 ) ? true : false;
 	m_bMeleeWeapon = ( pKeyValuesData->GetInt( "MeleeWeapon", 0 ) != 0 ) ? true : false;
+	m_flMeleeDamage = (pKeyValuesData->GetFloat("MeleeDamage", 80.0f ) );
 
 	KeyValues* pSights = pKeyValuesData->FindKey("IronSight");
 	if (pSights)

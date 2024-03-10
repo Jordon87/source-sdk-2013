@@ -160,6 +160,12 @@ void CBaseCombatWeapon::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseComb
 {
 	if ( (pEvent->type & AE_TYPE_NEWEVENTSYSTEM) && (pEvent->type & AE_TYPE_SERVER) )
 	{
+		if (pEvent->event == AE_WPN_MELEEATTACK)
+		{
+			PrimaryMeleeAttack();
+			return;
+		}
+
 		if ( pEvent->event == AE_NPC_WEAPON_FIRE )
 		{
 			bool bSecondary = (atoi( pEvent->options ) != 0);

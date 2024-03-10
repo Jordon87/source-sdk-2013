@@ -246,8 +246,6 @@ $Project "Server (1187)"
 			$File	"hl2\weapon_rpg.h"
 			$File	"hl2\weapon_shotgun.cpp"
 			$File	"hl2\weapon_smg1.cpp"
-			$File	"hl2\weapon_stunstick.cpp"
-			$File	"hl2\weapon_stunstick.h"
 			
 			$File	"1187\1187_npc_john.cpp"
 			$File	"1187\1187_npc_chris.cpp"
@@ -256,6 +254,7 @@ $Project "Server (1187)"
 			$File	"1187\1187_npc_armouredzombie.cpp"
 			$File	"1187\1187_npc_burstzombie.cpp"
 			$File	"1187\1187_item_key.cpp"
+			$File	"1187\1187_weapon_m4.cpp"
 
 			$Folder	"Unused"
 			{

@@ -2884,13 +2884,13 @@ void CNPC_MetroPolice::OnAnimEventShove( void )
 void CNPC_MetroPolice::OnAnimEventBatonOn( void )
 {
 #ifndef HL2MP
-
-	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
-
-	if ( pStick )
-	{
-		pStick->SetStunState( true );
-	}
+//
+//	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
+//
+//	if ( pStick )
+//	{
+//		pStick->SetStunState( true );
+//	}
 #endif
 
 }
@@ -2902,12 +2902,12 @@ void CNPC_MetroPolice::OnAnimEventBatonOff( void )
 {
 #ifndef HL2MP
 
-	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
-	
-	if ( pStick )
-	{
-		pStick->SetStunState( false );
-	}
+//	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
+//	
+//	if ( pStick )
+//	{
+//		pStick->SetStunState( false );
+//	}
 #endif
 }
 
@@ -5051,13 +5051,13 @@ bool CNPC_MetroPolice::HasBaton( void )
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::BatonActive( void )
 {
-#ifndef HL2MP
-
-	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
-
-	if ( pStick )
-		return pStick->GetStunState();
-#endif
+//#ifndef HL2MP
+//
+//	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
+//
+//	if ( pStick )
+//		return pStick->GetStunState();
+//#endif
 
 	return false;
 }
