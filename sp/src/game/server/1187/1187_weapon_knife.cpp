@@ -5,102 +5,72 @@
 //=============================================================================//
 
 #include "cbase.h"
-#include "1187_baseweapon_melee.h"
+#include "basehlcombatweapon.h"
+#include "in_buttons.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ConVar sk_plr_dmg_knife;
-extern ConVar sk_npc_dmg_knife;
-
 //-----------------------------------------------------------------------------
 // C1187WeaponKnife
 //-----------------------------------------------------------------------------
-class C1187WeaponKnife : public C1187_BaseWeapon_Melee
+class CWeaponKnife : public CBaseHLCombatWeapon
 {
-	DECLARE_CLASS(C1187WeaponKnife, C1187_BaseWeapon_Melee);
+	DECLARE_CLASS(CWeaponKnife, CBaseHLCombatWeapon);
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_ACTTABLE();
 
-	virtual void		Operator_HandleHitEvent(bool bIsSecondary, CBaseCombatCharacter *pOperator);
+	CWeaponKnife();
 
-	virtual float		GetPrimaryAttackHitDelay(void) const { return 0.1f; }
-
-	float		GetDamageForActivity(Activity hitActivity);
-
-	virtual void		AddMeleeViewKick(void);
-	virtual void		AddMeleeViewMiss(void);
+	void		PrimaryAttack(void);
+	void		ItemPostFrame(void);
 };
 
-IMPLEMENT_SERVERCLASS_ST(C1187WeaponKnife, DT_1187WeaponKnife)
+IMPLEMENT_SERVERCLASS_ST(CWeaponKnife, DT_WeaponKnife)
 END_SEND_TABLE()
 
-LINK_ENTITY_TO_CLASS(weapon_knife, C1187WeaponKnife);
+acttable_t CWeaponKnife::m_acttable[] =
+{
+	{ ACT_MELEE_ATTACK1,	ACT_MELEE_ATTACK_SWING, true },
+	{ ACT_IDLE,				ACT_IDLE_ANGRY_MELEE,	false },
+	{ ACT_IDLE_ANGRY,		ACT_IDLE_ANGRY_MELEE,	false },
+};
+
+IMPLEMENT_ACTTABLE(CWeaponKnife);
+
+LINK_ENTITY_TO_CLASS(weapon_knife, CWeaponKnife);
 PRECACHE_WEAPON_REGISTER(weapon_knife);
 
-void C1187WeaponKnife::Operator_HandleHitEvent(bool bIsSecondary, CBaseCombatCharacter *pOperator)
+CWeaponKnife::CWeaponKnife()
 {
-	BaseClass::Operator_HandleHitEvent(bIsSecondary, pOperator);
+	m_bReloadsSingly = false;
+	m_bFiresUnderwater = true;
+}
 
-	CBasePlayer* pPlayer = ToBasePlayer(pOperator);
-	if (pPlayer)
+void CWeaponKnife::PrimaryAttack(void)
+{
+
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+
+	if (pOwner && pOwner->IsPlayer())
 	{
-		//Disorient the player
-		QAngle angles = pPlayer->GetLocalAngles();
+		SendWeaponAnim(ACT_VM_PRIMARYATTACK);
 
-		angles.x += random->RandomInt(-4, 4);
-		angles.y += random->RandomInt(-4, 4);
-		angles.z = 0;
-
-		pPlayer->SnapEyeAngles(angles);
-
-		pPlayer->ViewPunch(QAngle(random->RandomFloat(8, 10), -random->RandomFloat(8, 10), 0));
+		m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+		m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
 	}
 }
 
-
-float C1187WeaponKnife::GetDamageForActivity(Activity hitActivity)
+void CWeaponKnife::ItemPostFrame(void)
 {
-	if ((GetOwner() != NULL) && (GetOwner()->IsPlayer()))
-		return sk_plr_dmg_knife.GetFloat();
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
 
-	return sk_npc_dmg_knife.GetFloat();
-}
-
-void C1187WeaponKnife::AddMeleeViewKick(void)
-{
-	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
-
-	if (pPlayer)
+	if (pOwner && pOwner->IsPlayer())
 	{
-		//Disorient the player
-		QAngle angles = pPlayer->GetLocalAngles();
-
-		angles.x += random->RandomInt(0, 1);
-		angles.y += -random->RandomInt(4, 6);
-		angles.z = 0;
-
-		pPlayer->SnapEyeAngles(angles);
-
-		pPlayer->ViewPunch(QAngle(1, -random->RandomFloat(6, 8), 0));
-	}
-}
-
-void C1187WeaponKnife::AddMeleeViewMiss(void)
-{
-	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
-
-	if (pPlayer)
-	{
-		//Disorient the player
-		QAngle angles = pPlayer->GetLocalAngles();
-
-		angles.x += random->RandomInt(0, 1);
-		angles.y += -random->RandomInt(6, 8);
-		angles.z = 0;
-
-		pPlayer->SnapEyeAngles(angles);
-
-		pPlayer->ViewPunch(QAngle(1, -random->RandomFloat(8, 10), 0));
+		if ((pOwner->m_afButtonPressed & IN_ATTACK) != 0 || (pOwner->m_afButtonPressed & IN_ATTACK2) != 0 && gpGlobals->curtime >= m_flNextPrimaryAttack)
+			PrimaryAttack();
+		else
+			WeaponIdle();
 	}
 }

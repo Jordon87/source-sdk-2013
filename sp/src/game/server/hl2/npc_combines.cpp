@@ -28,11 +28,21 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar	sk_combine_s_health( "sk_combine_s_health","0");
-ConVar	sk_combine_s_kick( "sk_combine_s_kick","0");
+const char* pszMercenaryModels[] =
+{
+	"models/mercenary/merc_01.mdl",
+	"models/mercenary/merc_02.mdl",
+	"models/mercenary/merc_03.mdl",
+	"models/mercenary/merc_01.mdl",
+	"models/mercenary/merc_02.mdl",
+	"models/mercenary/merc_03.mdl",
+};
 
-ConVar sk_combine_guard_health( "sk_combine_guard_health", "0");
-ConVar sk_combine_guard_kick( "sk_combine_guard_kick", "0");
+ConVar	sk_mercenary_health( "sk_mercenary_health","70");
+ConVar	sk_mercenary_kick( "sk_mercenary_kick","20");
+
+ConVar	sk_mercenary_elite_health( "sk_mercenary_elite_health","70");
+ConVar	sk_mercenary_elite_kick( "sk_mercenary_elite_kick","20");
  
 // Whether or not the combine guard should spawn health on death
 ConVar combine_guard_spawn_health( "combine_guard_spawn_health", "1" );
@@ -43,7 +53,7 @@ extern ConVar sk_plr_num_shotgun_pellets;
 //Whether or not the combine should spawn health on death
 ConVar	combine_spawn_health( "combine_spawn_health", "1" );
 
-LINK_ENTITY_TO_CLASS( npc_combine_s, CNPC_CombineS );
+LINK_ENTITY_TO_CLASS( npc_citizen, CNPC_CombineS );
 
 
 #define AE_SOLDIER_BLOCK_PHYSICS		20 // trying to block an incoming physics object
@@ -57,20 +67,21 @@ extern Activity ACT_WALK_MARCH;
 void CNPC_CombineS::Spawn( void )
 {
 	Precache();
-	SetModel( STRING( GetModelName() ) );
 
 	if( IsElite() )
 	{
 		// Stronger, tougher.
-		SetHealth( sk_combine_guard_health.GetFloat() );
-		SetMaxHealth( sk_combine_guard_health.GetFloat() );
-		SetKickDamage( sk_combine_guard_kick.GetFloat() );
+		SetModel("models/mercenary/merc_heavy.mdl");
+		SetHealth(sk_mercenary_elite_health.GetFloat() );
+		SetMaxHealth(sk_mercenary_elite_health.GetFloat() );
+		SetKickDamage(sk_mercenary_elite_kick.GetFloat() );
 	}
 	else
 	{
-		SetHealth( sk_combine_s_health.GetFloat() );
-		SetMaxHealth( sk_combine_s_health.GetFloat() );
-		SetKickDamage( sk_combine_s_kick.GetFloat() );
+		SetModel(pszMercenaryModels[random->RandomInt(0,5)]);
+		SetHealth(sk_mercenary_health.GetFloat() );
+		SetMaxHealth(sk_mercenary_health.GetFloat() );
+		SetKickDamage(sk_mercenary_kick.GetFloat() );
 	}
 
 	CapabilitiesAdd( bits_CAP_ANIMATEDFACE );
@@ -79,6 +90,7 @@ void CNPC_CombineS::Spawn( void )
 
 	BaseClass::Spawn();
 
+	CapabilitiesRemove(bits_CAP_USE_SHOT_REGULATOR);
 #if HL2_EPISODIC
 	if (m_iUseMarch && !HasSpawnFlags(SF_NPC_START_EFFICIENT))
 	{
@@ -94,23 +106,10 @@ void CNPC_CombineS::Spawn( void )
 //-----------------------------------------------------------------------------
 void CNPC_CombineS::Precache()
 {
-	const char *pModelName = STRING( GetModelName() );
-
-	if( !Q_stricmp( pModelName, "models/combine_super_soldier.mdl" ) )
-	{
-		m_fIsElite = true;
-	}
-	else
-	{
-		m_fIsElite = false;
-	}
-
-	if( !GetModelName() )
-	{
-		SetModelName( MAKE_STRING( "models/combine_soldier.mdl" ) );
-	}
-
-	PrecacheModel( STRING( GetModelName() ) );
+	PrecacheModel( "models/mercenary/merc_01.mdl" );
+	PrecacheModel( "models/mercenary/merc_02.mdl" );
+	PrecacheModel( "models/mercenary/merc_03.mdl" );
+	PrecacheModel( "models/mercenary/merc_heavy.mdl" );
 
 	UTIL_PrecacheOther( "item_healthvial" );
 	UTIL_PrecacheOther( "weapon_frag" );

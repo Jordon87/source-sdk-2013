@@ -35,6 +35,8 @@ class CNPC_HoundeyeNew : public CNPC_BaseZombie
 public:
 	void Precache();
 	void Spawn();
+	Class_T Classify(void);
+
 	void HandleAnimEvent(animevent_t* pEvent);
 
 	int MeleeAttack1Conditions(float flDot, float flDist);
@@ -134,6 +136,11 @@ void CNPC_HoundeyeNew::Spawn()
 
 	m_flNextMoanSound = (random->RandomFloat(1.0f,4.0f) + gpGlobals->curtime);
 
+}
+
+Class_T CNPC_HoundeyeNew::Classify(void)
+{
+	return CLASS_HOUNDEYE;
 }
 
 void CNPC_HoundeyeNew::HandleAnimEvent(animevent_t* pEvent)

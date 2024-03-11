@@ -324,7 +324,7 @@ void CNPC_Combine::Spawn( void )
 	CapabilitiesAdd( bits_CAP_AIM_GUN );
 
 	// Innate range attack for grenade
-	// CapabilitiesAdd(bits_CAP_INNATE_RANGE_ATTACK2 );
+	CapabilitiesAdd(bits_CAP_INNATE_RANGE_ATTACK2 );
 
 	// Innate range attack for kicking
 	CapabilitiesAdd(bits_CAP_INNATE_MELEE_ATTACK1 );
@@ -335,7 +335,7 @@ void CNPC_Combine::Spawn( void )
 
 	CapabilitiesAdd( bits_CAP_DUCK );				// In reloading and cover
 
-	CapabilitiesAdd( bits_CAP_NO_HIT_SQUADMATES );
+	//CapabilitiesAdd( bits_CAP_NO_HIT_SQUADMATES );
 
 	m_bFirstEncounter	= true;// this is true when the grunt spawns, because he hasn't encountered an enemy yet.
 
@@ -372,15 +372,15 @@ bool CNPC_Combine::CreateBehaviors()
 //-----------------------------------------------------------------------------
 void CNPC_Combine::PostNPCInit()
 {
-	if( IsElite() )
-	{
-		// Give a warning if a Combine Soldier is equipped with anything other than
-		// an AR2. 
-		if( !GetActiveWeapon() || !FClassnameIs( GetActiveWeapon(), "weapon_ar2" ) )
-		{
-			DevWarning("**Combine Elite Soldier MUST be equipped with AR2\n");
-		}
-	}
+//	if( IsElite() )
+//	{
+//		// Give a warning if a Combine Soldier is equipped with anything other than
+//		// an AR2. 
+//		if( !GetActiveWeapon() || !FClassnameIs( GetActiveWeapon(), "weapon_ar2" ) )
+//		{
+//			DevWarning("**Combine Elite Soldier MUST be equipped with AR2\n");
+//		}
+//	}
 
 	BaseClass::PostNPCInit();
 }
@@ -2325,26 +2325,26 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 		}
 		else if ( pEvent->event == COMBINE_AE_ALTFIRE )
 		{
-			if( IsElite() )
-			{
-				animevent_t fakeEvent;
-
-				fakeEvent.pSource = this;
-				fakeEvent.event = EVENT_WEAPON_AR2_ALTFIRE;
-				GetActiveWeapon()->Operator_HandleAnimEvent( &fakeEvent, this );
-
-				// Stop other squad members from combine balling for a while.
-				DelaySquadAltFireAttack( 10.0f );
-
-				// I'm disabling this decrementor. At the time of this change, the elites
-				// don't bother to check if they have grenades anyway. This means that all
-				// elites have infinite combine balls, even if the designer marks the elite
-				// as having 0 grenades. By disabling this decrementor, yet enabling the code
-				// that makes sure the elite has grenades in order to fire a combine ball, we
-				// preserve the legacy behavior while making it possible for a designer to prevent
-				// elites from shooting combine balls by setting grenades to '0' in hammer. (sjb) EP2_OUTLAND_10
-				// m_iNumGrenades--;
-			}
+			//if( IsElite() )
+			//{
+			//	animevent_t fakeEvent;
+			//
+			//	fakeEvent.pSource = this;
+			//	fakeEvent.event = EVENT_WEAPON_AR2_ALTFIRE;
+			//	GetActiveWeapon()->Operator_HandleAnimEvent( &fakeEvent, this );
+			//
+			//	// Stop other squad members from combine balling for a while.
+			//	DelaySquadAltFireAttack( 10.0f );
+			//
+			//	// I'm disabling this decrementor. At the time of this change, the elites
+			//	// don't bother to check if they have grenades anyway. This means that all
+			//	// elites have infinite combine balls, even if the designer marks the elite
+			//	// as having 0 grenades. By disabling this decrementor, yet enabling the code
+			//	// that makes sure the elite has grenades in order to fire a combine ball, we
+			//	// preserve the legacy behavior while making it possible for a designer to prevent
+			//	// elites from shooting combine balls by setting grenades to '0' in hammer. (sjb) EP2_OUTLAND_10
+			//	// m_iNumGrenades--;
+			//}
 
 			handledEvent = true;
 		}
@@ -2863,74 +2863,74 @@ bool CNPC_Combine::CheckCanThrowGrenade( const Vector &vecTarget )
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 {
-	if (!IsElite() )
-		return false;
-
-	if (IsCrouching())
-		return false;
-
-	if( gpGlobals->curtime < m_flNextAltFireTime )
-		return false;
-
-	if( !GetEnemy() )
-		return false;
-
-	if (gpGlobals->curtime < m_flNextGrenadeCheck )
-		return false;
-
-	// See Steve Bond if you plan on changing this next piece of code!! (SJB) EP2_OUTLAND_10
-	if (m_iNumGrenades < 1)
-		return false;
-
-	CBaseEntity *pEnemy = GetEnemy();
-
-	if( !pEnemy->IsPlayer() && (!pEnemy->IsNPC() || !pEnemy->MyNPCPointer()->IsPlayerAlly()) )
-		return false;
-
-	Vector vecTarget;
-
-	// Determine what point we're shooting at
-	if( bUseFreeKnowledge )
-	{
-		vecTarget = GetEnemies()->LastKnownPosition( pEnemy ) + (pEnemy->GetViewOffset()*0.75);// approximates the chest
-	}
-	else
-	{
-		vecTarget = GetEnemies()->LastSeenPosition( pEnemy ) + (pEnemy->GetViewOffset()*0.75);// approximates the chest
-	}
-
-	// Trace a hull about the size of the combine ball (don't shoot through grates!)
-	trace_t tr;
-
-	Vector mins( -12, -12, -12 );
-	Vector maxs( 12, 12, 12 );
-
-	Vector vShootPosition = EyePosition();
-
-	if ( GetActiveWeapon() )
-	{
-		GetActiveWeapon()->GetAttachment( "muzzle", vShootPosition );
-	}
-
-	// Trace a hull about the size of the combine ball.
-	UTIL_TraceHull( vShootPosition, vecTarget, mins, maxs, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
-
-	float flLength = (vShootPosition - vecTarget).Length();
-
-	flLength *= tr.fraction;
-
-	//If the ball can travel at least 65% of the distance to the player then let the NPC shoot it.
-	if( tr.fraction >= 0.65 && flLength > 128.0f )
-	{
-		// Target is valid
-		m_vecAltFireTarget = vecTarget;
-		return true;
-	}
-
-
-	// Check again later
-	m_vecAltFireTarget = vec3_origin;
-	m_flNextGrenadeCheck = gpGlobals->curtime + 1.0f;
+	//if (!IsElite() )
+	//	return false;
+	//
+	//if (IsCrouching())
+	//	return false;
+	//
+	//if( gpGlobals->curtime < m_flNextAltFireTime )
+	//	return false;
+	//
+	//if( !GetEnemy() )
+	//	return false;
+	//
+	//if (gpGlobals->curtime < m_flNextGrenadeCheck )
+	//	return false;
+	//
+	//// See Steve Bond if you plan on changing this next piece of code!! (SJB) EP2_OUTLAND_10
+	//if (m_iNumGrenades < 1)
+	//	return false;
+	//
+	//CBaseEntity *pEnemy = GetEnemy();
+	//
+	//if( !pEnemy->IsPlayer() && (!pEnemy->IsNPC() || !pEnemy->MyNPCPointer()->IsPlayerAlly()) )
+	//	return false;
+	//
+	//Vector vecTarget;
+	//
+	//// Determine what point we're shooting at
+	//if( bUseFreeKnowledge )
+	//{
+	//	vecTarget = GetEnemies()->LastKnownPosition( pEnemy ) + (pEnemy->GetViewOffset()*0.75);// approximates the chest
+	//}
+	//else
+	//{
+	//	vecTarget = GetEnemies()->LastSeenPosition( pEnemy ) + (pEnemy->GetViewOffset()*0.75);// approximates the chest
+	//}
+	//
+	//// Trace a hull about the size of the combine ball (don't shoot through grates!)
+	//trace_t tr;
+	//
+	//Vector mins( -12, -12, -12 );
+	//Vector maxs( 12, 12, 12 );
+	//
+	//Vector vShootPosition = EyePosition();
+	//
+	//if ( GetActiveWeapon() )
+	//{
+	//	GetActiveWeapon()->GetAttachment( "muzzle", vShootPosition );
+	//}
+	//
+	//// Trace a hull about the size of the combine ball.
+	//UTIL_TraceHull( vShootPosition, vecTarget, mins, maxs, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
+	//
+	//float flLength = (vShootPosition - vecTarget).Length();
+	//
+	//flLength *= tr.fraction;
+	//
+	////If the ball can travel at least 65% of the distance to the player then let the NPC shoot it.
+	//if( tr.fraction >= 0.65 && flLength > 128.0f )
+	//{
+	//	// Target is valid
+	//	m_vecAltFireTarget = vecTarget;
+	//	return true;
+	//}
+	//
+	//
+	//// Check again later
+	//m_vecAltFireTarget = vec3_origin;
+	//m_flNextGrenadeCheck = gpGlobals->curtime + 1.0f;
 	return false;
 }
 
@@ -2938,8 +2938,8 @@ bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::CanGrenadeEnemy( bool bUseFreeKnowledge )
 {
-	if( IsElite() )
-		return false;
+	//if( IsElite() )
+	//	return false;
 
 	CBaseEntity *pEnemy = GetEnemy();
 

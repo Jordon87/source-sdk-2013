@@ -255,6 +255,8 @@ $Project "Server (1187)"
 			$File	"1187\1187_npc_burstzombie.cpp"
 			$File	"1187\1187_item_key.cpp"
 			$File	"1187\1187_weapon_m4.cpp"
+			$File	"1187\1187_logic_keysystem.cpp"
+			$File	"1187\1187_weapon_knife.cpp"
 
 			$Folder	"Unused"
 			{

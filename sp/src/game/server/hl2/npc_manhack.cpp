@@ -1481,10 +1481,10 @@ void CNPC_Manhack::Slice( CBaseEntity *pHitEntity, float flInterval, trace_t &tr
 	}
 	else if ( pHitEntity->IsNPC() && HasPhysicsAttacker( MANHACK_SMASH_TIME ) )
 	{
-		extern ConVar sk_combine_guard_health;
+		extern ConVar sk_mercenary_elite_health;
 		// NOTE: The else here is essential.
 		// The physics attacker *will* be set even when the manhack is held
-		flDamage = sk_combine_guard_health.GetFloat(); // the highest healthed fleshy enemy
+		flDamage = sk_mercenary_elite_health.GetFloat(); // the highest healthed fleshy enemy
 	}
 	else if ( dynamic_cast<CBaseProp*>(pHitEntity) || dynamic_cast<CBreakable*>(pHitEntity) )
 	{
