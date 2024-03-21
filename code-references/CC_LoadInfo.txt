@@ -1,0 +1,176 @@
+void __cdecl CC_LoadInfo()
+{
+  char *m_pszString; // ecx
+  __int16 *v1; // edx
+  char v2; // al
+  _DWORD *v3; // eax
+  _DWORD *v4; // eax
+  _DWORD *v5; // eax
+  _DWORD *v6; // eax
+  _DWORD *v7; // eax
+  _DWORD *v8; // eax
+  _DWORD *v9; // eax
+  _DWORD *v10; // eax
+  _DWORD *v11; // eax
+  _DWORD *v12; // eax
+  int v13; // edi
+  unsigned int i; // esi
+  int v15; // eax
+  int v16; // eax
+  int v17; // eax
+  const char *v18; // esi
+  int v19; // eax
+  unsigned int j; // esi
+  _DWORD *v21; // eax
+  _DWORD *v22; // eax
+  int v23; // ecx
+  _WORD *v24; // edi
+  char v25; // al
+  int v26; // eax
+  int v27; // eax
+  int v28; // esi
+  _DWORD *v29; // eax
+  ConVarRef v30; // [esp+38h] [ebp-A0h] BYREF
+  ConVarRef v31; // [esp+40h] [ebp-98h] BYREF
+  char *pName[10]; // [esp+48h] [ebp-90h] BYREF
+  __int16 v33[5]; // [esp+70h] [ebp-68h] BYREF
+  char v34; // [esp+7Ah] [ebp-5Eh]
+  char v35; // [esp+83h] [ebp-55h]
+  char v36; // [esp+89h] [ebp-4Fh]
+  char v37; // [esp+8Fh] [ebp-49h]
+  char v38; // [esp+92h] [ebp-46h]
+  char v39; // [esp+A7h] [ebp-31h]
+  char v40; // [esp+A8h] [ebp-30h]
+  char v41; // [esp+AEh] [ebp-2Ah]
+  char v42; // [esp+B2h] [ebp-26h]
+  char v43; // [esp+BEh] [ebp-1Ah]
+
+  if ( (dec_1187_encryptedeggs.m_nFlags & 0x1000) != 0 )
+  {
+    m_pszString = "FCVAR_NEVER_AS_STRING";
+  }
+  else
+  {
+    m_pszString = dec_1187_encryptedeggs.m_pParent->m_pszString;
+    if ( !m_pszString )
+      m_pszString = (char *)defaultValue;
+  }
+  v1 = v33;
+  do
+  {
+    v2 = *m_pszString;
+    *(_BYTE *)v1 = *m_pszString++;
+    v1 = (__int16 *)((char *)v1 + 1);
+  }
+  while ( v2 );
+  if ( v34 == 49 )
+  {
+    ConVarRef::ConVarRef(&v30, "_egg_1187d1");
+    (**(void (__thiscall ***)(_DWORD, int))*v3)(*v3, 1);
+  }
+  if ( v35 == 49 )
+  {
+    ConVarRef::ConVarRef(&v30, "_egg_1187d2");
+    (**(void (__thiscall ***)(_DWORD, int))*v4)(*v4, 1);
+  }
+  if ( v36 == 49 )
+  {
+    ConVarRef::ConVarRef(&v30, "_egg_1187d3");
+    (**(void (__thiscall ***)(_DWORD, int))*v5)(*v5, 1);
+  }
+  if ( v37 == 49 )
+  {
+    ConVarRef::ConVarRef(&v30, "_egg_1187d4");
+    (**(void (__thiscall ***)(_DWORD, int))*v6)(*v6, 1);
+  }
+  if ( v38 == 49 )
+  {
+    ConVarRef::ConVarRef(&v30, "_egg_1187d5");
+    (**(void (__thiscall ***)(_DWORD, int))*v7)(*v7, 1);
+  }
+  if ( v39 == 49 )
+  {
+    ConVarRef::ConVarRef(&v30, "_egg_1187d6");
+    (**(void (__thiscall ***)(_DWORD, int))*v8)(*v8, 1);
+  }
+  if ( v40 == 49 )
+  {
+    ConVarRef::ConVarRef(&v30, "_egg_1187d7");
+    (**(void (__thiscall ***)(_DWORD, int))*v9)(*v9, 1);
+  }
+  if ( v41 == 49 )
+  {
+    ConVarRef::ConVarRef(&v30, "_egg_1187d8");
+    (**(void (__thiscall ***)(_DWORD, int))*v10)(*v10, 1);
+  }
+  if ( v42 == 49 )
+  {
+    ConVarRef::ConVarRef(&v30, "_egg_1187d9");
+    (**(void (__thiscall ***)(_DWORD, int))*v11)(*v11, 1);
+  }
+  if ( v43 == 49 )
+  {
+    ConVarRef::ConVarRef(&v30, "_egg_1187d10");
+    (**(void (__thiscall ***)(_DWORD, int))*v12)(*v12, 1);
+  }
+  v13 = 0;
+  pName[0] = "_egg_1187d1";
+  pName[1] = "_egg_1187d2";
+  pName[2] = "_egg_1187d3";
+  pName[3] = "_egg_1187d4";
+  pName[4] = "_egg_1187d5";
+  pName[5] = "_egg_1187d6";
+  pName[6] = "_egg_1187d7";
+  pName[7] = "_egg_1187d8";
+  pName[8] = "_egg_1187d9";
+  pName[9] = "_egg_1187d10";
+  for ( i = 0; i < 0xA; ++i )
+  {
+    ConVarRef::ConVarRef(&v30, pName[i]);
+    if ( *(_DWORD *)(*(_DWORD *)(v15 + 4) + 48) == 1 )
+      ++v13;
+  }
+  ConVarRef::ConVarRef(&v30, "xbox_forcebytes");
+  if ( *(_DWORD *)(*(_DWORD *)(v16 + 4) + 48) != v13
+    || (ConVarRef::ConVarRef(&v30, "cl_name"),
+        v18 = *(const char **)(*(_DWORD *)(v17 + 4) + 36),
+        ConVarRef::ConVarRef(&v31, "name"),
+        strcmp(*(const char **)(*(_DWORD *)(v19 + 4) + 36), v18)) )
+  {
+    for ( j = 0; j < 0xA; ++j )
+    {
+      ConVarRef::ConVarRef(&v31, pName[j]);
+      (**(void (__thiscall ***)(_DWORD, _DWORD))*v21)(*v21, 0);
+    }
+    ConVarRef::ConVarRef(&v31, "xbox_forcebytes");
+    (**(void (__thiscall ***)(_DWORD, _DWORD))*v22)(*v22, 0);
+    v33[0] = 48;
+    v23 = 100;
+    do
+    {
+      v24 = (_WORD *)((char *)&pName[9] + 3);
+      do
+      {
+        v25 = *((_BYTE *)v24 + 1);
+        v24 = (_WORD *)((char *)v24 + 1);
+      }
+      while ( v25 );
+      --v23;
+      *v24 = 48;
+    }
+    while ( v23 );
+    ConVar::SetValue2((ConVar *)&dec_1187_encryptedeggs.IConVar, (const char *)v33);
+    Warning("Easter eggs reset.\n");
+  }
+  ConVarRef::ConVarRef(&v31, "xbox_forcebytes");
+  if ( *(_DWORD *)(*(_DWORD *)(v26 + 4) + 48) == 10 )
+  {
+    ConVar::SetValue((ConVar *)&dec3542568236206973268276836829.IConVar, 1);
+    Msg("You have unlocked all easter eggs!\n");
+  }
+  ConVarRef::ConVarRef(&v31, "name");
+  v28 = *(_DWORD *)(*(_DWORD *)(v27 + 4) + 36);
+  ConVarRef::ConVarRef(&v30, "cl_name");
+  (*(void (__thiscall **)(_DWORD, int))(*(_DWORD *)*v29 + 8))(*v29, v28);
+  (*(void (__thiscall **)(int, const char *))(*(_DWORD *)engine + 28))(engine, "host_writeconfig");
+}
