@@ -1105,11 +1105,8 @@ CFourWheelServerVehicle::CFourWheelServerVehicle( void )
 	m_ViewSmoothing.flRollCurveLinear	= ROLL_CURVE_LINEAR;
 }
 
-#ifdef HL2_EPISODIC
-ConVar r_JeepFOV( "r_JeepFOV", "82", FCVAR_CHEAT | FCVAR_REPLICATED );
-#else
+ConVar r_CarFOV( "r_CarFOV", "70", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar r_JeepFOV( "r_JeepFOV", "90", FCVAR_CHEAT | FCVAR_REPLICATED );
-#endif // HL2_EPISODIC
 
 //-----------------------------------------------------------------------------
 // Purpose: Setup our view smoothing information

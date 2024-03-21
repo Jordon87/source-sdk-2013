@@ -13,12 +13,12 @@
 #include "tier0/memdbgon.h"
 
 //-----------------------------------------------------------------------------
-// CWeaponKar98
+// CWeaponColt
 //-----------------------------------------------------------------------------
 
-class CWeaponKar98 : public CBaseHLCombatWeapon
+class CWeaponColt : public CBaseHLCombatWeapon
 {
-	DECLARE_CLASS(CWeaponKar98, CBaseHLCombatWeapon);
+	DECLARE_CLASS(CWeaponColt, CBaseHLCombatWeapon);
 public:
 
 	DECLARE_SERVERCLASS();
@@ -26,8 +26,8 @@ public:
 
 	virtual const Vector& GetBulletSpread(void)
 	{
-		static Vector Cone = VECTOR_CONE_1DEGREES;
-		static Vector Cone2 = VECTOR_CONE_10DEGREES;
+		static Vector Cone = VECTOR_CONE_2DEGREES;
+		static Vector Cone2 = VECTOR_CONE_6DEGREES;
 
 		if (m_bIsIronsighted)
 		{
@@ -39,22 +39,21 @@ public:
 		}
 	}
 
+	virtual float	WeaponAutoAimScale() { return 0.8f; };
 	virtual void PrimaryAttack(void);
 
-private:
-	void FUN_1037dc30();
 };
 
-LINK_ENTITY_TO_CLASS(weapon_kar98, CWeaponKar98);
-PRECACHE_WEAPON_REGISTER(weapon_kar98);
+LINK_ENTITY_TO_CLASS(weapon_colt, CWeaponColt);
+PRECACHE_WEAPON_REGISTER(weapon_colt);
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponKar98, DT_WeaponKar98)
+IMPLEMENT_SERVERCLASS_ST(CWeaponColt, DT_WeaponColt)
 END_SEND_TABLE()
 
-BEGIN_DATADESC(CWeaponKar98)
+BEGIN_DATADESC(CWeaponColt)
 END_DATADESC()
 
-void CWeaponKar98::PrimaryAttack(void)
+void CWeaponColt::PrimaryAttack(void)
 {
 	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
 
@@ -96,42 +95,18 @@ void CWeaponKar98::PrimaryAttack(void)
 				// HEV suit - indicate out of ammo condition
 				pOwner->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 			}
-
-			if (m_iClip1 <= 0)
-				Reload();
-			else
-				FUN_1037dc30();
-		}
-		else
-		{
-			if (m_bFireOnEmpty)
-			{
-				WeaponSound(EMPTY);
-				m_flNextPrimaryAttack += 0.15f;
-			}
 			else
 			{
-				Reload();
+				if (m_bFireOnEmpty)
+				{
+					WeaponSound(EMPTY);
+					m_flNextPrimaryAttack += 0.15f;
+				}
+				else
+				{
+					Reload();
+				}
 			}
 		}
-	}
-}
-
-void CWeaponKar98::FUN_1037dc30()
-{
-	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
-
-	if (pOwner)
-	{
-		WeaponSound(SPECIAL1);
-
-		if (!IsIronsighted())
-			SendWeaponAnim(ACT_VM_PULLPIN);
-		else
-			SendWeaponAnim(ACT_VM_RELEASE);
-
-		pOwner->SetNextAttack(gpGlobals->curtime + SequenceDuration());
-		m_flNextPrimaryAttack = SequenceDuration() + gpGlobals->curtime;
-
 	}
 }

@@ -15,11 +15,10 @@ ITexture *GetWaterReflectionTexture( void );
 ITexture *GetWaterRefractionTexture( void );
 ITexture *GetFullscreenTexture( void );
 ITexture *GetCameraTexture( void );
-ITexture *GetFullFrameDepthTexture( void );
 
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+//Dynamic Scope Texture
 ITexture *GetScopeTexture();
-#endif
+ITexture *GetFullFrameDepthTexture( void );
 
 // SmallBufferHDRx=r16g16b16a16 quarter-sized texture
 ITexture *GetSmallBufferHDR0( void );

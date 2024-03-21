@@ -308,6 +308,9 @@ public:
 	// TF Injury functions
 	virtual float			GetDamage( float flDistance, int iLocation ) { return 0.0; };
 
+	virtual float			GetScopeStuff() { return 10.0f; };
+
+
 	virtual void			SetActivity( Activity act, float duration );
 	inline void				SetActivity( Activity eActivity ) { m_Activity = eActivity; }
 	inline Activity			GetActivity( void ) { return m_Activity; }

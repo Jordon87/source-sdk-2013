@@ -63,6 +63,7 @@ END_DATADESC()
 LINK_ENTITY_TO_CLASS(info_player_deathmatch,CBaseDMStart);
 LINK_ENTITY_TO_CLASS(info_player_start,CPointEntity);
 LINK_ENTITY_TO_CLASS(info_landmark,CPointEntity);
+LINK_ENTITY_TO_CLASS(info_vort_teleport,CPointEntity);
 
 bool CBaseDMStart::IsTriggered( CBaseEntity *pEntity )
 {

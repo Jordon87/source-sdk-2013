@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "vgui_imagebutton.h"
 #include "vgui/mousecode.h"
+#include <vgui/ISurface.h>
 
 using namespace vgui;
 
@@ -43,6 +44,7 @@ ImageButton::ImageButton( Panel *parent, const char *panelName, const char *norm
 
 void ImageButton::OnCursorEntered()
 {
+	surface()->PlaySound("ui/1187menuover.wav");
 	if ( hasMouseOverImage )
 		SetMouseOverImage();
 }
@@ -63,6 +65,7 @@ void ImageButton::OnMouseReleased( vgui::MouseCode code )
 
 void ImageButton::OnMousePressed( vgui::MouseCode code )
 {
+	surface()->PlaySound("ui/1187menuclick.wav");
 	if ( ( code == MOUSE_LEFT ) && hasMouseClickImage )
 		SetMouseClickImage();
 }

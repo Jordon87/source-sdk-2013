@@ -30,6 +30,9 @@ extern ConVar in_forceuser;
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar g_viewmodellag("g_viewmodellag", "10.5f", FCVAR_REPLICATED);
+ConVar g_viewmodellagiron("g_viewmodellagiron", "0.2f", FCVAR_REPLICATED);
+
 #define VIEWMODEL_ANIMATION_PARITY_BITS 3
 #define SCREEN_OVERLAY_MATERIAL "vgui/screens/vgui_overlay"
 
@@ -497,10 +500,18 @@ void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePos
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-float g_fMaxViewModelLag = 1.5f;
 
 void CBaseViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles )
 {
+	float g_fMaxViewModelLag = g_viewmodellag.GetFloat();
+
+	CBaseCombatWeapon* pWeapon = GetOwningWeapon();
+
+	if (pWeapon && pWeapon->IsIronsighted())
+	{
+		g_fMaxViewModelLag = g_viewmodellagiron.GetFloat();
+	}
+
 	Vector vOriginalOrigin = origin;
 	QAngle vOriginalAngles = angles;
 

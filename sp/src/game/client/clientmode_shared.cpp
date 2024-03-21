@@ -419,47 +419,47 @@ void ClientModeShared::OverrideView( CViewSetup *pSetup )
 
 	pPlayer->OverrideView( pSetup );
 
-	if( ::input->CAM_IsThirdPerson() )
-	{
-		Vector cam_ofs = g_ThirdPersonManager.GetCameraOffsetAngles();
-		Vector cam_ofs_distance = g_ThirdPersonManager.GetFinalCameraOffset();
-
-		cam_ofs_distance *= g_ThirdPersonManager.GetDistanceFraction();
-
-		camAngles[ PITCH ] = cam_ofs[ PITCH ];
-		camAngles[ YAW ] = cam_ofs[ YAW ];
-		camAngles[ ROLL ] = 0;
-
-		Vector camForward, camRight, camUp;
-		
-
-		if ( g_ThirdPersonManager.IsOverridingThirdPerson() == false )
-		{
-			engine->GetViewAngles( camAngles );
-		}
-			
-		// get the forward vector
-		AngleVectors( camAngles, &camForward, &camRight, &camUp );
-	
-		VectorMA( pSetup->origin, -cam_ofs_distance[0], camForward, pSetup->origin );
-		VectorMA( pSetup->origin, cam_ofs_distance[1], camRight, pSetup->origin );
-		VectorMA( pSetup->origin, cam_ofs_distance[2], camUp, pSetup->origin );
-
-		// Override angles from third person camera
-		VectorCopy( camAngles, pSetup->angles );
-	}
-	else if (::input->CAM_IsOrthographic())
-	{
-		pSetup->m_bOrtho = true;
-		float w, h;
-		::input->CAM_OrthographicSize( w, h );
-		w *= 0.5f;
-		h *= 0.5f;
-		pSetup->m_OrthoLeft   = -w;
-		pSetup->m_OrthoTop    = -h;
-		pSetup->m_OrthoRight  = w;
-		pSetup->m_OrthoBottom = h;
-	}
+//	if( ::input->CAM_IsThirdPerson() )
+//	{
+//		Vector cam_ofs = g_ThirdPersonManager.GetCameraOffsetAngles();
+//		Vector cam_ofs_distance = g_ThirdPersonManager.GetFinalCameraOffset();
+//
+//		cam_ofs_distance *= g_ThirdPersonManager.GetDistanceFraction();
+//
+//		camAngles[ PITCH ] = cam_ofs[ PITCH ];
+//		camAngles[ YAW ] = cam_ofs[ YAW ];
+//		camAngles[ ROLL ] = 0;
+//
+//		Vector camForward, camRight, camUp;
+//		
+//
+//		if ( g_ThirdPersonManager.IsOverridingThirdPerson() == false )
+//		{
+//			engine->GetViewAngles( camAngles );
+//		}
+//			
+//		// get the forward vector
+//		AngleVectors( camAngles, &camForward, &camRight, &camUp );
+//	
+//		VectorMA( pSetup->origin, -cam_ofs_distance[0], camForward, pSetup->origin );
+//		VectorMA( pSetup->origin, cam_ofs_distance[1], camRight, pSetup->origin );
+//		VectorMA( pSetup->origin, cam_ofs_distance[2], camUp, pSetup->origin );
+//
+//		// Override angles from third person camera
+//		VectorCopy( camAngles, pSetup->angles );
+//	}
+//	else if (::input->CAM_IsOrthographic())
+//	{
+//		pSetup->m_bOrtho = true;
+//		float w, h;
+//		::input->CAM_OrthographicSize( w, h );
+//		w *= 0.5f;
+//		h *= 0.5f;
+//		pSetup->m_OrthoLeft   = -w;
+//		pSetup->m_OrthoTop    = -h;
+//		pSetup->m_OrthoRight  = w;
+//		pSetup->m_OrthoBottom = h;
+//	}
 }
 
 //-----------------------------------------------------------------------------

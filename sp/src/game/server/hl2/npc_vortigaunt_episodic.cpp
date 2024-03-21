@@ -25,6 +25,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#define SF_IS_ENHANCED_VORTIGAUNT		( 1 << 16 )
+
 #define HAND_LEFT	0
 #define HAND_RIGHT	1
 #define HAND_BOTH	2
@@ -73,12 +75,20 @@ static const char *VORT_EXTRACT_FINISH = "VORT_EXTRACT_FINISH";
 ConVar sk_vortigaunt_armor_charge( "sk_vortigaunt_armor_charge","30");
 ConVar sk_vortigaunt_armor_charge_per_token( "sk_vortigaunt_armor_charge_per_token","5");
 
+ConVar sk_vortigaunt_dispell_damage( "sk_vortigaunt_dispell_damage","5000");
+ConVar sk_vortigaunt_enhanced_teleport( "sk_vortigaunt_enhanced_teleport","3");
+ConVar sk_vortigaunt_enhanced_health( "sk_vortigaunt_enhanced_health","800");
+ConVar sk_vortigaunt_enhanced_dmg_zap( "sk_vortigaunt_enhanced_dmg_zap","150");
+ConVar sk_vortigaunt_enhanced_teleportchance( "sk_vortigaunt_enhanced_teleportchance","6");
+
 ConVar sk_vortigaunt_health( "sk_vortigaunt_health","0");
 ConVar sk_vortigaunt_dmg_claw( "sk_vortigaunt_dmg_claw","0");
 ConVar sk_vortigaunt_dmg_rake( "sk_vortigaunt_dmg_rake","0");
 ConVar sk_vortigaunt_dmg_zap( "sk_vortigaunt_dmg_zap","0");
 ConVar sk_vortigaunt_zap_range( "sk_vortigaunt_zap_range", "100", FCVAR_NONE, "Range of vortigaunt's ranged attack (feet)" );
 ConVar sk_vortigaunt_vital_antlion_worker_dmg("sk_vortigaunt_vital_antlion_worker_dmg", "0.2", FCVAR_NONE, "Vital-ally vortigaunts scale damage taken from antlion workers by this amount." );
+
+ConVar sk_vortigaunt_blast_velocity("sk_vortigaunt_blast_velocity", "300");
 
 ConVar g_debug_vortigaunt_aim( "g_debug_vortigaunt_aim", "0" );
 
@@ -202,6 +212,7 @@ BEGIN_DATADESC( CNPC_Vortigaunt )
 END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( npc_vortigaunt, CNPC_Vortigaunt );
+LINK_ENTITY_TO_CLASS( npc_vortigaunt_enhanced, CNPC_Vortigaunt );
 
 IMPLEMENT_SERVERCLASS_ST( CNPC_Vortigaunt, DT_NPC_Vortigaunt )
 	SendPropTime( SENDINFO (m_flBlueEndFadeTime ) ),
@@ -660,19 +671,11 @@ int CNPC_Vortigaunt::RangeAttack1Conditions( float flDot, float flDist )
 //-----------------------------------------------------------------------------
 int CNPC_Vortigaunt::MeleeAttack1Conditions( float flDot, float flDist )
 {
-	if ( m_flDispelTestTime > gpGlobals->curtime )
-		return COND_NONE;
+	if (flDist > 70.0f)
+		return COND_TOO_FAR_TO_ATTACK;
 
-	m_flDispelTestTime = gpGlobals->curtime + 1.0f;
-
-	if ( GetEnemy() && GetEnemy()->Classify() == CLASS_ANTLION )
-	{
-		if ( NumAntlionsInRadius(128) > 3 )
-		{
-			m_flDispelTestTime = gpGlobals->curtime + 15.0f;
-			return COND_VORTIGAUNT_DISPEL_ANTLIONS;
-		}
-	}
+	if (GetEnemy())
+		return ( (HasSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT) != false ) + COND_CAN_MELEE_ATTACK1);
 
 	return COND_NONE;
 }
@@ -719,6 +722,46 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 		return;
 	}
 	
+	if (pEvent->event == AE_VORTIGAUNT_CLAW_LEFT || pEvent->event == AE_VORTIGAUNT_CLAW_RIGHT)
+	{
+		Vector clawForward, clawRight;
+
+		clawRight = clawRight * Vector(100, 100, 100);
+		clawForward = clawForward * Vector(200, 200, 200);
+		AngleVectors(GetAbsAngles(), &clawForward, &clawRight, NULL);
+		CBaseEntity* pHurt;
+
+		pHurt = CheckTraceHullAttack(sk_vortigaunt_dmg_claw.GetFloat(), GetHullMins(), GetHullMaxs(), 30, DMG_SLASH);
+	
+		if (pHurt)
+		{
+			Vector vecBloodPos;
+
+			if (pEvent->event == AE_VORTIGAUNT_CLAW_LEFT)
+				GetAttachment("leftclaw", vecBloodPos);
+			else
+				GetAttachment("rightclaw", vecBloodPos);
+
+			SpawnBlood(vecBloodPos, g_vecAttackDir, pHurt->BloodColor(), sk_vortigaunt_dmg_claw.GetFloat());
+		
+			if (pHurt->IsAlive())
+			{
+				if ((pHurt->GetFlags() & FL_GODMODE) == 0)
+				{
+					QAngle attackAngles;
+
+					attackAngles = QAngle(-15.0, -20.0, 10.0);
+					ViewPunch(attackAngles);
+
+					Vector attackVector;
+					attackVector = clawForward + clawRight;
+					VelocityPunch(attackVector);
+				}
+			}
+		}
+		return;
+	}
+
 	// Stop our heal glows (choreo driven)
 	if ( pEvent->event == AE_VORTIGAUNT_STOP_HEAL_GLOW )
 	{
@@ -1085,11 +1128,19 @@ void CNPC_Vortigaunt::Spawn( void )
 	AddSpawnFlags( SF_NPC_NO_PLAYER_PUSHAWAY );
 #endif // HL2_EPISODIC
 
+	if (ClassMatches("npc_vortigaunt_enhanced"))
+	{
+		AddSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT);
+	}
+
 	// Allow multiple models (for slaves), but default to vortigaunt.mdl
 	char *szModel = (char *)STRING( GetModelName() );
 	if (!szModel || !*szModel)
 	{
-		szModel = "models/vortigaunt.mdl";
+		szModel = "models/vortigaunt_enchanced.mdl";
+		if (HasSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT) == false)
+			szModel = "models/vortigaunt_slave.mdl";
+
 		SetModelName( AllocPooledString(szModel) );
 	}
 
@@ -1102,12 +1153,20 @@ void CNPC_Vortigaunt::Spawn( void )
 	SetHullType( HULL_WIDE_HUMAN );
 	SetHullSizeNormal();
 
-	m_bloodColor		= BLOOD_COLOR_GREEN;
-	m_iHealth			= sk_vortigaunt_health.GetFloat();
+	if (HasSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT) == false)
+	{
+		m_bloodColor = BLOOD_COLOR_GREEN;
+		m_iHealth = sk_vortigaunt_health.GetFloat();
+	}
+	else
+	{
+		m_bloodColor = BLOOD_COLOR_MECH;
+		m_iHealth = sk_vortigaunt_enhanced_health.GetFloat();
+	}
+
 	SetViewOffset( Vector ( 0, 0, 64 ) );// position of the eyes relative to monster's origin.
 
 	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK1 );
-	CapabilitiesRemove( bits_CAP_USE_SHOT_REGULATOR );
 
 	m_flEyeIntegRate		= 0.6f;		// Got a big eyeball so turn it slower
 	m_bForceArmorRecharge	= false;
@@ -1123,11 +1182,28 @@ void CNPC_Vortigaunt::Spawn( void )
 	NPCInit();
 
 	SetUse( &CNPC_Vortigaunt::Use );
+	
+	Vector vecTeleport;
+	QAngle angTeleport;
+	if (HasSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT) == false)
+	{
+		vecTeleport = GetAbsOrigin() + Vector(0, 0, 30);
+		angTeleport = GetAbsAngles();
+		DispatchParticleEffect("1187dec_xen", vecTeleport, angTeleport, this);
+	}
+	else
+	{
+		vecTeleport = GetAbsOrigin() + Vector(0, 0, 30);
+		angTeleport = GetAbsAngles();
+		DispatchParticleEffect("1187dec_teleport", vecTeleport, angTeleport, this);
+	}
+
+	CapabilitiesRemove(bits_CAP_USE_SHOT_REGULATOR);
 
 	// Setup our re-fire times when moving and shooting
-	GetShotRegulator()->SetBurstInterval( 2.0f, 2.0f );
+	GetShotRegulator()->SetBurstInterval( 0.3f, 0.9f );
 	GetShotRegulator()->SetBurstShotCountRange( 1, 1 );
-	GetShotRegulator()->SetRestInterval( 2.0f, 2.0f );
+	GetShotRegulator()->SetRestInterval( 1.0f, 3.0f );
 }
 
 //-----------------------------------------------------------------------------
@@ -1184,40 +1260,40 @@ void CNPC_Vortigaunt::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 {
 	m_OnPlayerUse.FireOutput( pActivator, pCaller );
 
-	// Foremost, try and heal a wounded player
-	if ( HealBehaviorAvailable() )
-	{
-		// See if we should heal the player
-		CBaseEntity *pHealTarget = FindHealTarget();
-		if ( pHealTarget != NULL )
-		{
-			SetCondition( COND_PROVOKED );
-			SetHealTarget( pHealTarget, true );
-			return;
-		}
-	}
-	
-	// Next, try to speak the +USE concept
-	if ( IsOkToSpeakInResponseToPlayer() && m_eHealState == HEAL_STATE_NONE )
-	{
-		if ( Speak( TLK_USE ) == false )
-		{
-			// If we haven't said hi, say that first
-			if ( !SpokeConcept( TLK_HELLO ) )
-			{
-				Speak( TLK_HELLO );
-			}
-			else
-			{
-				Speak( TLK_IDLE );
-			}
-		}
-		else
-		{
-			// Don't say hi after you've said your +USE speech
-			SetSpokeConcept( TLK_HELLO, NULL );	
-		}
-	}
+//	// Foremost, try and heal a wounded player
+//	if ( HealBehaviorAvailable() )
+//	{
+//		// See if we should heal the player
+//		CBaseEntity *pHealTarget = FindHealTarget();
+//		if ( pHealTarget != NULL )
+//		{
+//			SetCondition( COND_PROVOKED );
+//			SetHealTarget( pHealTarget, true );
+//			return;
+//		}
+//	}
+//	
+//	// Next, try to speak the +USE concept
+//	if ( IsOkToSpeakInResponseToPlayer() && m_eHealState == HEAL_STATE_NONE )
+//	{
+//		if ( Speak( TLK_USE ) == false )
+//		{
+//			// If we haven't said hi, say that first
+//			if ( !SpokeConcept( TLK_HELLO ) )
+//			{
+//				Speak( TLK_HELLO );
+//			}
+//			else
+//			{
+//				Speak( TLK_IDLE );
+//			}
+//		}
+//		else
+//		{
+//			// Don't say hi after you've said your +USE speech
+//			SetSpokeConcept( TLK_HELLO, NULL );	
+//		}
+//	}
 }
 
 //=========================================================
@@ -1248,35 +1324,35 @@ void CNPC_Vortigaunt::TraceAttack( const CTakeDamageInfo &inputInfo, const Vecto
 {
 	CTakeDamageInfo info = inputInfo;
 
-	if ( (info.GetDamageType() & DMG_SHOCK) && FClassnameIs( info.GetAttacker(), GetClassname() ) )
-	{
-		// mask off damage from other vorts for now
-		info.SetDamage( 0.01 );
-	}
-
-	switch( ptr->hitgroup)
-	{
-	case HITGROUP_CHEST:
-	case HITGROUP_STOMACH:
-		if (info.GetDamageType() & (DMG_BULLET | DMG_SLASH | DMG_BLAST))
-		{
-			info.ScaleDamage( 0.5f );
-		}
-		break;
-	case 10:
-		if (info.GetDamageType() & (DMG_BULLET | DMG_SLASH | DMG_CLUB))
-		{
-			info.SetDamage( info.GetDamage() - 20 );
-			if (info.GetDamage() <= 0)
-			{
-				g_pEffects->Ricochet( ptr->endpos, (vecDir*-1.0f) );
-				info.SetDamage( 0.01 );
-			}
-		}
-		// always a head shot
-		ptr->hitgroup = HITGROUP_HEAD;
-		break;
-	}
+//	if ( (info.GetDamageType() & DMG_SHOCK) && FClassnameIs( info.GetAttacker(), GetClassname() ) )
+//	{
+//		// mask off damage from other vorts for now
+//		info.SetDamage( 0.01 );
+//	}
+//
+//	switch( ptr->hitgroup)
+//	{
+//	case HITGROUP_CHEST:
+//	case HITGROUP_STOMACH:
+//		if (info.GetDamageType() & (DMG_BULLET | DMG_SLASH | DMG_BLAST))
+//		{
+//			info.ScaleDamage( 0.5f );
+//		}
+//		break;
+//	case 10:
+//		if (info.GetDamageType() & (DMG_BULLET | DMG_SLASH | DMG_CLUB))
+//		{
+//			info.SetDamage( info.GetDamage() - 20 );
+//			if (info.GetDamage() <= 0)
+//			{
+//				g_pEffects->Ricochet( ptr->endpos, (vecDir*-1.0f) );
+//				info.SetDamage( 0.01 );
+//			}
+//		}
+//		// always a head shot
+//		ptr->hitgroup = HITGROUP_HEAD;
+//		break;
+//	}
 
 	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
 }
@@ -1546,8 +1622,7 @@ int CNPC_Vortigaunt::SelectSchedule( void )
 	if ( m_bForceArmorRecharge )
 	{
 		m_flNextHealTime = 0;
-		int nSchedule = SelectHealSchedule();
-			return nSchedule;
+		return 0;
 	}
 
 #ifndef HL2_EPISODIC
@@ -1561,10 +1636,6 @@ int CNPC_Vortigaunt::SelectSchedule( void )
 	// If we're currently supposed to be doing something scripted, do it immediately.
 	if ( m_bExtractingBugbait )
 		return SCHED_VORTIGAUNT_EXTRACT_BUGBAIT;
-
-	int schedule = SelectHealSchedule();
-	if ( schedule != SCHED_NONE )
-		return schedule;
 
 	if ( HasCondition(COND_VORTIGAUNT_DISPEL_ANTLIONS ) )
 	{
@@ -1608,14 +1679,7 @@ void CNPC_Vortigaunt::DeclineFollowing( void )
 //-----------------------------------------------------------------------------
 bool CNPC_Vortigaunt::CanBeUsedAsAFriend( void )
 {
-	// We don't want to be used if we're busy
-	if ( IsCurSchedule( SCHED_VORTIGAUNT_HEAL ) )
-		return false;
-	
-	if ( IsCurSchedule( SCHED_VORTIGAUNT_EXTRACT_BUGBAIT ) )
-		return false;
-
-	return BaseClass::CanBeUsedAsAFriend();
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -1704,66 +1768,66 @@ void CNPC_Vortigaunt::MaintainHealSchedule( void )
 	// Don't let us shoot while we're healing
 	GetShotRegulator()->FireNoEarlierThan( gpGlobals->curtime + 0.5f );
 
-	// If we're in the healing phase, heal our target (if able)
-	if ( m_eHealState == HEAL_STATE_HEALING )
-	{
-		// FIXME: We need to have better logic controlling this
-		if ( HasCondition( COND_VORTIGAUNT_HEAL_VALID ) )
-		{
-			if ( m_flNextHealTokenTime < gpGlobals->curtime )
-			{
-				CBasePlayer *pPlayer = ToBasePlayer( m_hHealTarget );
-
-				// We're done, so stop playing the animation
-				if ( m_nNumTokensToSpawn <= 0 || ( m_bForceArmorRecharge == false && ( pPlayer && pPlayer->ArmorValue() >= sk_vortigaunt_armor_charge.GetInt() ) ) )
-				{
-					m_flHealHinderedTime = 0.0f;
-					m_nNumTokensToSpawn = 0;
-					SpeakIfAllowed( VORT_CURESTOP );
-					StopHealing( false );
-					return;
-				}
-
-				// Create a charge token
-				Vector vecHandPos;
-				QAngle vecHandAngles;
-				GetAttachment( m_iRightHandAttachment, vecHandPos, vecHandAngles );
-				CVortigauntChargeToken::CreateChargeToken( vecHandPos, this, m_hHealTarget );
-				m_flNextHealTokenTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 1.0f );
-				m_nNumTokensToSpawn--;
-
-				// If we're stopping, delay our animation a bit so it's not so robotic
-				if ( m_nNumTokensToSpawn <= 0 )
-				{
-					m_nNumTokensToSpawn = 0;
-					m_flNextHealTokenTime = gpGlobals->curtime + 1.0f;
-				}
-			}
-		}
-		else
-		{
-			/*
-			// NOTENOTE: It's better if the vort give up than ignore things around him to try and continue -- jdw
-
-			// Increment a counter to let us know how long we've failed
-			m_flHealHinderedTime += gpGlobals->curtime - GetLastThink();
-			
-			if ( m_flHealHinderedTime > 2.0f )
-			{
-				// If too long, stop trying
-				StopHealing();
-			}
-			*/
-
-			bool bInterrupt = false;
-			if ( HasCondition( COND_NEW_ENEMY ) )
-			{
-				bInterrupt = true;
-			}
-
-			StopHealing( true );
-		}
-	}
+//	// If we're in the healing phase, heal our target (if able)
+//	if ( m_eHealState == HEAL_STATE_HEALING )
+//	{
+//		// FIXME: We need to have better logic controlling this
+//		if ( HasCondition( COND_VORTIGAUNT_HEAL_VALID ) )
+//		{
+//			if ( m_flNextHealTokenTime < gpGlobals->curtime )
+//			{
+//				CBasePlayer *pPlayer = ToBasePlayer( m_hHealTarget );
+//
+//				// We're done, so stop playing the animation
+//				if ( m_nNumTokensToSpawn <= 0 || ( m_bForceArmorRecharge == false && ( pPlayer && pPlayer->ArmorValue() >= sk_vortigaunt_armor_charge.GetInt() ) ) )
+//				{
+//					m_flHealHinderedTime = 0.0f;
+//					m_nNumTokensToSpawn = 0;
+//					SpeakIfAllowed( VORT_CURESTOP );
+//					StopHealing( false );
+//					return;
+//				}
+//
+//				// Create a charge token
+//				Vector vecHandPos;
+//				QAngle vecHandAngles;
+//				GetAttachment( m_iRightHandAttachment, vecHandPos, vecHandAngles );
+//				CVortigauntChargeToken::CreateChargeToken( vecHandPos, this, m_hHealTarget );
+//				m_flNextHealTokenTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 1.0f );
+//				m_nNumTokensToSpawn--;
+//
+//				// If we're stopping, delay our animation a bit so it's not so robotic
+//				if ( m_nNumTokensToSpawn <= 0 )
+//				{
+//					m_nNumTokensToSpawn = 0;
+//					m_flNextHealTokenTime = gpGlobals->curtime + 1.0f;
+//				}
+//			}
+//		}
+//		else
+//		{
+//			/*
+//			// NOTENOTE: It's better if the vort give up than ignore things around him to try and continue -- jdw
+//
+//			// Increment a counter to let us know how long we've failed
+//			m_flHealHinderedTime += gpGlobals->curtime - GetLastThink();
+//			
+//			if ( m_flHealHinderedTime > 2.0f )
+//			{
+//				// If too long, stop trying
+//				StopHealing();
+//			}
+//			*/
+//
+//			bool bInterrupt = false;
+//			if ( HasCondition( COND_NEW_ENEMY ) )
+//			{
+//				bInterrupt = true;
+//			}
+//
+//			StopHealing( true );
+//		}
+//	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1956,7 +2020,7 @@ void CNPC_Vortigaunt::StartHandGlow( int beamType, int nHand )
 			if ( m_hHandEffect[nHand] == NULL )
 			{
 				// Create the token if it doesn't already exist
-				m_hHandEffect[nHand] = CVortigauntEffectDispel::CreateEffectDispel( GetAbsOrigin(), this, NULL );
+				m_hHandEffect[nHand] = CVortigauntEffectDispel::CreateEffectDispel( GetAbsOrigin(), this, NULL, HasSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT) );
 				if ( m_hHandEffect[nHand] == NULL )
 					return;
 			}
@@ -2029,7 +2093,18 @@ bool CNPC_Vortigaunt::IsValidEnemy( CBaseEntity *pEnemy )
 //-----------------------------------------------------------------------------
 void CNPC_Vortigaunt::CreateBeamBlast( const Vector &vecOrigin )
 {
-	CSprite *pBlastSprite = CSprite::SpriteCreate( "sprites/vortring1.vmt", vecOrigin, true );
+	const char* szRing = NULL;
+
+	if (HasSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT) == false)
+	{
+		szRing = "sprites/vortring1.vmt";
+	}
+	else
+	{
+		szRing = "sprites/physring1.vmt";
+	}
+
+	CSprite *pBlastSprite = CSprite::SpriteCreate( szRing, vecOrigin, true );
 	if ( pBlastSprite != NULL )
 	{
 		pBlastSprite->SetTransparency( kRenderTransAddFrameBlend, 255, 255, 255, 255, kRenderFxNone );
@@ -2041,6 +2116,70 @@ void CNPC_Vortigaunt::CreateBeamBlast( const Vector &vecOrigin )
 
 	CPVSFilter filter( vecOrigin );
 	te->GaussExplosion( filter, 0.0f, vecOrigin, Vector( 0, 0, 1 ), 0 );
+}
+
+bool CNPC_Vortigaunt::TeleportEffect()
+{
+	CBaseEntity* v2 = FUN_10353E10();
+	if (!v2)
+		return false;
+
+	return false;
+
+	Vector vecStart, vecEnd;
+
+	vecStart = v2->GetAbsOrigin();
+	vecEnd = v2->GetAbsOrigin() + Vector(0,0,10);
+
+	trace_t tr;
+
+	UTIL_TraceLine(vecStart, vecEnd, MASK_NPCSOLID, this, NULL, &tr);
+	UTIL_TraceHull(vecStart, vecEnd, GetHullMins(), GetHullMaxs(), MASK_NPCSOLID, this, NULL, &tr);
+
+	if (tr.startsolid || tr.fraction < 1.0f)
+	{
+		DevMsg("Can't teleport this.  Bad Position!\n");
+		NDebugOverlay::Box(v2->GetAbsOrigin(), GetHullMins(), GetHullMaxs(), 255, 0, 0, 0, 0.0f);
+		return false;
+	}
+
+	unk_0x1444 = v2;
+
+	SetNextAttack(gpGlobals->curtime);
+
+	Vector vecTeleport;
+	QAngle angTeleport;
+
+	vecTeleport = GetAbsOrigin() + Vector(0, 0, 30);
+	angTeleport = GetAbsAngles();
+	DispatchParticleEffect("1187dec_teleport", vecTeleport, angTeleport, this);
+
+	UTIL_DropToFloor(this, MASK_NPCSOLID);
+
+	DispatchParticleEffect("1187dec_teleport", vecTeleport, angTeleport, this);
+
+	return true;
+}
+
+CBaseEntity* CNPC_Vortigaunt::FUN_10353E10()
+{
+	CBaseEntity *pEntity = NULL;
+	int i;
+	CBaseEntity *v4[32];
+
+	for (i = 0; i < 32; i++)
+	{
+		pEntity = gEntList.FindEntityByName(pEntity, "info_vort_teleport");
+		if (!pEntity)
+			break;
+
+		v4[i + 1] = pEntity == unk_0x1444 && i ? v4[i] : pEntity;
+	}
+	
+	if (i > 0)
+		return v4[RandomInt(0, i - 1) + 1];
+
+	return pEntity;
 }
 
 #define COS_30	0.866025404f // sqrt(3) / 2
@@ -2127,29 +2266,39 @@ void CNPC_Vortigaunt::ZapBeam( int nHand )
 			NDebugOverlay::Box( tr.endpos, -Vector(2,2,2), Vector(2,2,2), 255, 0, 0, 8, 10.0f );
 		}
 
-		CTakeDamageInfo dmgInfo( this, this, sk_vortigaunt_dmg_zap.GetFloat(), DMG_SHOCK );
+		float flDmgzap = NULL;
+		if (HasSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT) == false)
+		{
+			flDmgzap = sk_vortigaunt_dmg_zap.GetFloat();
+		}
+		else
+		{
+			flDmgzap = sk_vortigaunt_enhanced_dmg_zap.GetFloat();
+		}
+
+		CTakeDamageInfo dmgInfo( this, this, flDmgzap, DMG_SHOCK );
 		dmgInfo.SetDamagePosition( tr.endpos );
 		VectorNormalize( vecAim );// not a unit vec yet
 		// hit like a 5kg object flying 100 ft/s
 		dmgInfo.SetDamageForce( 5 * 100 * 12 * vecAim );
 		
-		// Our zaps do special things to antlions
-		if ( FClassnameIs( pEntity, "npc_antlion" ) )
+		CBasePlayer* pPlayer = ToBasePlayer(pEntity);
+
+		if (pPlayer->IsPlayer() && !(pPlayer->GetFlags() & FL_GODMODE))
 		{
-			// Make a worker flip instead of explode
-			if ( IsAntlionWorker( pEntity ) )
-			{
-				CNPC_Antlion *pAntlion = static_cast<CNPC_Antlion *>(pEntity);
-				pAntlion->Flip();
-			}
-			else
-			{
-				// Always gib the antlion hit!
-				dmgInfo.ScaleDamage( 4.0f );
-			}
-			
-			// Look in a ring and flip other antlions nearby
-			DispelAntlions( tr.endpos, 200.0f, false );
+			QAngle angViewpunch;
+
+			angViewpunch.x = RandomFloat(-15.0f, 15.0f);
+			angViewpunch.y = RandomFloat(-5.0f, 5.0f);
+			angViewpunch.z = RandomFloat(-3.0f, 3.0f);
+			pPlayer->ViewPunch(angViewpunch);
+
+			Vector vecBlast;
+
+			vecBlast.x = vecAim.x * sk_vortigaunt_blast_velocity.GetFloat();
+			vecBlast.y = vecAim.y * sk_vortigaunt_blast_velocity.GetFloat();
+			vecBlast.z = vecAim.z * sk_vortigaunt_blast_velocity.GetFloat();
+			pPlayer->VelocityPunch(vecBlast);
 		}
 
 		// Send the damage to the recipient
@@ -2324,14 +2473,14 @@ Disposition_t CNPC_Vortigaunt::IRelationType( CBaseEntity *pTarget )
 
 	Disposition_t disposition = BaseClass::IRelationType( pTarget );
 
-	if ( pTarget->Classify() == CLASS_ZOMBIE && disposition == D_HT )
-	{
-		if( GetAbsOrigin().DistToSqr(pTarget->GetAbsOrigin()) < VORTIGAUNT_FEAR_ZOMBIE_DIST_SQR )
-		{
-			// Be afraid of a zombie that's near if I'm not allowed to dodge. This will make Alyx back away.
-			return D_FR;
-		}
-	}
+//	if ( pTarget->Classify() == CLASS_ZOMBIE && disposition == D_HT )
+//	{
+//		if( GetAbsOrigin().DistToSqr(pTarget->GetAbsOrigin()) < VORTIGAUNT_FEAR_ZOMBIE_DIST_SQR )
+//		{
+//			// Be afraid of a zombie that's near if I'm not allowed to dodge. This will make Alyx back away.
+//			return D_FR;
+//		}
+//	}
 
 	return disposition;
 }
@@ -2635,31 +2784,11 @@ void CNPC_Vortigaunt::SetScriptedScheduleIgnoreConditions( Interruptability_t in
 //-----------------------------------------------------------------------------
 int CNPC_Vortigaunt::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
-	if( info.GetDamageType() & (DMG_CRUSH | DMG_BURN) )
-		return 0;
-
-	// vital vortigaunts (eg the vortigoth in ep2) take less damage from explosions
-	// so that zombines don't blow them up disappointingly. They take less damage
-	// still from antlion workers.
-	if ( Classify() == CLASS_PLAYER_ALLY_VITAL )
+	if (HasSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT) != false && !random->RandomInt(0, sk_vortigaunt_enhanced_teleportchance.GetInt()) && gpGlobals->curtime > m_flDispelTestTime)
 	{
-		// half damage
-		CTakeDamageInfo subInfo = info;
-
-		// take less damage from antlion worker acid/poison
-		if ( info.GetAttacker()->Classify() == CLASS_ANTLION          &&
-			 (info.GetDamageType() & ( DMG_ACID | DMG_POISON ))!=0
-			)
-		{
-			subInfo.ScaleDamage( sk_vortigaunt_vital_antlion_worker_dmg.GetFloat() );
-		}
-
-		else if ( info.GetDamageType() & DMG_BLAST )
-		{
-			subInfo.ScaleDamage( 0.5f );
-		}
-
-		return BaseClass::OnTakeDamage_Alive( subInfo );
+		SetNextAttack(gpGlobals->curtime + 2.0f);
+		m_flDispelTestTime = sk_vortigaunt_enhanced_teleport.GetFloat() + gpGlobals->curtime;
+		TeleportEffect();
 	}
 
 	return BaseClass::OnTakeDamage_Alive( info );
@@ -2785,9 +2914,9 @@ bool CNPC_Vortigaunt::CanFlinch( void )
 void CNPC_Vortigaunt::OnUpdateShotRegulator( void )
 {
 	// Do nothing, we're not really running this code in a normal manner
-	GetShotRegulator()->SetBurstInterval( 2.0f, 2.0f );
+	GetShotRegulator()->SetBurstInterval( 3.0f, 7.0f );
 	GetShotRegulator()->SetBurstShotCountRange( 1, 1 );
-	GetShotRegulator()->SetRestInterval( 2.0f, 2.0f );	
+	GetShotRegulator()->SetRestInterval( 5.0f, 12.0f );	
 }
 
 /*
@@ -3290,15 +3419,19 @@ LINK_ENTITY_TO_CLASS( vort_effect_dispel, CVortigauntEffectDispel );
 
 BEGIN_DATADESC( CVortigauntEffectDispel )
 	DEFINE_FIELD( m_bFadeOut, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_bEnhanced, FIELD_BOOLEAN ),
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS_ST( CVortigauntEffectDispel, DT_VortigauntEffectDispel )
 	SendPropBool( SENDINFO(m_bFadeOut) ),
+	SendPropBool( SENDINFO(m_bEnhanced) ),
 END_SEND_TABLE()
 
 CVortigauntEffectDispel::CVortigauntEffectDispel( void )
 {
+	static bool test;
 	m_bFadeOut = false;
+	m_bEnhanced = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -3307,11 +3440,16 @@ CVortigauntEffectDispel::CVortigauntEffectDispel( void )
 //			*pOwner - Who created us
 //			*pTarget - Who we're seeking towards
 //-----------------------------------------------------------------------------
-CVortigauntEffectDispel *CVortigauntEffectDispel::CreateEffectDispel( const Vector &vecOrigin, CBaseEntity *pOwner, CBaseEntity *pTarget )
+CVortigauntEffectDispel *CVortigauntEffectDispel::CreateEffectDispel( const Vector &vecOrigin, CBaseEntity *pOwner, CBaseEntity *pTarget, bool bEnhanced )
 {
 	CVortigauntEffectDispel *pToken = (CVortigauntEffectDispel *) CreateEntityByName( "vort_effect_dispel" );
 	if ( pToken == NULL )
 		return NULL;
+
+	if (bEnhanced)
+	{
+		pToken->m_bEnhanced = true;
+	}
 
 	// Set up our internal data
 	UTIL_SetOrigin( pToken, vecOrigin );

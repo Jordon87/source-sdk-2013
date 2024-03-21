@@ -111,6 +111,8 @@ ConVar	sk_plr_dmg_alyxgun		( "sk_plr_dmg_alyxgun","0", FCVAR_REPLICATED );
 ConVar	sk_npc_dmg_alyxgun		( "sk_npc_dmg_alyxgun","0", FCVAR_REPLICATED);
 ConVar	sk_max_alyxgun			( "sk_max_alyxgun","0", FCVAR_REPLICATED);
 
+ConVar	sk_plr_dmg_colt("sk_plr_dmg_colt", "0", FCVAR_REPLICATED);
+
 ConVar	sk_plr_dmg_pistol		( "sk_plr_dmg_pistol","0", FCVAR_REPLICATED );
 ConVar	sk_npc_dmg_pistol		( "sk_npc_dmg_pistol","0", FCVAR_REPLICATED);
 ConVar	sk_max_pistol			( "sk_max_pistol","0", FCVAR_REPLICATED);
@@ -122,6 +124,14 @@ ConVar	sk_max_smg1				( "sk_max_smg1","0", FCVAR_REPLICATED);
 ConVar	sk_plr_dmg_m4			( "sk_plr_dmg_m4", "0", FCVAR_REPLICATED );
 ConVar	sk_npc_dmg_m4			( "sk_npc_dmg_m4", "0", FCVAR_REPLICATED );
 ConVar	sk_max_m4				( "sk_max_m4", "0", FCVAR_REPLICATED );
+
+ConVar	sk_plr_dmg_m16			( "sk_plr_dmg_m16", "0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_m16			( "sk_npc_dmg_m16", "0", FCVAR_REPLICATED );
+ConVar	sk_max_m16				( "sk_max_m16", "0", FCVAR_REPLICATED );
+
+ConVar	sk_plr_dmg_kar98			( "sk_plr_dmg_kar98", "0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_kar98			( "sk_npc_dmg_kar98", "0", FCVAR_REPLICATED );
+ConVar	sk_max_kar98				( "sk_max_kar98", "0", FCVAR_REPLICATED );
 
 // FIXME: remove these
 //ConVar	sk_plr_dmg_flare_round	( "sk_plr_dmg_flare_round","0", FCVAR_REPLICATED);
@@ -1808,7 +1818,10 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("357",				DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_357",			"sk_npc_dmg_357",			"sk_max_357",			BULLET_IMPULSE(800, 5000), 0 );
 		def.AddAmmoType("XBowBolt",			DMG_BULLET,					TRACER_LINE,			"sk_plr_dmg_crossbow",		"sk_npc_dmg_crossbow",		"sk_max_crossbow",		BULLET_IMPULSE(800, 8000), 0 );
 
-		def.AddAmmoType("M4",				DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_m4",			"sk_npc_dmg_m4",			"sk_max_m4",			BULLET_IMPULSE(200, 1225), 0 );
+		def.AddAmmoType("ColtPistol",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_colt",			NULL,						"sk_max_pistol",		3033.143f, 0 );
+		def.AddAmmoType("M4",				DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_m4",			"sk_npc_dmg_m4",			"sk_max_m4",			4246.4f, 0 );
+		def.AddAmmoType("M16",				DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_m16",			"sk_npc_dmg_m16",			"sk_max_m16",			31899.12f, 0 );
+		def.AddAmmoType("98",				DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_kar98",			"sk_npc_dmg_kar98",			"sk_max_kar98",			31899.12f, 0 );
 
 		def.AddAmmoType("Buckshot",			DMG_BULLET | DMG_BUCKSHOT,	TRACER_LINE,			"sk_plr_dmg_buckshot",		"sk_npc_dmg_buckshot",		"sk_max_buckshot",		BULLET_IMPULSE(400, 1200), 0 );
 		def.AddAmmoType("RPG_Round",		DMG_BURN,					TRACER_NONE,			"sk_plr_dmg_rpg_round",		"sk_npc_dmg_rpg_round",		"sk_max_rpg_round",		0, 0 );

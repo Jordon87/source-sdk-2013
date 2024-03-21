@@ -25,6 +25,7 @@
 #include "tier0/memdbgon.h"
 
 static ConVar soundpatch_captionlength( "soundpatch_captionlength", "2.0", FCVAR_REPLICATED, "How long looping soundpatch captions should display for." );
+static ConVar xbox_forcebytes( "xbox_forcebytes", "0", FCVAR_ARCHIVE );
 
 // Envelope
 // This is a class that controls a ramp for a sound (pitch / volume / etc)

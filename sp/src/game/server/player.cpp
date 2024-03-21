@@ -994,7 +994,7 @@ void CBasePlayer::DamageEffect(float flDamage, int fDamageType)
 		// calls are just expensive ways of returning zero. This code has always been this
 		// way and has never had any value. clang complains about the conversion from a
 		// literal floating-point number to an integer.
-		//ViewPunch(QAngle(random->RandomInt(-0.1,0.1), random->RandomInt(-0.1,0.1), random->RandomInt(-0.1,0.1)));
+		ViewPunch(QAngle(random->RandomInt(0,0), random->RandomInt(0,0), random->RandomInt(0,0)));
 
 		// Burn sound 
 		EmitSound( "Player.PlasmaDamage" );
@@ -1649,6 +1649,15 @@ int CBasePlayer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 void CBasePlayer::Event_Killed( const CTakeDamageInfo &info )
 {
+	color32 playerdied;
+	playerdied.r = 0;
+	playerdied.g = 0;
+	playerdied.b = 0;
+	playerdied.a = 255;
+
+	UTIL_ScreenFade(this, playerdied, 15.0f, 90.0f, FFADE_OUT);
+	SetBodygroup(0,1);
+
 	CSound *pSound;
 
 	if ( Hints() )
@@ -5970,8 +5979,6 @@ void CBasePlayer::ImpulseCommands( )
 	m_nImpulse = 0;
 }
 
-#ifdef HL2_EPISODIC
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -6007,7 +6014,75 @@ void CC_CH_CreateJalopy( void )
 
 static ConCommand ch_createjalopy("ch_createjalopy", CC_CH_CreateJalopy, "Spawn jalopy in front of the player.", FCVAR_CHEAT);
 
-#endif // HL2_EPISODIC
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+static void CreateMustang( CBasePlayer *pPlayer )
+{
+	// Cheat to create a jeep in front of the player
+	Vector vecForward;
+	AngleVectors( pPlayer->EyeAngles(), &vecForward );
+	CBaseEntity *pJeep = (CBaseEntity *)CreateEntityByName( "prop_vehicle_car" );
+	if ( pJeep )
+	{
+		Vector vecOrigin = pPlayer->GetAbsOrigin() + vecForward * 256 + Vector(0,0,64);
+		QAngle vecAngles( 0, pPlayer->GetAbsAngles().y - 90, 0 );
+		pJeep->SetAbsOrigin( vecOrigin );
+		pJeep->SetAbsAngles( vecAngles );
+		pJeep->KeyValue( "model", "models/mustang.mdl" );
+		pJeep->KeyValue( "solid", "6" );
+		pJeep->KeyValue( "targetname", "mustang" );
+		pJeep->KeyValue( "vehiclescript", "scripts/vehicles/mustang.txt" );
+		DispatchSpawn( pJeep );
+		pJeep->Activate();
+		pJeep->Teleport( &vecOrigin, &vecAngles, NULL );
+	}
+}
+
+void CC_CH_CreateMustang( void )
+{
+	CBasePlayer *pPlayer = UTIL_GetCommandClient();
+	if ( !pPlayer )
+		return;
+	CreateMustang( pPlayer );
+}
+
+static ConCommand ch_createmustang("ch_createmustang", CC_CH_CreateMustang, "Spawn an 1187 mustang in front of the player.", FCVAR_CHEAT);
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+static void CreateMercedes( CBasePlayer *pPlayer )
+{
+	// Cheat to create a jeep in front of the player
+	Vector vecForward;
+	AngleVectors( pPlayer->EyeAngles(), &vecForward );
+	CBaseEntity *pJeep = (CBaseEntity *)CreateEntityByName( "prop_vehicle_car" );
+	if ( pJeep )
+	{
+		Vector vecOrigin = pPlayer->GetAbsOrigin() + vecForward * 256 + Vector(0,0,64);
+		QAngle vecAngles( 0, pPlayer->GetAbsAngles().y - 90, 0 );
+		pJeep->SetAbsOrigin( vecOrigin );
+		pJeep->SetAbsAngles( vecAngles );
+		pJeep->KeyValue( "model", "models/mercedes.mdl" );
+		pJeep->KeyValue( "solid", "6" );
+		pJeep->KeyValue( "targetname", "mercedes" );
+		pJeep->KeyValue( "vehiclescript", "scripts/vehicles/mercedes.txt" );
+		DispatchSpawn( pJeep );
+		pJeep->Activate();
+		pJeep->Teleport( &vecOrigin, &vecAngles, NULL );
+	}
+}
+
+void CC_CH_CreateMercedes( void )
+{
+	CBasePlayer *pPlayer = UTIL_GetCommandClient();
+	if ( !pPlayer )
+		return;
+	CreateMercedes( pPlayer );
+}
+
+static ConCommand ch_createmercedes("ch_createmercedes", CC_CH_CreateMercedes, "Spawn an 1187 mercedes in front of the player.", FCVAR_CHEAT);
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -6139,30 +6214,30 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 
 		// Give the player everything!
 		GiveAmmo( 255,	"Pistol");
-		GiveAmmo( 255,	"AR2");
-		GiveAmmo( 5,	"AR2AltFire");
+		GiveAmmo( 255,	"ColtPistol");
 		GiveAmmo( 255,	"SMG1");
+		GiveAmmo( 255,	"98");
 		GiveAmmo( 255,	"M4");
+		GiveAmmo( 255,	"M16");
 		GiveAmmo( 255,	"Buckshot");
-		GiveAmmo( 3,	"smg1_grenade");
 		GiveAmmo( 3,	"rpg_round");
 		GiveAmmo( 5,	"grenade");
+		GiveAmmo( 5,	"SMG1_Grenade");
 		GiveAmmo( 32,	"357" );
-		GiveAmmo( 16,	"XBowBolt" );
 #ifdef HL2_EPISODIC
 		GiveAmmo( 5,	"Hopwire" );
 #endif		
 		GiveNamedItem( "weapon_smg1" );
 		GiveNamedItem( "weapon_frag" );
 		GiveNamedItem( "weapon_crowbar" );
+		GiveNamedItem( "weapon_knife" );
 		GiveNamedItem( "weapon_pistol" );
-		GiveNamedItem( "weapon_ar2" );
 		GiveNamedItem( "weapon_shotgun" );
-		GiveNamedItem( "weapon_physcannon" );
-		GiveNamedItem( "weapon_bugbait" );
 		GiveNamedItem( "weapon_rpg" );
 		GiveNamedItem( "weapon_357" );
-		GiveNamedItem( "weapon_crossbow" );
+		GiveNamedItem( "weapon_kar98" );
+		GiveNamedItem( "weapon_m4" );
+		GiveNamedItem( "weapon_m16" );
 #ifdef HL2_EPISODIC
 		// GiveNamedItem( "weapon_magnade" );
 #endif

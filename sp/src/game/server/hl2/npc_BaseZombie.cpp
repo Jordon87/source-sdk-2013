@@ -2977,7 +2977,7 @@ AI_BEGIN_CUSTOM_NPC( base_zombie, CNPC_BaseZombie )
 
 		"	Tasks"
 		"		TASK_STOP_MOVING		0"
-		"		TASK_WAIT				1"
+		"		TASK_WAIT				0.1"
 		"		TASK_SET_SCHEDULE		SCHEDULE:SCHED_ZOMBIE_WANDER_MEDIUM"
 		"	Interrupts"
 		"		COND_NEW_ENEMY"

@@ -45,6 +45,11 @@ extern ConVar r_JeepViewDampenFreq;
 extern ConVar r_JeepViewDampenDamp;
 extern ConVar r_JeepViewZHeight;
 
+// Car convars
+extern ConVar r_CarViewDampenFreq;
+extern ConVar r_CarViewDampenDamp;
+extern ConVar r_CarViewZHeight;
+
 // Airboat convars
 extern ConVar r_AirboatViewDampenFreq;
 extern ConVar r_AirboatViewDampenDamp;

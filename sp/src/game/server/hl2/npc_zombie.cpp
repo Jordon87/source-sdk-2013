@@ -949,7 +949,7 @@ AI_BEGIN_CUSTOM_NPC( npc_zombie, CZombie )
 		"	Tasks"
 		"		TASK_WANDER						480240" // 48 units to 240 units.
 		"		TASK_WALK_PATH					0"
-		"		TASK_WAIT_FOR_MOVEMENT			4"
+		"		TASK_WAIT_FOR_MOVEMENT			1"
 		""
 		"	Interrupts"
 		"		COND_ZOMBIE_RELEASECRAB"

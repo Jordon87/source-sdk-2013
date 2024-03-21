@@ -123,7 +123,17 @@ END_DATADESC()
 
 void CNPC_John::SelectModel()
 {
-	SetModelName(AllocPooledString(JOHH_MODEL));
+	// HBN reporter use John NPC as entity support.
+	// Every npc_john entity whose name matches 'reporter'
+	// will have their model changed for a different model.
+	if (FStrEq(STRING(GetEntityName()), "reporter"))
+	{
+		SetModelName(AllocPooledString("models/humans/group01/female_03.mdl"));
+	}
+	else
+	{
+		SetModelName(AllocPooledString(JOHH_MODEL));
+	}
 }
 
 void CNPC_John::Precache(void)

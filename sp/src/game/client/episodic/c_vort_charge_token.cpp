@@ -331,6 +331,7 @@ private:
 
 	CNewParticleEffect				*m_hEffect;
 	bool							m_bFadeOut;
+	bool							m_bEnhanced;
 	dlight_t						*m_pDLight;
 };
 
@@ -345,6 +346,7 @@ void RecvProxy_DispelFadeOutDuration( const CRecvProxyData *pData, void *pStruct
 
 IMPLEMENT_CLIENTCLASS_DT( C_VortigauntEffectDispel, DT_VortigauntEffectDispel, CVortigauntEffectDispel )
 	RecvPropBool( RECVINFO( m_bFadeOut ) ),
+	RecvPropBool( RECVINFO( m_bEnhanced ) ),
 END_RECV_TABLE()
 
 void C_VortigauntEffectDispel::UpdateOnRemove( void )
@@ -398,7 +400,11 @@ void C_VortigauntEffectDispel::NotifyShouldTransmit( ShouldTransmitState_t state
 	// Turn on
 	if ( state == SHOULDTRANSMIT_START )
 	{
-		m_hEffect = ParticleProp()->Create( "vortigaunt_hand_glow", PATTACH_ABSORIGIN_FOLLOW );
+		if (m_bEnhanced)
+			m_hEffect = ParticleProp()->Create("vortigaunt_hand_glow_player_blue", PATTACH_ABSORIGIN_FOLLOW);
+		else
+			m_hEffect = ParticleProp()->Create( "vortigaunt_hand_glow", PATTACH_ABSORIGIN_FOLLOW );
+		
 		m_hEffect->SetControlPointEntity( 0, this );
 	}
 }

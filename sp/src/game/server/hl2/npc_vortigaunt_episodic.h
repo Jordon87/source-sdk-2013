@@ -88,7 +88,7 @@ public:
 
 	virtual void	DeclineFollowing( void );
 	virtual bool	CanBeUsedAsAFriend( void );
-	virtual bool	IsPlayerAlly( void ) { return true; }
+	virtual bool	IsPlayerAlly( void ) { return false; }
 
 	// Override these to set behavior
 	virtual int		TranslateSchedule( int scheduleType );
@@ -151,6 +151,9 @@ private:
 	int		SelectHealSchedule( void );
 
 	void	CreateBeamBlast( const Vector &vecOrigin );
+
+	bool	TeleportEffect();
+	CBaseEntity *FUN_10353E10();
 
 private:
 	//=========================================================
@@ -238,6 +241,7 @@ private:
 	void			SetHealTarget( CBaseEntity *pTarget, bool bPlayerRequested );
 	void			GatherHealConditions( void );
 
+	CBaseEntity		*unk_0x1444;
 	int				m_nNumTokensToSpawn;
 	float			m_flHealHinderedTime;
 	float			m_flPainTime;
@@ -268,6 +272,8 @@ private:
 
 	// used for fading to black
 	CNetworkVar( bool, m_bIsBlack );
+
+
 
 public:
 	DECLARE_SERVERCLASS();
@@ -325,7 +331,7 @@ class CVortigauntEffectDispel : public CBaseEntity
 
 public:
 
-	static CVortigauntEffectDispel *CreateEffectDispel( const Vector &vecOrigin, CBaseEntity *pOwner, CBaseEntity *pTarget );
+	static CVortigauntEffectDispel *CreateEffectDispel( const Vector &vecOrigin, CBaseEntity *pOwner, CBaseEntity *pTarget, bool bEnhanced );
 
 	CVortigauntEffectDispel( void );	
 
@@ -336,6 +342,7 @@ public:
 private:
 
 	CNetworkVar( bool, m_bFadeOut );
+	CNetworkVar( bool, m_bEnhanced );
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();

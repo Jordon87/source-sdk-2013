@@ -1386,17 +1386,16 @@ void C_BasePlayer::OverrideView( CViewSetup *pSetup )
 		return;
 	}
 
-//	if (GetActiveWeapon() && GetViewModel(0))
-//	{
-//		int iPlayerEyes = GetViewModel(0)->LookupAttachment("1187eyefix");
-//
-//		if (iPlayerEyes)
-//		{
-//			Vector origin(0,0,0);
-//			GetViewModel(0)->GetAttachment(iPlayerEyes, origin, pSetup->angles);
-//		}
-//	}
-//
+	if (GetActiveWeapon() && GetViewModel(0))
+	{
+		int iPlayerEyes = GetViewModel(0)->LookupAttachment("1187eyefix");
+
+		if (iPlayerEyes)
+		{
+			GetViewModel(0)->GetAttachment(iPlayerEyes, Vector(0,0,0), pSetup->angles);
+		}
+	}
+
 	float targetz, valuez, speedz;
 
 	if (camhack_right.GetInt() && (GetAbsVelocity().Length() > 90.0f))

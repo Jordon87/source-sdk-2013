@@ -120,6 +120,10 @@ $Project "Client (1187)"
 			$File 	"1187\vgui\vgui_imagebutton.h"
 			$File 	"1187\loadingscreenproxy.cpp"
 			$File 	"1187\fx_zombie.cpp"
+			$File 	"episodic\c_weapon_hopwire.cpp"
+			$File 	"vdc\tne_RenderTargets.cpp"
+			$File 	"vdc\tne_RenderTargets.h"
+			$File 	"1187\c_1187_prop_vehicle_car.cpp"
 		}
 	}
 }
