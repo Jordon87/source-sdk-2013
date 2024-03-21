@@ -1,0 +1,202 @@
+void __cdecl CC_75646754887676789089083428847867()
+{
+  unsigned int i; // edi
+  _DWORD *v1; // eax
+  int v2; // edi
+  unsigned int j; // esi
+  int v4; // eax
+  _DWORD *v5; // eax
+  int v6; // ebx
+  int v7; // ebp
+  int v8; // eax
+  const char *v9; // ecx
+  unsigned int mapcount; // eax
+  const char *mapbuffer; // esi
+  char *mapname; // edi
+  int v14; // eax
+  const char *v15; // ecx
+  int v17; // eax
+  const char *v18; // ecx
+  int v20; // eax
+  const char *v21; // ecx
+  int v23; // eax
+  const char *v24; // ecx
+  int v26; // eax
+  const char *v27; // ecx
+  int v29; // eax
+  const char *v30; // ecx
+  int v32; // eax
+  const char *v33; // ecx
+  int v35; // eax
+  const char *v36; // ecx
+  int v38; // eax
+  const char *v39; // ecx
+  int v41; // eax
+  char Buffer[4]; // [esp+14h] [ebp-10Ch] BYREF
+  ConVarRef v44; // [esp+18h] [ebp-108h] BYREF
+  char *eggs[10]; // [esp+20h] [ebp-100h]
+  char *mapnames[10]; // [esp+48h] [ebp-D8h] BYREF
+  char value[2]; // [esp+70h] [ebp-B0h] BYREF
+  ConVarRef v48; // [esp+D8h] [ebp-48h] BYREF
+  ConVarRef v49; // [esp+E0h] [ebp-40h] BYREF
+  ConVarRef v50; // [esp+E8h] [ebp-38h] BYREF
+  ConVarRef v51; // [esp+F0h] [ebp-30h] BYREF
+  ConVarRef v52; // [esp+F8h] [ebp-28h] BYREF
+  ConVarRef v53; // [esp+100h] [ebp-20h] BYREF
+  ConVarRef v54; // [esp+108h] [ebp-18h] BYREF
+  ConVarRef v55; // [esp+110h] [ebp-10h] BYREF
+  ConVarRef v56; // [esp+118h] [ebp-8h] BYREF
+
+  Msg("You found an easter egg, congrats!\n");
+  mapnames[0] = "maps/1187d1.bsp";
+  mapnames[1] = "maps/1187d2.bsp";
+  mapnames[2] = "maps/1187d3.bsp";
+  mapnames[3] = "maps/1187d4.bsp";
+  mapnames[4] = "maps/1187d5.bsp";
+  mapnames[5] = "maps/1187d6.bsp";
+  mapnames[6] = "maps/1187d7.bsp";
+  mapnames[7] = "maps/1187d8.bsp";
+  mapnames[8] = "maps/1187d9.bsp";
+  mapnames[9] = "maps/1187d10.bsp";
+  eggs[0] = "_egg_1187d1";
+  eggs[1] = "_egg_1187d2";
+  eggs[2] = "_egg_1187d3";
+  eggs[3] = "_egg_1187d4";
+  eggs[4] = "_egg_1187d5";
+  eggs[5] = "_egg_1187d6";
+  eggs[6] = "_egg_1187d7";
+  eggs[7] = "_egg_1187d8";
+  eggs[8] = "_egg_1187d9";
+  eggs[9] = "_egg_1187d10";
+  for ( i = 0; i < 10; ++i )
+  {
+    if ( !strcmp((const char *)(*(int (__thiscall **)(int))(*(_DWORD *)engine + 204))(engine), mapnames[i]) )
+    {
+      ConVarRef::ConVarRef(&v44, eggs[i]);
+      (**(void (__thiscall ***)(_DWORD, int))*v1)(*v1, 1);
+    }
+  }
+  v2 = 0;
+  for ( j = 0; j < 0xA; ++j )
+  {
+    ConVarRef::ConVarRef(&v44, eggs[j]);
+    if ( *(_DWORD *)(*(_DWORD *)(v4 + 4) + 48) == 1 )
+      ++v2;
+  }
+  ConVarRef::ConVarRef(&v44, "xbox_forcebytes");
+  (**(void (__thiscall ***)(_DWORD, int))*v5)(*v5, v2);
+  strcpy(value, "0");
+  v6 = -9;
+  v7 = 100;
+  do
+  {
+    switch ( v6 )
+    {
+      case 0:
+        ConVarRef::ConVarRef(&v44, "_egg_1187d1");
+        v9 = *(const char **)(*(_DWORD *)(v8 + 4) + 36);
+        mapcount = strlen(v9) + 1;
+        mapbuffer = v9;
+        mapname = (char *)&mapnames[9] + 3;
+        while ( *++mapname )
+          ;
+        break;
+      case 9:
+        ConVarRef::ConVarRef(&v53, "_egg_1187d2");
+        v15 = *(const char **)(*(_DWORD *)(v14 + 4) + 36);
+        mapcount = strlen(v15) + 1;
+        mapbuffer = v15;
+        mapname = (char *)&mapnames[9] + 3;
+        while ( *++mapname )
+          ;
+        break;
+      case 15:
+        ConVarRef::ConVarRef(&v52, "_egg_1187d3");
+        v18 = *(const char **)(*(_DWORD *)(v17 + 4) + 36);
+        mapcount = strlen(v18) + 1;
+        mapbuffer = v18;
+        mapname = (char *)&mapnames[9] + 3;
+        while ( *++mapname )
+          ;
+        break;
+      case 21:
+        ConVarRef::ConVarRef(&v54, "_egg_1187d4");
+        v21 = *(const char **)(*(_DWORD *)(v20 + 4) + 36);
+        mapcount = strlen(v21) + 1;
+        mapbuffer = v21;
+        mapname = (char *)&mapnames[9] + 3;
+        while ( *++mapname )
+          ;
+        break;
+      case 24:
+        ConVarRef::ConVarRef(&v56, "_egg_1187d5");
+        v24 = *(const char **)(*(_DWORD *)(v23 + 4) + 36);
+        mapcount = strlen(v24) + 1;
+        mapbuffer = v24;
+        mapname = (char *)&mapnames[9] + 3;
+        while ( *++mapname )
+          ;
+        break;
+      case 45:
+        ConVarRef::ConVarRef(&v48, "_egg_1187d6");
+        v27 = *(const char **)(*(_DWORD *)(v26 + 4) + 36);
+        mapcount = strlen(v27) + 1;
+        mapbuffer = v27;
+        mapname = (char *)&mapnames[9] + 3;
+        while ( *++mapname )
+          ;
+        break;
+      case 46:
+        ConVarRef::ConVarRef(&v51, "_egg_1187d7");
+        v30 = *(const char **)(*(_DWORD *)(v29 + 4) + 36);
+        mapcount = strlen(v30) + 1;
+        mapbuffer = v30;
+        mapname = (char *)&mapnames[9] + 3;
+        while ( *++mapname )
+          ;
+        break;
+      case 52:
+        ConVarRef::ConVarRef(&v55, "_egg_1187d8");
+        v33 = *(const char **)(*(_DWORD *)(v32 + 4) + 36);
+        mapcount = strlen(v33) + 1;
+        mapbuffer = v33;
+        mapname = (char *)&mapnames[9] + 3;
+        while ( *++mapname )
+          ;
+        break;
+      case 56:
+        ConVarRef::ConVarRef(&v49, "_egg_1187d9");
+        v36 = *(const char **)(*(_DWORD *)(v35 + 4) + 36);
+        mapcount = strlen(v36) + 1;
+        mapbuffer = v36;
+        mapname = (char *)&mapnames[9] + 3;
+        while ( *++mapname )
+          ;
+        break;
+      case 68:
+        ConVarRef::ConVarRef(&v50, "_egg_1187d10");
+        v39 = *(const char **)(*(_DWORD *)(v38 + 4) + 36);
+        mapcount = strlen(v39) + 1;
+        mapbuffer = v39;
+        mapname = (char *)&mapnames[9] + 3;
+        while ( *++mapname )
+          ;
+        break;
+      default:
+        v41 = random->RandomInt(random, 0, 1);
+        sprintf(Buffer, "%d", v41);
+        mapcount = strlen(Buffer) + 1;
+        mapbuffer = Buffer;
+        mapname = (char *)&mapnames[9] + 3;
+        while ( *++mapname )
+          ;
+        break;
+    }
+    qmemcpy(mapname, mapbuffer, mapcount);
+    ++v6;
+    --v7;
+  }
+  while ( v7 );
+  ConVar::SetValue2((ConVar *)&dec_1187_encryptedeggs.IConVar, value);
+  (*(void (__thiscall **)(int, const char *))(*(_DWORD *)engine + 28))(engine, "host_writeconfig");
+}
