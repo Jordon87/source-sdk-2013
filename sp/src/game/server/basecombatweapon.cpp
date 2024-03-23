@@ -166,6 +166,24 @@ void CBaseCombatWeapon::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseComb
 			return;
 		}
 
+		if (pEvent->event == AE_WPN_FRAGATTACK)
+		{
+			FragAttack();
+			return;
+		}
+
+		if (pEvent->event == AE_WPN_PRIMARYATTACK)
+		{
+			PrimaryAttack();
+			return;
+		}
+
+		if (pEvent->event == AE_WPN_SECONDARYATTACK)
+		{
+			SecondaryAttack();
+			return;
+		}
+
 		if ( pEvent->event == AE_NPC_WEAPON_FIRE )
 		{
 			bool bSecondary = (atoi( pEvent->options ) != 0);

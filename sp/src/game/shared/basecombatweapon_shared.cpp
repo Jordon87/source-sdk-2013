@@ -5,6 +5,11 @@
 // $NoKeywords: $
 //=============================================================================//
 #include "cbase.h"
+
+#if !defined( CLIENT_DLL )
+#include "grenade_frag.h"
+#endif
+
 #include "in_buttons.h"
 #include "engine/IEngineSound.h"
 #include "ammodef.h"
@@ -440,6 +445,11 @@ int CBaseCombatWeapon::GetDefaultClip2( void ) const
 bool CBaseCombatWeapon::UsesClipsForAmmo1( void ) const
 {
 	return ( GetMaxClip1() != WEAPON_NOCLIP );
+}
+
+bool CBaseCombatWeapon::GetHasFlashlight() const
+{
+	return GetWpnData().m_bHasFlashlight;
 }
 
 bool CBaseCombatWeapon::IsMeleeWeapon() const
@@ -1810,6 +1820,44 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 
 	bool bFired = false;
 
+	if ((pOwner->m_afButtonPressed & IN_DUCK) != 0 && (pOwner->m_nButtons & IN_SPEED) == 0 && !IsIronsighted() && !viewmodel_adjust_enabled.GetBool())
+	{
+		if (gpGlobals->curtime - 0.1f >= m_flNextPrimaryAttack && gpGlobals->curtime - 0.1f >= m_flNextSecondaryAttack)
+		{
+			SendWeaponAnim(ACT_CROUCH);
+			m_flNextPrimaryAttack = gpGlobals->curtime + 0.34f;
+			m_flNextPrimaryAttack = gpGlobals->curtime + 0.34f;
+			return;
+		}
+	}
+
+	if ((pOwner->m_nButtons & IN_ATTACK3) != 0)
+	{
+		if (gpGlobals->curtime - 0.1f >= m_flNextPrimaryAttack && gpGlobals->curtime - 0.1f >= m_flNextSecondaryAttack)
+		{
+			SendWeaponAnim(ACT_VM_SWINGHARD);
+			WeaponSound(SPECIAL3);
+			m_flNextPrimaryAttack = gpGlobals->curtime + 1.0f;
+			m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
+			return;
+		}
+	}
+
+	if ((pOwner->m_nButtons & IN_FRAG) != 0)
+	{
+		if (gpGlobals->curtime - 0.1f >= m_flNextPrimaryAttack && gpGlobals->curtime - 0.1f >= m_flNextSecondaryAttack)
+		{
+			if (pOwner->GetAmmoCount("grenade") > 0)
+			{
+				SendWeaponAnim(ACT_VM_HAULBACK);
+				WeaponSound(TAUNT);
+				m_flNextPrimaryAttack = gpGlobals->curtime + 1.0f;
+				m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
+				return;
+			}
+		}
+	}
+
 	// Secondary attack has priority
 	if ((pOwner->m_nButtons & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->curtime))
 	{
@@ -2466,9 +2514,7 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
 
 	if (!pPlayer)
-	{
 		return;
-	}
 
 	Vector vecSrc = pPlayer->Weapon_ShootPosition();
 	Vector forward;
@@ -2516,6 +2562,45 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 	weaponangle.y = random->RandomFloat(-6.0f, 6.0f);
 	weaponangle.z = 0.0f;
 	pPlayer->ViewPunch(weaponangle);
+}
+
+void CBaseCombatWeapon::FragAttack(void) 
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+
+	if (!pPlayer)
+		return;
+
+	Vector vecEye = pPlayer->EyePosition();
+	m_flNextPrimaryAttack = SequenceDuration() + gpGlobals->curtime - 0.2f;
+	m_flNextSecondaryAttack = SequenceDuration() + gpGlobals->curtime - 0.2f;
+
+	pPlayer->RemoveAmmo(1, "grenade");
+
+#if !defined( CLIENT_DLL )
+	Vector vForward, vRight, vUp;
+	pPlayer->EyeVectors(&vForward, &vRight, &vUp);
+
+	Vector vFragOffset = GetWpnData().vecFragPosOffset;
+
+	Vector vecSrc = vecEye + vForward * vFragOffset.x + vRight * vFragOffset.y + vUp * vFragOffset.z;
+
+	trace_t tr;
+	UTIL_TraceHull(vecEye, vecSrc, Vector(-6, -6, -6), Vector(6, 6, 6), PhysicsSolidMaskForEntity(), pPlayer, GetCollisionGroup(), &tr);
+	if (tr.fraction < 1.0f || tr.allsolid || tr.startsolid)
+	{
+		vecSrc = tr.endpos;
+	}
+
+	vForward[2] += 0.1f;
+
+	Vector vecThrow;
+	pPlayer->GetVelocity(&vecThrow, NULL);
+	vecThrow += vForward * 1200;
+
+	Fraggrenade_Create(vecSrc, vec3_angle, vecThrow, AngularImpulse(600, random->RandomInt(-1200, 1200), 0), pPlayer, 3.0f, false);
+	pPlayer->ViewPunch(QAngle(random->RandomFloat(5.0f, 12.0f), random->RandomFloat(-2.0f, -1.0f), 0.0f));
+#endif
 }
 
 //-----------------------------------------------------------------------------

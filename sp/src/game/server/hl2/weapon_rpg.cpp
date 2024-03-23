@@ -41,6 +41,7 @@
 
 #define	RPG_SPEED	1500
 
+static ConVar sk_plr_missile_speed("sk_plr_missile_speed", "2000");
 static ConVar sk_apc_missile_damage("sk_apc_missile_damage", "15");
 ConVar rpg_missle_use_custom_detonators( "rpg_missle_use_custom_detonators", "1" );
 
@@ -167,8 +168,8 @@ void CMissile::Spawn( void )
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 	SetThink( &CMissile::IgniteThink );
 	
-	SetNextThink( gpGlobals->curtime + 0.3f );
-	SetDamage( 200.0f );
+	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetDamage( 300.0f );
 
 	m_takedamage = DAMAGE_YES;
 	m_iHealth = m_iMaxHealth = 100;
@@ -266,7 +267,7 @@ void CMissile::AccelerateThink( void )
 	// SetEffects( EF_LIGHT );
 
 	AngleVectors( GetLocalAngles(), &vecForward );
-	SetAbsVelocity( vecForward * RPG_SPEED );
+	SetAbsVelocity( vecForward * sk_plr_missile_speed.GetFloat() );
 
 	SetThink( &CMissile::SeekThink );
 	SetNextThink( gpGlobals->curtime + 0.1f );
@@ -449,7 +450,7 @@ void CMissile::IgniteThink( void )
 	EmitSound( "Missile.Ignite" );
 
 	AngleVectors( GetLocalAngles(), &vecForward );
-	SetAbsVelocity( vecForward * RPG_SPEED );
+	SetAbsVelocity( vecForward  * sk_plr_missile_speed.GetFloat() );
 
 	SetThink( &CMissile::SeekThink );
 	SetNextThink( gpGlobals->curtime );
@@ -1425,8 +1426,10 @@ CWeaponRPG::CWeaponRPG()
 	m_bHideGuiding = false;
 	m_bGuiding = false;
 
-	m_fMinRange1 = m_fMinRange2 = 40*12;
-	m_fMaxRange1 = m_fMaxRange2 = 500*12;
+	m_fMinRange1 = 120.0f;
+	m_fMinRange2 = 120.0f;
+	m_fMaxRange1 = 10800.0f;
+	m_fMaxRange2 = 10800.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -1632,7 +1635,11 @@ void CWeaponRPG::PrimaryAttack( void )
 	// Register a muzzleflash for the AI
 	pOwner->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
 
-	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
+	if (!IsIronsighted())
+		SendWeaponAnim( ACT_VM_PRIMARYATTACK );
+	else
+		SendWeaponAnim( ACT_VM_RECOIL1 );
+
 	WeaponSound( SINGLE );
 
 	pOwner->RumbleEffect( RUMBLE_SHOTGUN_SINGLE, 0, RUMBLE_FLAG_RESTART );
@@ -1651,22 +1658,6 @@ void CWeaponRPG::PrimaryAttack( void )
 			if ( FClassnameIs( g_hWeaponFireTriggers[i], "trigger_rpgfire" ) )
 			{
 				g_hWeaponFireTriggers[i]->ActivateMultiTrigger( pOwner );
-			}
-		}
-	}
-
-	if( hl2_episodic.GetBool() )
-	{
-		CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
-		int nAIs = g_AI_Manager.NumAIs();
-
-		string_t iszStriderClassname = AllocPooledString( "npc_strider" );
-
-		for ( int i = 0; i < nAIs; i++ )
-		{
-			if( ppAIs[ i ]->m_iClassname == iszStriderClassname )
-			{
-				ppAIs[ i ]->DispatchInteraction( g_interactionPlayerLaunchedRPG, NULL, m_hMissile );
 			}
 		}
 	}
@@ -1750,19 +1741,13 @@ void CWeaponRPG::ItemPostFrame( void )
 		SuppressGuiding( false );
 	}
 
-	//Player has toggled guidance state
-	//Adrian: Players are not allowed to remove the laser guide in single player anymore, bye!
-	if ( g_pGameRules->IsMultiplayer() == true )
+	if ( m_hMissile && !IsIronsighted() )
 	{
-		if ( pPlayer->m_afButtonPressed & IN_ATTACK2 )
-		{
-			ToggleGuiding();
-		}
+		SuppressGuiding( true );
 	}
 
 	//Move the laser
 	UpdateLaserPosition();
-	UpdateLaserEffects();
 }
 
 //-----------------------------------------------------------------------------
@@ -1865,7 +1850,6 @@ void CWeaponRPG::StartGuiding( void )
 	WeaponSound(SPECIAL1);
 
 	CreateLaserPointer();
-	StartLaserEffects();
 }
 
 //-----------------------------------------------------------------------------
@@ -1876,8 +1860,6 @@ void CWeaponRPG::StopGuiding( void )
 	m_bGuiding = false;
 
 	WeaponSound( SPECIAL2 );
-
-	StopLaserEffects();
 
 	// Kill the dot completely
 	if ( m_hLaserDot != NULL )
@@ -2104,118 +2086,6 @@ int CWeaponRPG::WeaponRangeAttack1Condition( float flDot, float flDist )
 	return COND_CAN_RANGE_ATTACK1;
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Start the effects on the viewmodel of the RPG
-//-----------------------------------------------------------------------------
-void CWeaponRPG::StartLaserEffects( void )
-{
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	if ( pOwner == NULL )
-		return;
-
-	CBaseViewModel *pBeamEnt = static_cast<CBaseViewModel *>(pOwner->GetViewModel());
-
-	if ( m_hLaserBeam == NULL )
-	{
-		m_hLaserBeam = CBeam::BeamCreate( RPG_BEAM_SPRITE, 1.0f );
-		
-		if ( m_hLaserBeam == NULL )
-		{
-			// We were unable to create the beam
-			Assert(0);
-			return;
-		}
-
-		m_hLaserBeam->EntsInit( pBeamEnt, pBeamEnt );
-
-		int	startAttachment = LookupAttachment( "laser" );
-		int endAttachment	= LookupAttachment( "laser_end" );
-
-		m_hLaserBeam->FollowEntity( pBeamEnt );
-		m_hLaserBeam->SetStartAttachment( startAttachment );
-		m_hLaserBeam->SetEndAttachment( endAttachment );
-		m_hLaserBeam->SetNoise( 0 );
-		m_hLaserBeam->SetColor( 255, 0, 0 );
-		m_hLaserBeam->SetScrollRate( 0 );
-		m_hLaserBeam->SetWidth( 0.5f );
-		m_hLaserBeam->SetEndWidth( 0.5f );
-		m_hLaserBeam->SetBrightness( 128 );
-		m_hLaserBeam->SetBeamFlags( SF_BEAM_SHADEIN );
-#ifdef PORTAL
-		m_hLaserBeam->m_bDrawInMainRender = true;
-		m_hLaserBeam->m_bDrawInPortalRender = false;
-#endif
-	}
-	else
-	{
-		m_hLaserBeam->SetBrightness( 128 );
-	}
-
-	if ( m_hLaserMuzzleSprite == NULL )
-	{
-		m_hLaserMuzzleSprite = CSprite::SpriteCreate( RPG_LASER_SPRITE, GetAbsOrigin(), false );
-
-		if ( m_hLaserMuzzleSprite == NULL )
-		{
-			// We were unable to create the sprite
-			Assert(0);
-			return;
-		}
-
-#ifdef PORTAL
-		m_hLaserMuzzleSprite->m_bDrawInMainRender = true;
-		m_hLaserMuzzleSprite->m_bDrawInPortalRender = false;
-#endif
-
-		m_hLaserMuzzleSprite->SetAttachment( pOwner->GetViewModel(), LookupAttachment( "laser" ) );
-		m_hLaserMuzzleSprite->SetTransparency( kRenderTransAdd, 255, 255, 255, 255, kRenderFxNoDissipation );
-		m_hLaserMuzzleSprite->SetBrightness( 255, 0.5f );
-		m_hLaserMuzzleSprite->SetScale( 0.25f, 0.5f );
-		m_hLaserMuzzleSprite->TurnOn();
-	}
-	else
-	{
-		m_hLaserMuzzleSprite->TurnOn();
-		m_hLaserMuzzleSprite->SetScale( 0.25f, 0.25f );
-		m_hLaserMuzzleSprite->SetBrightness( 255 );
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Stop the effects on the viewmodel of the RPG
-//-----------------------------------------------------------------------------
-void CWeaponRPG::StopLaserEffects( void )
-{
-	if ( m_hLaserBeam != NULL )
-	{
-		m_hLaserBeam->SetBrightness( 0 );
-	}
-	
-	if ( m_hLaserMuzzleSprite != NULL )
-	{
-		m_hLaserMuzzleSprite->SetScale( 0.01f );
-		m_hLaserMuzzleSprite->SetBrightness( 0, 0.5f );
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Pulse all the effects to make them more... well, laser-like
-//-----------------------------------------------------------------------------
-void CWeaponRPG::UpdateLaserEffects( void )
-{
-	if ( !m_bGuiding )
-		return;
-
-	if ( m_hLaserBeam != NULL )
-	{
-		m_hLaserBeam->SetBrightness( 128 + random->RandomInt( -8, 8 ) );
-	}
-
-	if ( m_hLaserMuzzleSprite != NULL )
-	{
-		m_hLaserMuzzleSprite->SetScale( 0.1f + random->RandomFloat( -0.025f, 0.025f ) );
-	}
-}
 
 //=============================================================================
 // Laser Dot

@@ -23,6 +23,9 @@ public:
 
 	CWeaponKnife();
 
+	bool		HasAnyAmmo() { return true; }
+	bool		HasIronsights() { return false; }
+
 	void		PrimaryAttack(void);
 	void		ItemPostFrame(void);
 };
@@ -68,6 +71,55 @@ void CWeaponKnife::ItemPostFrame(void)
 
 	if (pOwner && pOwner->IsPlayer())
 	{
+		if ((pOwner->m_afButtonPressed & IN_JUMP) != 0)
+		{
+			if (m_flNextPrimaryAttack - 0.1f <= gpGlobals->curtime && m_flNextSecondaryAttack - 0.1f <= gpGlobals->curtime)
+			{
+				SendWeaponAnim(ACT_JUMP);
+				m_flNextPrimaryAttack = gpGlobals->curtime + 0.64f;
+				m_flNextPrimaryAttack = gpGlobals->curtime + 0.64f;
+				return;
+			}
+		}
+
+		if ((pOwner->m_afButtonPressed & IN_DUCK) != 0 && (pOwner->m_nButtons & IN_SPEED) == 0 && GetActivity() == ACT_VM_IDLE)
+		{
+			if (m_flNextPrimaryAttack - 0.2f <= gpGlobals->curtime && m_flNextSecondaryAttack - 0.2f <= gpGlobals->curtime)
+			{
+				SendWeaponAnim(ACT_CROUCH);
+				m_flNextPrimaryAttack = gpGlobals->curtime + 0.34f;
+				m_flNextSecondaryAttack = gpGlobals->curtime + 0.34f;
+				return;
+			}
+		}
+
+		if ((pOwner->m_nButtons & IN_ATTACK3) != 0 && GetActivity() == ACT_VM_IDLE)
+		{
+			if (m_flNextPrimaryAttack - 0.2f <= gpGlobals->curtime && m_flNextSecondaryAttack - 0.2f <= gpGlobals->curtime)
+			{
+				DisableIronsights();
+				SendWeaponAnim(ACT_VM_SWINGHARD);
+				m_flNextPrimaryAttack = gpGlobals->curtime + 5.0f;
+				m_flNextSecondaryAttack = gpGlobals->curtime + 5.0f;
+				return;
+			}
+		}
+
+		if ((pOwner->m_nButtons & IN_FRAG) != 0 && GetActivity() == ACT_VM_IDLE)
+		{
+			if (gpGlobals->curtime >= m_flNextPrimaryAttack && gpGlobals->curtime >= m_flNextSecondaryAttack)
+			{
+				if (pOwner->GetAmmoCount("grenade") > 0)
+				{
+					DisableIronsights();
+					SendWeaponAnim(ACT_VM_HAULBACK);
+					m_flNextPrimaryAttack = gpGlobals->curtime + 5.0f;
+					m_flNextSecondaryAttack = gpGlobals->curtime + 5.0f;
+					return;
+				}
+			}
+		}
+
 		if ((pOwner->m_afButtonPressed & IN_ATTACK) != 0 || (pOwner->m_afButtonPressed & IN_ATTACK2) != 0 && gpGlobals->curtime >= m_flNextPrimaryAttack)
 			PrimaryAttack();
 		else

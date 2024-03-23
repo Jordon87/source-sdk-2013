@@ -264,9 +264,6 @@ public:
 	void	CreateLaserPointer( void );
 	void	UpdateLaserPosition( Vector vecMuzzlePos = vec3_origin, Vector vecEndPos = vec3_origin );
 	Vector	GetLaserPosition( void );
-	void	StartLaserEffects( void );
-	void	StopLaserEffects( void );
-	void	UpdateLaserEffects( void );
 
 	// NPC RPG users cheat and directly set the laser pointer's origin
 	void	UpdateNPCLaserPosition( const Vector &vecTarget );

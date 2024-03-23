@@ -412,6 +412,7 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 	m_bAllowFlipping = ( pKeyValuesData->GetInt( "AllowFlipping", 1 ) != 0 ) ? true : false;
 	m_bMeleeWeapon = ( pKeyValuesData->GetInt( "MeleeWeapon", 0 ) != 0 ) ? true : false;
 	m_flMeleeDamage = (pKeyValuesData->GetFloat("MeleeDamage", 80.0f ) );
+	m_bHasFlashlight = (pKeyValuesData->GetInt("HasFlashlight", 0) != 0) ? true : false;
 
 	KeyValues* pSights = pKeyValuesData->FindKey("IronSight");
 	if (pSights)
@@ -432,7 +433,21 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 		vecIronsightPosOffset = vec3_origin;
 		angIronsightAngOffset.Init();
 		flIronsightFOVOffset = 0.0f;
-}
+	}
+
+	KeyValues* pFrag = pKeyValuesData->FindKey("Frag");
+	if (pFrag)
+	{
+		vecFragPosOffset.x = pFrag->GetFloat("forward", 18.0f);
+		vecFragPosOffset.y = pFrag->GetFloat("right", 8.0f);
+		vecFragPosOffset.z = pFrag->GetFloat("up", 0.0f);
+	}
+	else
+	{
+		vecFragPosOffset.x = 18.0f;
+		vecFragPosOffset.y = 8.0f;
+		vecFragPosOffset.z = 0.0f;
+	}
 
 #if defined(_DEBUG) && defined(HL2_CLIENT_DLL)
 	// make sure two weapons aren't in the same slot & position

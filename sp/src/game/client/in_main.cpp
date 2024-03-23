@@ -144,11 +144,8 @@ static  kbutton_t   in_grenade1;
 static  kbutton_t   in_grenade2;
 static	kbutton_t	in_attack3;
 kbutton_t	in_ducktoggle;
-
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 static  kbutton_t   in_frag;
 static  kbutton_t   in_melee;
-#endif
 
 /*
 ===========
@@ -495,13 +492,10 @@ void IN_Grenade2Down( const CCommand &args ) { KeyDown( &in_grenade2, args[1] );
 void IN_XboxStub( const CCommand &args ) { /*do nothing*/ }
 void IN_Attack3Down( const CCommand &args ) { KeyDown(&in_attack3, args[1] );}
 void IN_Attack3Up( const CCommand &args ) { KeyUp(&in_attack3, args[1] );}
-
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 void IN_FragDown(const CCommand &args) { KeyDown(&in_frag, args[1]); }
 void IN_FragUp(const CCommand &args) { KeyUp(&in_frag, args[1]); }
 void IN_MeleeDown(const CCommand &args) { KeyDown(&in_melee, args[1]); }
 void IN_MeleeUp(const CCommand &args) { KeyUp(&in_melee, args[1]); }
-#endif
 
 void IN_DuckToggle( const CCommand &args ) 
 { 
@@ -1481,11 +1475,8 @@ int CInput::GetButtonBits( int bResetState )
 	CalcButtonBits( bits, IN_GRENADE1, s_ClearInputState, &in_grenade1, bResetState );
 	CalcButtonBits( bits, IN_GRENADE2, s_ClearInputState, &in_grenade2, bResetState );
 	CalcButtonBits( bits, IN_ATTACK3, s_ClearInputState, &in_attack3, bResetState );
-
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 	CalcButtonBits(bits, IN_FRAG, s_ClearInputState, &in_frag, bResetState);
 	CalcButtonBits(bits, IN_MELEE, s_ClearInputState, &in_melee, bResetState);
-#endif
 
 	if ( KeyState(&in_ducktoggle) )
 	{
@@ -1643,13 +1634,10 @@ static ConCommand endgrenade2( "-grenade2", IN_Grenade2Up );
 static ConCommand startgrenade2( "+grenade2", IN_Grenade2Down );
 static ConCommand startattack3("+attack3", IN_Attack3Down);
 static ConCommand endattack3("-attack3", IN_Attack3Up);
-
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 static ConCommand startfrag("+frag", IN_FragDown);
 static ConCommand endfrag("-frag", IN_FragUp);
 static ConCommand startmelee("+melee", IN_MeleeDown);
 static ConCommand endmelee("-melee", IN_MeleeUp);
-#endif
 
 #ifdef TF_CLIENT_DLL
 static ConCommand toggle_duck( "toggle_duck", IN_DuckToggle );

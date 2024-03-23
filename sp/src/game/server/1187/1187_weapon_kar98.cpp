@@ -73,11 +73,16 @@ void CWeaponKar98::PrimaryAttack(void)
 			m_flNextSecondaryAttack = SequenceDuration() + gpGlobals->curtime;
 
 			m_iClip1 -= 1;
+			float flAim;
+			if (IsIronsighted())
+				flAim = 0.13917311f;
+			else
+				flAim = 1.0f;
 
 			FireBulletsInfo_t info;
 			info.m_iShots = 1;
 			info.m_vecSrc = pOwner->Weapon_ShootPosition();
-			info.m_vecDirShooting = pOwner->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
+			info.m_vecDirShooting = pOwner->GetAutoaimVector(flAim);
 			info.m_vecSpread = pOwner->GetAttackSpread(this);
 			info.m_flDistance = MAX_TRACE_LENGTH;
 			info.m_iAmmoType = m_iPrimaryAmmoType;

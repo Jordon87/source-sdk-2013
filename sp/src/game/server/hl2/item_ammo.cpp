@@ -554,6 +554,39 @@ public:
 LINK_ENTITY_TO_CLASS(item_box_buckshot, CItem_BoxBuckshot);
 
 // ========================================================================
+//	>> BoxBuckshot
+// ========================================================================
+class CItem_HealthRounds : public CItem
+{
+public:
+	DECLARE_CLASS(CItem_HealthRounds, CItem);
+
+	void Spawn(void)
+	{
+		Precache();
+		SetModel("models/items/boxbuckshot.mdl");
+		BaseClass::Spawn();
+	}
+	void Precache(void)
+	{
+		PrecacheModel("models/items/boxbuckshot.mdl");
+	}
+	bool MyTouch(CBasePlayer* pPlayer)
+	{
+		if (ITEM_GiveAmmo(pPlayer, 1.0f, "Health"))
+		{
+			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
+			{
+				UTIL_Remove(this);
+			}
+			return true;
+		}
+		return false;
+	}
+};
+LINK_ENTITY_TO_CLASS(item_ammo_healthpack, CItem_HealthRounds);
+
+// ========================================================================
 //	>> CItem_AR2AltFireRound
 // ========================================================================
 class CItem_AR2AltFireRound : public CItem

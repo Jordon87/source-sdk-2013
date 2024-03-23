@@ -32,6 +32,9 @@ public:
 
 	CWeaponCrowbar();
 
+	bool		HasAnyAmmo() { return true; }
+	bool		HasIronsights() { return false; }
+
 	void		PrimaryAttack( void );
 	void		ItemPostFrame( void );
 };

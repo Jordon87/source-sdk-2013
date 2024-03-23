@@ -273,8 +273,8 @@ public:
 	virtual void			PrimaryAttack( void );						// do "+ATTACK"
 	virtual void			SecondaryAttack( void ) { return; }			// do "+ATTACK2"
 
-
 	virtual void			PrimaryMeleeAttack( void );
+	virtual void			FragAttack( void );
 
 	// Firing animations
 	virtual Activity		GetPrimaryAttackActivity( void );
@@ -363,12 +363,14 @@ public:
 	virtual int				GetRumbleEffect() const;
 	virtual bool			UsesClipsForAmmo1( void ) const;
 	virtual bool			UsesClipsForAmmo2( void ) const;
+	virtual bool			HasIronsights(void) { return true; } //default yes; override and return false for weapons with no ironsights (like weapon_crowbar)
+	virtual bool			GetHasFlashlight() const;
 	bool					IsMeleeWeapon() const;
 	
 	Vector					GetIronsightPositionOffset(void) const;
 	QAngle					GetIronsightAngleOffset(void) const;
 	float					GetIronsightFOVOffset(void) const;
-	virtual bool				HasIronsights(void) { return true; } //default yes; override and return false for weapons with no ironsights (like weapon_crowbar)
+
 	bool					IsIronsighted(void);
 	void					ToggleIronsights(void);
 	void					EnableIronsights(void);
