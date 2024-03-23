@@ -2284,7 +2284,7 @@ void CNPC_Vortigaunt::ZapBeam( int nHand )
 		
 		CBasePlayer* pPlayer = ToBasePlayer(pEntity);
 
-		//Voritgaunt will sometimes crash here --JordyPorgie
+		//Vortigaunt will sometimes crash here --JordyPorgie
 		if (pPlayer->IsPlayer() && !(pPlayer->GetFlags() & FL_GODMODE))
 		{
 			QAngle angViewpunch;
