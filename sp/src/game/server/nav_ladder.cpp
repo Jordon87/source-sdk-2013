@@ -26,6 +26,44 @@ extern ConVar nav_area_bgcolor;
 unsigned int CNavLadder::m_nextID = 1;
 
 //--------------------------------------------------------------------------------------------------------------
+bool CInfoLadder::KeyValue( const char *szKeyName, const char *szValue )
+{
+	if ( FStrEq( szKeyName, "mins.x" ) )
+	{
+		mins.x = atof( szValue );
+		SetCollisionBounds( mins, maxs );
+	}
+	else if ( FStrEq( szKeyName, "mins.y" ) )
+	{
+		mins.y = atof( szValue );
+		SetCollisionBounds( mins, maxs );
+	}
+	else if ( FStrEq( szKeyName, "mins.z" ) )
+	{
+		mins.z = atof( szValue );
+		SetCollisionBounds( mins, maxs );
+	}
+	else if ( FStrEq( szKeyName, "maxs.x" ) )
+	{
+		maxs.x = atof( szValue );
+		SetCollisionBounds( mins, maxs );
+	}
+	else if ( FStrEq( szKeyName, "maxs.y" ) )
+	{
+		maxs.y = atof( szValue );
+		SetCollisionBounds( mins, maxs );
+	}
+	else if ( FStrEq( szKeyName, "maxs.z" ) )
+	{
+		maxs.z = atof( szValue );
+		SetCollisionBounds( mins, maxs );
+	}
+
+	return BaseClass::KeyValue( szKeyName, szValue );
+}
+
+
+//--------------------------------------------------------------------------------------------------------------
 /**
  * Shift the nav area
  */
