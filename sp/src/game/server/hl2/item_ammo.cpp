@@ -564,12 +564,12 @@ public:
 	void Spawn(void)
 	{
 		Precache();
-		SetModel("models/items/boxbuckshot.mdl");
+		SetModel("models/weapons/w_healthpack.mdl");
 		BaseClass::Spawn();
 	}
 	void Precache(void)
 	{
-		PrecacheModel("models/items/boxbuckshot.mdl");
+		PrecacheModel("models/weapons/w_healthpack.mdl");
 	}
 	bool MyTouch(CBasePlayer* pPlayer)
 	{
