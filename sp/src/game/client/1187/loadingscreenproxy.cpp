@@ -8,14 +8,16 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar loadscreen("loadscreen","0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE | FCVAR_HIDDEN);
-ConVar loadscreen_max("loadscreen_max","1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE | FCVAR_HIDDEN);
+ConVar loadscreen("loadscreen","0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
+ConVar loadscreen_max("loadscreen_max","1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 
 void cc_loadscreen_force()
 {
 	random->SetSeed(gpGlobals->curtime);
 	loadscreen.SetValue(RandomInt(0, loadscreen_max.GetInt()));
 }
+
+static ConCommand loadscreen_force("loadscreen_force", cc_loadscreen_force, "", FCVAR_CLIENTDLL);
 
 class CLoadingScreenProxy : public CEntityMaterialProxy
 {

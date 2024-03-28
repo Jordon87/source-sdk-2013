@@ -134,8 +134,6 @@ ConVar camhack_forward("camhack_forward", "0", FCVAR_HIDDEN);
 ConVar camhack_back("camhack_back", "0", FCVAR_HIDDEN);
 ConVar camhack_control("camhack_control", "0");
 
-ConVar cl_righthand("cl_righthand", "1", FCVAR_ARCHIVE);
-
 void RecvProxy_LocalVelocityX( const CRecvProxyData *pData, void *pStruct, void *pOut );
 void RecvProxy_LocalVelocityY( const CRecvProxyData *pData, void *pStruct, void *pOut );
 void RecvProxy_LocalVelocityZ( const CRecvProxyData *pData, void *pStruct, void *pOut );

@@ -18,12 +18,12 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar hopwire_vortex( "hopwire_vortex", "0" );
+ConVar hopwire_vortex( "hopwire_vortex", "1" );
 ConVar hopwire_trap( "hopwire_trap", "1" );
 ConVar hopwire_strider_kill_dist_h( "hopwire_strider_kill_dist_h", "300" );
 ConVar hopwire_strider_kill_dist_v( "hopwire_strider_kill_dist_v", "256" );
 ConVar hopwire_strider_hits( "hopwire_strider_hits", "1" );
-ConVar hopwire_hopheight( "hopwire_hopheight", "400" );
+ConVar hopwire_hopheight( "hopwire_hopheight", "80" );
 
 ConVar g_debug_hopwire( "g_debug_hopwire", "0" );
 
