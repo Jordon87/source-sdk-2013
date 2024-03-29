@@ -1209,6 +1209,7 @@ void C_BasePlayer::TeamChange( int iNewTeam )
 	// Base class does nothing
 }
 
+extern void FormatViewModelAttachment( Vector &vOrigin, bool bInverse );
 
 //-----------------------------------------------------------------------------
 // Purpose: Creates, destroys, and updates the flashlight effect as needed.
@@ -1230,6 +1231,23 @@ void C_BasePlayer::UpdateFlashlight()
 		}
 
 		Vector vecForward, vecRight, vecUp;
+		QAngle angOrigin;
+
+		if (GetViewModel())
+		{
+			int iMuzzle = LookupAttachment("muzzle");
+
+			if (iMuzzle != -1)
+			{
+				GetViewModel()->GetAttachment(iMuzzle, EyePosition(), angOrigin);
+			
+				::FormatViewModelAttachment(EyePosition(), true);
+				AngleVectors(angOrigin, &vecForward, &vecRight, &vecUp);
+			
+				EyePosition() = vecForward * -35.0f + EyePosition();
+			}
+		}
+
 		EyeVectors( &vecForward, &vecRight, &vecUp );
 
 		// Update the light with the new position and direction.		
