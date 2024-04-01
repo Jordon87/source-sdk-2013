@@ -130,10 +130,16 @@ void CNPC_John::SelectModel()
 	{
 		SetModelName(AllocPooledString("models/humans/group01/female_03.mdl"));
 	}
-	else
+
+	// For the Rogue Train bonus map, the John NPC
+	// is used for Markus.
+
+	if (FStrEq(STRING(GetEntityName()), "markus"))
 	{
-		SetModelName(AllocPooledString(JOHH_MODEL));
+		SetModelName(AllocPooledString("models/monk.mdl"));
 	}
+
+	SetModelName(AllocPooledString(JOHH_MODEL));
 }
 
 void CNPC_John::Precache(void)

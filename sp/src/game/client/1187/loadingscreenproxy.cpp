@@ -11,7 +11,7 @@
 ConVar loadscreen("loadscreen","0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 ConVar loadscreen_max("loadscreen_max","1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 
-void cc_loadscreen_force()
+static void cc_loadscreen_force()
 {
 	random->SetSeed(gpGlobals->curtime);
 	loadscreen.SetValue(RandomInt(0, loadscreen_max.GetInt()));
@@ -64,7 +64,7 @@ void CLoadingScreenProxy::OnBind(C_BaseEntity* pEnt)
 	{
 		V_snprintf(loadingscreenbuffer, sizeof(loadingscreenbuffer), "VGUI/loading/screen%d", loadscreen.GetInt());
 
-		pMaterial = materials->FindMaterial(loadingscreenbuffer, false);
+		pMaterial = materials->FindMaterial(loadingscreenbuffer, 0, false);
 	
 		if (!pMaterial)
 			pMaterial = materials->FindMaterial("VGUI/loading/error", false);

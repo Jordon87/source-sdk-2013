@@ -465,6 +465,13 @@ int giPrecacheGrunt = 0;
 
 edict_t *CBasePlayer::s_PlayerEdict = NULL;
 
+ConVar	g_handskin( "g_handskin", "0", FCVAR_GAMEDLL | FCVAR_CLIENTCMD_CAN_EXECUTE );
+
+int CBasePlayer::HandSkin()
+{
+	return g_handskin.GetInt();
+}
+
 
 inline bool ShouldRunCommandsInContext( const CCommandContext *ctx )
 {
@@ -507,6 +514,7 @@ void CBasePlayer::CreateViewModel( int index /*=0*/ )
 		DispatchSpawn( vm );
 		vm->FollowEntity( this );
 		m_hViewModel.Set( index, vm );
+		m_nSkin = g_handskin.GetInt();
 	}
 }
 

@@ -1213,6 +1213,8 @@ private:
 public:
 	virtual unsigned int PlayerSolidMask( bool brushOnly = false ) const;	// returns the solid mask for the given player, so bots can have a more-restrictive set
 
+public:
+	int HandSkin();
 };
 
 typedef CHandle<CBasePlayer> CBasePlayerHandle;
