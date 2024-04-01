@@ -148,6 +148,8 @@ void CBaseCombatWeapon::Operator_FrameUpdate( CBaseCombatCharacter *pOperator )
 	{
 		vm->StudioFrameAdvance();
 		vm->DispatchAnimEvents( this );
+
+		m_nSkin = pOwner->HandSkin();
 	}
 }
 
