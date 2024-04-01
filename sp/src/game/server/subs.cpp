@@ -64,6 +64,9 @@ LINK_ENTITY_TO_CLASS(info_player_deathmatch,CBaseDMStart);
 LINK_ENTITY_TO_CLASS(info_player_start,CPointEntity);
 LINK_ENTITY_TO_CLASS(info_landmark,CPointEntity);
 LINK_ENTITY_TO_CLASS(info_vort_teleport,CPointEntity);
+LINK_ENTITY_TO_CLASS(trigger_coop,CPointEntity);
+LINK_ENTITY_TO_CLASS(logic_coop_weapons,CPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_coop,CPointEntity);
 
 bool CBaseDMStart::IsTriggered( CBaseEntity *pEntity )
 {

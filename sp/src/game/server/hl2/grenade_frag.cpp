@@ -44,7 +44,6 @@ public:
 	void	OnRestore( void );
 	void	Precache( void );
 	bool	CreateVPhysics( void );
-	void	CreateEffects( void );
 	void	SetTimer( float detonateDelay, float warnDelay );
 	void	SetVelocity( const Vector &velocity, const AngularImpulse &angVelocity );
 	int		OnTakeDamage( const CTakeDamageInfo &inputInfo );
@@ -65,10 +64,6 @@ public:
 	void	InputSetTimer( inputdata_t &inputdata );
 
 protected:
-	CHandle<CSprite>		m_pMainGlow;
-	CHandle<CSpriteTrail>	m_pGlowTrail;
-
-	float	m_flNextBlipTime;
 	bool	m_inSolid;
 	bool	m_combineSpawned;
 	bool	m_punted;
@@ -79,9 +74,6 @@ LINK_ENTITY_TO_CLASS( npc_grenade_frag, CGrenadeFrag );
 BEGIN_DATADESC( CGrenadeFrag )
 
 	// Fields
-	DEFINE_FIELD( m_pMainGlow, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_pGlowTrail, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flNextBlipTime, FIELD_TIME ),
 	DEFINE_FIELD( m_inSolid, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_combineSpawned, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_punted, FIELD_BOOLEAN ),
@@ -126,9 +118,6 @@ void CGrenadeFrag::Spawn( void )
 	SetCollisionGroup( COLLISION_GROUP_WEAPON );
 	CreateVPhysics();
 
-	BlipSound();
-	m_flNextBlipTime = gpGlobals->curtime + FRAG_GRENADE_BLIP_FREQUENCY;
-
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 
 	m_combineSpawned	= false;
@@ -142,46 +131,12 @@ void CGrenadeFrag::Spawn( void )
 //-----------------------------------------------------------------------------
 void CGrenadeFrag::OnRestore( void )
 {
-	// If we were primed and ready to detonate, put FX on us.
-	if (m_flDetonateTime > 0)
-		CreateEffects();
-
 	BaseClass::OnRestore();
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CGrenadeFrag::CreateEffects( void )
-{
-	// Start up the eye glow
-	m_pMainGlow = CSprite::SpriteCreate( "sprites/redglow1.vmt", GetLocalOrigin(), false );
-
-	int	nAttachment = LookupAttachment( "fuse" );
-
-	if ( m_pMainGlow != NULL )
-	{
-		m_pMainGlow->FollowEntity( this );
-		m_pMainGlow->SetAttachment( this, nAttachment );
-		m_pMainGlow->SetTransparency( kRenderGlow, 255, 255, 255, 200, kRenderFxNoDissipation );
-		m_pMainGlow->SetScale( 0.2f );
-		m_pMainGlow->SetGlowProxySize( 4.0f );
-	}
-
-	// Start up the eye trail
-	m_pGlowTrail	= CSpriteTrail::SpriteTrailCreate( "sprites/bluelaser1.vmt", GetLocalOrigin(), false );
-
-	if ( m_pGlowTrail != NULL )
-	{
-		m_pGlowTrail->FollowEntity( this );
-		m_pGlowTrail->SetAttachment( this, nAttachment );
-		m_pGlowTrail->SetTransparency( kRenderTransAdd, 255, 0, 0, 255, kRenderFxNone );
-		m_pGlowTrail->SetStartWidth( 8.0f );
-		m_pGlowTrail->SetEndWidth( 1.0f );
-		m_pGlowTrail->SetLifeTime( 0.5f );
-	}
-}
-
 bool CGrenadeFrag::CreateVPhysics()
 {
 	// Create the object in the physics system
@@ -277,11 +232,6 @@ void CGrenadeFrag::Precache( void )
 {
 	PrecacheModel( GRENADE_MODEL );
 
-	PrecacheScriptSound( "Grenade.Blip" );
-
-	PrecacheModel( "sprites/redglow1.vmt" );
-	PrecacheModel( "sprites/bluelaser1.vmt" );
-
 	BaseClass::Precache();
 }
 
@@ -291,29 +241,11 @@ void CGrenadeFrag::SetTimer( float detonateDelay, float warnDelay )
 	m_flWarnAITime = gpGlobals->curtime + warnDelay;
 	SetThink( &CGrenadeFrag::DelayThink );
 	SetNextThink( gpGlobals->curtime );
-
-	CreateEffects();
 }
 
 void CGrenadeFrag::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
 	SetThrower( pPhysGunUser );
-
-#ifdef HL2MP
-	SetTimer( FRAG_GRENADE_GRACE_TIME_AFTER_PICKUP, FRAG_GRENADE_GRACE_TIME_AFTER_PICKUP / 2);
-
-	BlipSound();
-	m_flNextBlipTime = gpGlobals->curtime + FRAG_GRENADE_BLIP_FAST_FREQUENCY;
-	m_bHasWarnedAI = true;
-#else
-	if( IsX360() )
-	{
-		// Give 'em a couple of seconds to aim and throw. 
-		SetTimer( 2.0f, 1.0f);
-		BlipSound();
-		m_flNextBlipTime = gpGlobals->curtime + FRAG_GRENADE_BLIP_FAST_FREQUENCY;
-	}
-#endif
 
 #ifdef HL2_EPISODIC
 	SetPunted( true );
@@ -336,20 +268,6 @@ void CGrenadeFrag::DelayThink()
 		CSoundEnt::InsertSound ( SOUND_DANGER, GetAbsOrigin(), 400, 1.5, this );
 #endif
 		m_bHasWarnedAI = true;
-	}
-	
-	if( gpGlobals->curtime > m_flNextBlipTime )
-	{
-		BlipSound();
-		
-		if( m_bHasWarnedAI )
-		{
-			m_flNextBlipTime = gpGlobals->curtime + FRAG_GRENADE_BLIP_FAST_FREQUENCY;
-		}
-		else
-		{
-			m_flNextBlipTime = gpGlobals->curtime + FRAG_GRENADE_BLIP_FREQUENCY;
-		}
 	}
 
 	SetNextThink( gpGlobals->curtime + 0.1 );
