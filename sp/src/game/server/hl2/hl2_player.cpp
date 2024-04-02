@@ -475,10 +475,7 @@ void CHL2_Player::EquipSuit( bool bPlayEffects )
 	
 	m_HL2Local.m_bDisplayReticle = true;
 
-	if ( bPlayEffects == true )
-	{
-		StartAdmireGlovesAnimation();
-	}
+	BaseClass::GiveAmmo(1, "Health", true);
 }
 
 void CHL2_Player::RemoveSuit( void )
@@ -908,55 +905,6 @@ void CHL2_Player::PreThink(void)
 void CHL2_Player::PostThink( void )
 {
 	BaseClass::PostThink();
-
-	if ( !g_fGameOver && !IsPlayerLockedInPlace() && IsAlive() )
-	{
-		 HandleAdmireGlovesAnimation();
-	}
-}
-
-void CHL2_Player::StartAdmireGlovesAnimation( void )
-{
-	MDLCACHE_CRITICAL_SECTION();
-	CBaseViewModel *vm = GetViewModel( 0 );
-
-	if ( vm && !GetActiveWeapon() )
-	{
-		vm->SetWeaponModel( "models/weapons/v_hands.mdl", NULL );
-		ShowViewModel( true );
-						
-		int	idealSequence = vm->SelectWeightedSequence( ACT_VM_IDLE );
-		
-		if ( idealSequence >= 0 )
-		{
-			vm->SendViewModelMatchingSequence( idealSequence );
-			m_flAdmireGlovesAnimTime = gpGlobals->curtime + vm->SequenceDuration( idealSequence ); 
-		}
-	}
-}
-
-void CHL2_Player::HandleAdmireGlovesAnimation( void )
-{
-	CBaseViewModel *pVM = GetViewModel();
-
-	if ( pVM && pVM->GetOwningWeapon() == NULL )
-	{
-		if ( m_flAdmireGlovesAnimTime != 0.0 )
-		{
-			if ( m_flAdmireGlovesAnimTime > gpGlobals->curtime )
-			{
-				pVM->m_flPlaybackRate = 1.0f;
-				pVM->StudioFrameAdvance( );
-			}
-			else if ( m_flAdmireGlovesAnimTime < gpGlobals->curtime )
-			{
-				m_flAdmireGlovesAnimTime = 0.0f;
-				pVM->SetWeaponModel( NULL, NULL );
-			}
-		}
-	}
-	else
-		m_flAdmireGlovesAnimTime = 0.0f;
 }
 
 #define HL2PLAYER_RELOADGAME_ATTACK_DELAY 1.0f
@@ -1158,6 +1106,11 @@ void CHL2_Player::Spawn(void)
 	SetFlashlightPowerDrainScale( 1.0f );
 
 	Msg("1187: Map is: %s", gpGlobals->mapname);
+
+	if (GetActiveWeapon())
+	{
+		GetActiveWeapon()->DisableIronsights();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1209,6 +1162,9 @@ void CHL2_Player::StartAutoSprint()
 //-----------------------------------------------------------------------------
 void CHL2_Player::StartSprinting( void )
 {
+	if (GetActiveWeapon()->IsIronsighted())
+		return;
+
 	if( m_HL2Local.m_flSuitPower < 10 )
 	{
 		// Don't sprint unless there's a reasonable
@@ -2063,6 +2019,9 @@ void CHL2_Player::FlashlightTurnOn( void )
 	if( m_bFlashlightDisabled )
 		return;
 
+	if (!GetActiveWeapon()->GetHasFlashlight())
+		return;
+
 	if ( Flashlight_UseLegacyVersion() )
 	{
 		if( !SuitPower_AddDevice( SuitDeviceFlashlight ) )
@@ -2553,6 +2512,7 @@ void CHL2_Player::Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo
 //-----------------------------------------------------------------------------
 void CHL2_Player::Event_Killed( const CTakeDamageInfo &info )
 {
+	SetBodygroup(0,1);
 	BaseClass::Event_Killed( info );
 
 	FirePlayerProxyOutput( "PlayerDied", variant_t(), this, this );
@@ -3015,79 +2975,7 @@ void CHL2_Player::UpdateWeaponPosture( void )
 {
 	CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon *>(GetActiveWeapon());
 
-	if ( pWeapon && m_LowerWeaponTimer.Expired() && pWeapon->CanLower() )
-	{
-		m_LowerWeaponTimer.Set( .3 );
-		VPROF( "CHL2_Player::UpdateWeaponPosture-CheckLower" );
-		Vector vecAim = BaseClass::GetAutoaimVector( AUTOAIM_SCALE_DIRECT_ONLY );
-
-		const float CHECK_FRIENDLY_RANGE = 50 * 12;
-		trace_t	tr;
-		UTIL_TraceLine( EyePosition(), EyePosition() + vecAim * CHECK_FRIENDLY_RANGE, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
-
-		CBaseEntity *aimTarget = tr.m_pEnt;
-
-		//If we're over something
-		if (  aimTarget && !tr.DidHitWorld() )
-		{
-			if ( !aimTarget->IsNPC() || aimTarget->MyNPCPointer()->GetState() != NPC_STATE_COMBAT )
-			{
-				Disposition_t dis = IRelationType( aimTarget );
-
-				//Debug info for seeing what an object "cons" as
-				if ( sv_show_crosshair_target.GetBool() )
-				{
-					int text_offset = BaseClass::DrawDebugTextOverlays();
-
-					char tempstr[255];	
-
-					switch ( dis )
-					{
-					case D_LI:
-						Q_snprintf( tempstr, sizeof(tempstr), "Disposition: Like" );
-						break;
-
-					case D_HT:
-						Q_snprintf( tempstr, sizeof(tempstr), "Disposition: Hate" );
-						break;
-
-					case D_FR:
-						Q_snprintf( tempstr, sizeof(tempstr), "Disposition: Fear" );
-						break;
-
-					case D_NU:
-						Q_snprintf( tempstr, sizeof(tempstr), "Disposition: Neutral" );
-						break;
-
-					default:
-					case D_ER:
-						Q_snprintf( tempstr, sizeof(tempstr), "Disposition: !!!ERROR!!!" );
-						break;
-					}
-
-					//Draw the text
-					NDebugOverlay::EntityText( aimTarget->entindex(), text_offset, tempstr, 0 );
-				}
-
-				//See if we hates it
-				if ( dis == D_LI  )
-				{
-					//We're over a friendly, drop our weapon
-					if ( Weapon_Lower() == false )
-					{
-						//FIXME: We couldn't lower our weapon!
-					}
-
-					return;
-				}
-			}
-		}
-
-		if ( Weapon_Ready() == false )
-		{
-			//FIXME: We couldn't raise our weapon!
-		}
-	}
+	Weapon_Ready();
 
 	if( g_pGameRules->GetAutoAimMode() != AUTOAIM_NONE )
 	{

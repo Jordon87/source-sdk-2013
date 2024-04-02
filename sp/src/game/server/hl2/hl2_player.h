@@ -262,8 +262,6 @@ public:
 
 	virtual void EquipSuit( bool bPlayEffects = true );
 	virtual void RemoveSuit( void );
-	void  HandleAdmireGlovesAnimation( void );
-	void  StartAdmireGlovesAnimation( void );
 	
 	void  HandleSpeedChanges( void );
 
