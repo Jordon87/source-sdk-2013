@@ -49,6 +49,7 @@ PMaterialHandle g_Mat_Combine_Muzzleflash[3] = { NULL, NULL, NULL };
 
 static ConVar fx_drawimpactdebris( "fx_drawimpactdebris", "1", FCVAR_DEVELOPMENTONLY, "Draw impact debris effects." );
 static ConVar fx_drawimpactdust( "fx_drawimpactdust", "1", FCVAR_DEVELOPMENTONLY, "Draw impact dust effects." );
+static ConVar fx_drawottex( "fx_drawottex", "1", FCVAR_DEVELOPMENTONLY, "Draw over the top awesome fx." );
 
 void FX_CacheMaterialHandles( void )
 {
@@ -163,6 +164,9 @@ static void CreateFleckParticles( const Vector& origin, const Vector &color, tra
 
 	if ( !fleckEmitter )
 		return;
+
+	if (fx_drawottex.GetInt())
+		iScale = 2 * iScale;
 
 	// Handle increased scale
 	float flMaxSpeed = FLECK_MAX_SPEED * iScale;
@@ -345,6 +349,9 @@ void FX_DebrisFlecks( const Vector& origin, trace_t *tr, char materialType, int 
 	//
 	// PC version
 	//
+
+	if (fx_drawottex.GetInt())
+		iScale = 2 * iScale;
 
 	Vector	color;
 	GetColorForSurface( tr, &color );
@@ -1077,6 +1084,9 @@ void FX_DustImpact( const Vector &origin, trace_t *tr, float flScale )
 	//
 	// PC version
 	//
+
+	if (fx_drawottex.GetInt())
+		flScale = flScale * 1.2f;
 
 	VPROF_BUDGET( "FX_DustImpact", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 	Vector	offset;
