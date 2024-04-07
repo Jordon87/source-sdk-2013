@@ -1160,35 +1160,29 @@ void CHL2_Player::StartAutoSprint()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CHL2_Player::StartSprinting( void )
+void CHL2_Player::StartSprinting(void)
 {
-	if (GetActiveWeapon()->IsIronsighted())
-		return;
-
-	if( m_HL2Local.m_flSuitPower < 10 )
+	if (GetActiveWeapon() && !GetActiveWeapon()->IsIronsighted())
 	{
-		// Don't sprint unless there's a reasonable
-		// amount of suit power.
-		
-		// debounce the button for sound playing
-		if ( m_afButtonPressed & IN_SPEED )
+		if (m_HL2Local.m_flSuitPower >= 10)
 		{
-			CPASAttenuationFilter filter( this );
-			filter.UsePredictionRules();
-			EmitSound( filter, entindex(), "HL2Player.SprintNoPower" );
+			if (SuitPower_AddDevice(SuitDeviceSprint))
+			{
+				CPASAttenuationFilter filter(this);
+				filter.UsePredictionRules();
+				EmitSound(filter, entindex(), "HL2Player.SprintStart");
+
+				SetMaxSpeed(HL2_SPRINT_SPEED);
+				m_fIsSprinting = true;
+			}
 		}
-		return;
+		else if (m_afButtonPressed & IN_SPEED)
+		{
+			CPASAttenuationFilter filter(this);
+			filter.UsePredictionRules();
+			EmitSound(filter, entindex(), "HL2Player.SprintNoPower"); 
+		}
 	}
-
-	if( !SuitPower_AddDevice( SuitDeviceSprint ) )
-		return;
-
-	CPASAttenuationFilter filter( this );
-	filter.UsePredictionRules();
-	EmitSound( filter, entindex(), "HL2Player.SprintStart" );
-
-	SetMaxSpeed( HL2_SPRINT_SPEED );
-	m_fIsSprinting = true;
 }
 
 
@@ -2016,28 +2010,27 @@ int CHL2_Player::FlashlightIsOn( void )
 //-----------------------------------------------------------------------------
 void CHL2_Player::FlashlightTurnOn( void )
 {
-	if( m_bFlashlightDisabled )
-		return;
-
-	if (!GetActiveWeapon()->GetHasFlashlight())
-		return;
-
-	if ( Flashlight_UseLegacyVersion() )
+	if( !m_bFlashlightDisabled )
 	{
-		if( !SuitPower_AddDevice( SuitDeviceFlashlight ) )
-			return;
+		if (GetActiveWeapon())
+		{
+			if (!GetActiveWeapon() || GetActiveWeapon()->GetHasFlashlight())
+			{
+				if (!Flashlight_UseLegacyVersion() || SuitPower_AddDevice(SuitDeviceFlashlight))
+				{
+					if (IsSuitEquipped())
+					{
+						AddEffects(EF_DIMLIGHT);
+						EmitSound("HL2Player.FlashLightOn");
+
+						variant_t flashlighton;
+						flashlighton.SetFloat(m_HL2Local.m_flSuitPower / 100.0f);
+						FirePlayerProxyOutput("OnFlashlightOn", flashlighton, this, this);
+					}
+				}
+			}
+		}
 	}
-#ifdef HL2_DLL
-	if( !IsSuitEquipped() )
-		return;
-#endif
-
-	AddEffects( EF_DIMLIGHT );
-	EmitSound( "HL2Player.FlashLightOn" );
-
-	variant_t flashlighton;
-	flashlighton.SetFloat( m_HL2Local.m_flSuitPower / 100.0f );
-	FirePlayerProxyOutput( "OnFlashlightOn", flashlighton, this, this );
 }
 
 
