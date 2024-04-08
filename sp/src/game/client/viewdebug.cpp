@@ -655,6 +655,29 @@ CON_COMMAND_F( r_screenoverlay, "Draw specified material as an overlay", FCVAR_C
 	}
 }
 
+CON_COMMAND_F(r_bluroverlay, "Draw the ironsight fake blur.", FCVAR_SERVER_CAN_EXECUTE)
+{
+	if( args.ArgC() == 2 )
+	{
+		if ( !Q_stricmp( "off", args[1] ) )
+		{
+			view->SetScreenOverlayMaterial( NULL );
+		}
+		else
+		{
+			IMaterial *pMaterial = materials->FindMaterial( "VGUI/dec/fake_blur", TEXTURE_GROUP_OTHER, false );
+			if ( !IsErrorMaterial( pMaterial ) )
+			{
+				view->SetScreenOverlayMaterial( pMaterial );
+			}
+			else
+			{
+				view->SetScreenOverlayMaterial( NULL );
+			}
+		}
+	}
+}
+
 // Used to verify frame syncing.
 void CDebugViewRender::GenerateOverdrawForTesting()
 {
