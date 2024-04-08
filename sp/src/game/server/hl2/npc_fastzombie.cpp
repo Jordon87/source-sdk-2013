@@ -56,6 +56,8 @@ int AE_FASTZOMBIE_VEHICLE_SS_DIE;	// Killed while doing scripted sequence on veh
 
 #endif // HL2_EPISODIC
 
+ConVar sk_fast_zombie_health("sk_fast_zombie_health", "0");
+
 enum
 {
 	COND_FASTZOMBIE_CLIMB_TOUCH	= LAST_BASE_ZOMBIE_CONDITION,
@@ -670,7 +672,7 @@ void CFastZombie::Spawn( void )
 	SetBloodColor( BLOOD_COLOR_RED );
 #endif // HL2_EPISODIC
 
-	m_iHealth			= 50;
+	m_iHealth			= sk_fast_zombie_health.GetFloat();
 	m_flFieldOfView		= 0.2;
 
 	CapabilitiesClear();
