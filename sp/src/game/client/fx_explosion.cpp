@@ -553,6 +553,8 @@ void C_BaseExplosionEffect::CreateCore( void )
 			pParticle->m_flRollDelta	= random->RandomFloat( -16.0f, 16.0f );
 		}
 	}
+
+	DispatchParticleEffect("Explosion_2", Vector(0,0,34) + m_vecOrigin, QAngle(0,0,0));
 }
 
 //-----------------------------------------------------------------------------
