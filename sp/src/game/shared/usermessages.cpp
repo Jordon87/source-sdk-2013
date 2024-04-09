@@ -13,10 +13,6 @@
 
 void RegisterUserMessages( void );
 
-#if defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-void Register1187UserMessages(void);
-#endif
-
 //-----------------------------------------------------------------------------
 // Purpose: Force registration on .dll load
 // FIXME:  Should this be a client/server system?
@@ -25,11 +21,6 @@ CUserMessages::CUserMessages()
 {
 	// Game specific registration function;
 	RegisterUserMessages();
-
-#if defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-	// Register custom messages for 1187.
-	Register1187UserMessages();
-#endif
 }
 
 CUserMessages::~CUserMessages()

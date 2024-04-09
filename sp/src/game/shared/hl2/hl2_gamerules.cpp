@@ -1789,7 +1789,6 @@ bool CHalfLife2::ShouldBurningPropsEmitLight()
 // Global functions.
 // ------------------------------------------------------------------------------------ //
 
-#if !defined ( ELEVENEIGHTYSEVEN_DLL ) && !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 #ifndef HL2MP
 #ifndef PORTAL
 
@@ -1899,4 +1898,3 @@ CAmmoDef *GetAmmoDef()
 
 #endif
 #endif
-#endif // !defined ( ELEVENEIGHTYSEVEN_DLL ) && !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )

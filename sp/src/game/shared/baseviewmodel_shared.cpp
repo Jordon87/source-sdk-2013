@@ -596,9 +596,8 @@ static void RecvProxy_Weapon( const CRecvProxyData *pData, void *pStruct, void *
 }
 #endif
 
-#if !defined ( ELEVENEIGHTYSEVEN_DLL ) && !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
+
 LINK_ENTITY_TO_CLASS( viewmodel, CBaseViewModel );
-#endif // !defined ( ELEVENEIGHTYSEVEN_DLL ) && !defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseViewModel, DT_BaseViewModel )
 

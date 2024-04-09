@@ -183,11 +183,7 @@ public:
 
 	// Flashlight
 	void	Flashlight( void );
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-	virtual void UpdateFlashlight( void );
-#else
 	void	UpdateFlashlight( void );
-#endif
 
 	// Weapon selection code
 	virtual bool				IsAllowedToSwitchWeapons( void ) { return !IsObserver(); }
@@ -531,13 +527,7 @@ private:
 
 
 	// Player flashlight dynamic light pointers
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-protected:
 	CFlashlightEffect *m_pFlashlight;
-private:
-#else
-	CFlashlightEffect *m_pFlashlight;
-#endif
 
 	typedef CHandle<C_BaseCombatWeapon> CBaseCombatWeaponHandle;
 	CNetworkVar( CBaseCombatWeaponHandle, m_hLastWeapon );

@@ -35,16 +35,6 @@
 #include "tf_gamerules.h"
 #endif
 
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-#include "1187_mainmenu.h"
-#include "1187_gamesettings.h"
-
-#if defined ( ELEVENEIGHTYSEVEN_BETA ) && ( ELEVENEIGHTYSEVEN_BETA == 1 )
-#include "1187_beta.h"
-#endif // defined ( ELEVENEIGHTYSEVEN_BETA ) && ( ELEVENEIGHTYSEVEN_BETA == 1 )
-
-#endif // defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-
 using namespace vgui;
 
 void MP3Player_Create( vgui::VPANEL parent );
@@ -207,7 +197,7 @@ bool VGui_Startup( CreateInterfaceFn appSystemFactory )
 // Purpose: 
 //-----------------------------------------------------------------------------
 void VGui_CreateGlobalPanels( void )
-{;
+{
 	VPANEL gameToolParent = enginevgui->GetPanel( PANEL_CLIENTDLL_TOOLS );
 	VPANEL toolParent = enginevgui->GetPanel( PANEL_TOOLS );
 #if defined( TRACK_BLOCKING_IO )
@@ -238,34 +228,11 @@ void VGui_CreateGlobalPanels( void )
 #ifdef SIXENSE
 	g_pSixenseInput->CreateGUI( gameToolParent );
 #endif
-
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-	VPANEL gameUIDLLPanel = enginevgui->GetPanel(PANEL_GAMEUIDLL);
-	g_p1187mainmenu->Create(gameUIDLLPanel);
-	g_p1187gamesettings->Create(gameUIDLLPanel);
-	g_p1187gamesettings->Init();
-
-#if defined ( ELEVENEIGHTYSEVEN_BETA ) && ( ELEVENEIGHTYSEVEN_BETA == 1 )
-	g_p1187beta->Create(gameUIDLLPanel);
-#endif
-
-#endif
 }
 
 void VGui_Shutdown()
 {
 	VGUI_DestroyClientDLLRootPanel();
-
-#if defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-
-#if defined ( ELEVENEIGHTYSEVEN_BETA ) && ( ELEVENEIGHTYSEVEN_BETA == 1 )
-	g_p1187beta->Destroy();
-#endif
-
-	g_p1187gamesettings->Shutdown();
-	g_p1187gamesettings->Destroy();
-	g_p1187mainmenu->Destroy();
-#endif
 
 #ifndef _X360
 	MP3Player_Destroy();

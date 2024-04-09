@@ -10,11 +10,6 @@
 #ifdef _WIN32
 #pragma once
 #endif
-#if defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-
-#include "1187_baseviewmodel_shared.h"
-
-#else
 
 #include "predictable_entity.h"
 #include "utlvector.h"
@@ -213,7 +208,5 @@ private:
 	typedef CHandle<CVGuiScreen>	ScreenHandle_t;
 	CUtlVector<ScreenHandle_t>	m_hScreens;
 };
-
-#endif // defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
 
 #endif // BASEVIEWMODEL_SHARED_H
