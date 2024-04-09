@@ -164,13 +164,8 @@ public:
 
 	// Sprint Device
 	void StartAutoSprint( void );
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-	virtual void StartSprinting( void );
-	virtual void StopSprinting(void);
-#else
 	void StartSprinting( void );
-	void StopSprinting(void);
-#endif
+	void StopSprinting( void );
 	void InitSprinting( void );
 	bool IsSprinting( void ) { return m_fIsSprinting; }
 	bool CanSprint( void );
@@ -368,9 +363,6 @@ private:
 
 	void CameraMovement();
 
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-	friend class C1187_Player;
-#endif
 };
 
 

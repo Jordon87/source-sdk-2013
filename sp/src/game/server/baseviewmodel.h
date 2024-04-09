@@ -11,10 +11,7 @@
 #ifdef _WIN32
 #pragma once
 #endif
-#if defined ( ELEVENEIGHTYSEVEN_DLL ) || defined ( ELEVENEIGHTYSEVEN_CLIENT_DLL )
-#include "1187_baseviewmodel.h"
-#else
+
 #include "baseviewmodel_shared.h"
-#endif
 
 #endif // BASEVIEWMODEL_H

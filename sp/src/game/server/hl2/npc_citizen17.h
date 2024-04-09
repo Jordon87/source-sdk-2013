@@ -211,17 +211,10 @@ public:
 	//---------------------------------
 	// Special abilities
 	//---------------------------------
-#if defined ( ELEVENEIGHTYSEVEN_DLL )
-	virtual bool 	IsMedic() 			{ return HasSpawnFlags(SF_CITIZEN_MEDIC); }
-	virtual bool 	IsAmmoResupplier() 	{ return HasSpawnFlags(SF_CITIZEN_AMMORESUPPLIER); }
-	
-	virtual bool 	CanHeal();
-#else
 	bool 			IsMedic() 			{ return HasSpawnFlags(SF_CITIZEN_MEDIC); }
 	bool 			IsAmmoResupplier() 	{ return HasSpawnFlags(SF_CITIZEN_AMMORESUPPLIER); }
-
+	
 	bool 			CanHeal();
-#endif
 	bool 			ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse = false );
 #if HL2_EPISODIC
 	bool 			ShouldHealTossTarget( CBaseEntity *pTarget, bool bActiveUse = false );
