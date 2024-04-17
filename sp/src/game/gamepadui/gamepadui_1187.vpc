@@ -1,0 +1,23 @@
+//-----------------------------------------------------------------------------
+//	GAMEPADUI_HL2.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$Macro SRCDIR		"..\.."
+$Macro GAMENAME 	"1187"
+$Macro OUTBINNAME	"gamepadui"
+
+$Include "$SRCDIR\game\gamepadui\gamepadui_base.vpc"
+
+$Configuration
+{
+	$Compiler
+	{
+		$PreprocessorDefinitions			"$BASE;GAMEPADUI_GAME_HL2"
+	}
+}
+
+$Project "GamepadUI (1187)"
+{
+}
