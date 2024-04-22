@@ -96,6 +96,8 @@ ConVar g_debug_vortigaunt_aim( "g_debug_vortigaunt_aim", "0" );
 #define VORTFX_ZAPBEAM		0	// Beam that damages the target
 #define VORTFX_ARMBEAM		1	// Smaller beams from the hands as we charge up
 
+#define VORTFX_ENHANCEDBEAM		HasSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT)
+
 //-----------------------------------------------------------------------------
 // Interactions
 //-----------------------------------------------------------------------------
@@ -2256,6 +2258,7 @@ void CNPC_Vortigaunt::ZapBeam( int nHand )
 		WRITE_BYTE( VORTFX_ZAPBEAM );
 		WRITE_BYTE( uchAttachment );
 		WRITE_VEC3COORD( tr.endpos );
+		WRITE_BYTE( VORTFX_ENHANCEDBEAM );
 	MessageEnd();
 
 	CBaseEntity *pEntity = tr.m_pEnt;

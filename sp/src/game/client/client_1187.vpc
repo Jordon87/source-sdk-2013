@@ -124,6 +124,7 @@ $Project "Client (1187)"
 			$File 	"vdc\tne_RenderTargets.cpp"
 			$File 	"vdc\tne_RenderTargets.h"
 			$File 	"1187\c_prop_vehicle_car.cpp"
+			$File 	"1187\c_weapon_secret.cpp"
 		}
 	}
 }

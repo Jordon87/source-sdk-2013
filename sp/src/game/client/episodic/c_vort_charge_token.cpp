@@ -151,7 +151,17 @@ void C_NPC_Vortigaunt::ReceiveMessage( int classID, bf_read &msg )
 			msg.ReadBitVec3Coord( vecEndPos );
 
 			// Place a beam between the two points
-			CNewParticleEffect *pEffect = ParticleProp()->Create( "vortigaunt_beam", PATTACH_POINT_FOLLOW, nAttachment );
+
+			bool bEnhanced = msg.ReadByte();
+
+			const char *particleName;
+
+			if ( bEnhanced )
+				particleName = "vortigaunt_beam_heal";
+			else
+				particleName = "vortigaunt_beam";
+
+			CNewParticleEffect *pEffect = ParticleProp()->Create( particleName, PATTACH_POINT_FOLLOW, nAttachment );
 			if ( pEffect )
 			{
 				pEffect->SetControlPoint( 0, vecStart );
