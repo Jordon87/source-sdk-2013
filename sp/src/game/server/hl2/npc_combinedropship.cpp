@@ -268,7 +268,7 @@ public:
 	Vector	GetDropoffFinishPosition( Vector vecOrigin, CAI_BaseNPC *pNPC, Vector vecMins, Vector vecMaxs );
 	void	LandCommon( bool bHover = false );
 
-	Class_T Classify( void ) { return CLASS_COMBINE_GUNSHIP; }
+	Class_T Classify( void ) { return CLASS_PLAYER_ALLY; }
 
 	// Drop the soldier container
 	void	DropSoldierContainer( );
@@ -1013,6 +1013,10 @@ void CNPC_CombineDropship::Spawn( void )
 	SetSchedule( SCHED_IDLE_STAND );
 
 	SetLandingState( LANDING_NO );
+
+#if defined ( COMBINE_DESTINY_NEW_FEATURES )
+	CapabilitiesAdd( bits_CAP_FRIENDLY_DMG_IMMUNE );
+#endif
 
 	if ( HasSpawnFlags( SF_DROPSHIP_WAIT_FOR_DROPOFF_INPUT ) )
 	{

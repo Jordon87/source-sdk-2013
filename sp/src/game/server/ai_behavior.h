@@ -1107,8 +1107,10 @@ inline int CAI_BehaviorHost<BASE_NPC>::SelectSchedule()
 template <class BASE_NPC>
 inline void CAI_BehaviorHost<BASE_NPC>::KeepRunningBehavior()
 {
+	DevMsg( "( KeepRunningBehavior()  AI_Behavior\n" );
 	if ( m_pCurBehavior )
 		m_bCalledBehaviorSelectSchedule = true;
+		DevMsg( " m_bCalledBehaviorSelectSchedule = true;\n" );
 }
 
 //-------------------------------------

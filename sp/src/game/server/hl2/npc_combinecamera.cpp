@@ -138,7 +138,7 @@ public:
 
 	int OnTakeDamage(const CTakeDamageInfo &inputInfo);
 
-	Class_T Classify() { return (m_bEnabled) ? CLASS_MILITARY : CLASS_NONE; }
+	Class_T Classify() { return (m_bEnabled) ? CLASS_PLAYER_ALLY : CLASS_NONE; }
 	
 	bool IsValidEnemy( CBaseEntity *pEnemy );
 	bool FVisible(CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL);
@@ -331,6 +331,10 @@ void CNPC_CombineCamera::Spawn()
 
 	SetPoseParameter(COMBINE_CAMERA_BC_YAW, 0);
 	SetPoseParameter(COMBINE_CAMERA_BC_PITCH, 0);
+
+#if defined ( COMBINE_DESTINY_NEW_FEATURES )
+	CapabilitiesAdd( bits_CAP_FRIENDLY_DMG_IMMUNE );
+#endif
 
 	m_iAmmoType = GetAmmoDef()->Index("Pistol");
 

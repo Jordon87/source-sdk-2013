@@ -1028,6 +1028,7 @@ void UTIL_ScreenFade( CBaseEntity *pEntity, const color32 &color, float fadeTime
 
 void UTIL_HudMessage( CBasePlayer *pToPlayer, const hudtextparms_t &textparms, const char *pMessage )
 {
+	DevMsg( "( UTIL_HudMessage \n" );
 	CRecipientFilter filter;
 	
 	if( pToPlayer )
@@ -1040,6 +1041,8 @@ void UTIL_HudMessage( CBasePlayer *pToPlayer, const hudtextparms_t &textparms, c
 	}
 
 	filter.MakeReliable();
+
+	DevMsg( "( Begining Message \n" );
 
 	UserMessageBegin( filter, "HudMsg" );
 		WRITE_BYTE ( textparms.channel & 0xFF );
@@ -1060,6 +1063,8 @@ void UTIL_HudMessage( CBasePlayer *pToPlayer, const hudtextparms_t &textparms, c
 		WRITE_FLOAT( textparms.fxTime );
 		WRITE_STRING( pMessage );
 	MessageEnd();
+
+	DevMsg( "( Message Sent \n" );
 }
 
 void UTIL_HudMessageAll( const hudtextparms_t &textparms, const char *pMessage )

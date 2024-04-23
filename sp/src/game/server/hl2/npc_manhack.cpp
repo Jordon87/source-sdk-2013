@@ -240,7 +240,7 @@ CNPC_Manhack::~CNPC_Manhack()
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Manhack::Classify(void)
 {
-	return (m_bHeld||m_bHackedByAlyx) ? CLASS_PLAYER_ALLY : CLASS_MANHACK; 
+	return CLASS_PLAYER_ALLY; 
 }
 
 
@@ -2412,6 +2412,10 @@ void CNPC_Manhack::Spawn(void)
 	m_flNextBurstTime	= gpGlobals->curtime;
 
 	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_MOVE_FLY | bits_CAP_SQUAD );
+
+#if defined ( COMBINE_DESTINY_NEW_FEATURES )
+	CapabilitiesAdd( bits_CAP_FRIENDLY_DMG_IMMUNE );
+#endif
 
 	m_flNextEngineSoundTime		= gpGlobals->curtime;
 	m_flWaterSuspendTime		= gpGlobals->curtime;

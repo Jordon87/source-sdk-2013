@@ -29,6 +29,8 @@
 #include "weapon_physcannon.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "npc_headcrab.h"
+#include "ai_pathfinder.h"
+#include "npc_citizen17.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -54,6 +56,19 @@ int g_fCombineQuestion;				// true if an idle grunt asked a question. Cleared wh
 #define COMBINE_SHOTGUN_STANDING_POSITION	Vector( 0, 0, 36 )
 #define COMBINE_SHOTGUN_CROUCHING_POSITION	Vector( 0, 0, 36 )
 #define COMBINE_MIN_CROUCH_DISTANCE		256.0
+
+ConVar	g_ai_combine_show_enemy( "g_ai_combine_show_enemy", "0" );
+
+ConVar	npc_combine_insignia( "npc_combine_insignia", "0" );
+ConVar	npc_combine_squad_marker( "npc_combine_squad_marker", "0" );
+ConVar	npc_combine_auto_player_squad( "npc_combine_auto_player_squad", "1" );
+ConVar	npc_combine_auto_player_squad_allow_use( "npc_combine_auto_player_squad_allow_use", "0" );
+#define ShouldAutosquad() (npc_combine_auto_player_squad.GetBool())
+
+ConVar	ai_combine_debug_commander( "ai_combine_debug_commander", "1" );
+#define DebuggingCommanderMode() (ai_combine_debug_commander.GetBool() && (m_debugOverlays & OVERLAY_NPC_SELECTED_BIT))
+
+const int MAX_PLAYER_SQUAD = 4;
 
 //-----------------------------------------------------------------------------
 // Static stuff local to this file.
@@ -165,9 +180,9 @@ DEFINE_INPUTFUNC( FIELD_VOID,	"StopPatrolling",	InputStopPatrolling ),
 
 DEFINE_INPUTFUNC( FIELD_STRING,	"Assault", InputAssault ),
 
-DEFINE_INPUTFUNC( FIELD_VOID,	"HitByBugbait",		InputHitByBugbait ),
+DEFINE_INPUTFUNC( FIELD_VOID,	"SetCommandable", InputSetCommandable ),
 
-DEFINE_INPUTFUNC( FIELD_STRING,	"ThrowGrenadeAtTarget",	InputThrowGrenadeAtTarget ),
+DEFINE_INPUTFUNC( FIELD_VOID,	"HitByBugbait",		InputHitByBugbait ),
 
 DEFINE_FIELD( m_iLastAnimEventHandled, FIELD_INTEGER ),
 DEFINE_FIELD( m_fIsElite, FIELD_BOOLEAN ),
@@ -241,36 +256,18 @@ void CNPC_Combine::InputAssault( inputdata_t &inputdata )
 	m_AssaultBehavior.SetParameters( AllocPooledString(inputdata.value.String()), CUE_DONT_WAIT, RALLY_POINT_SELECT_DEFAULT );
 }
 
+void CNPC_Combine::InputSetCommandable( inputdata_t& inputdata )
+{
+	RemoveSpawnFlags( SF_COMBINE_NOT_COMMANDABLE );
+	m_PlayerSquadEvaluateTimer.Force();
+}
+
 //-----------------------------------------------------------------------------
 // We were hit by bugbait
 //-----------------------------------------------------------------------------
 void CNPC_Combine::InputHitByBugbait( inputdata_t &inputdata )
 {
 	SetCondition( COND_COMBINE_HIT_BY_BUGBAIT );
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Force the combine soldier to throw a grenade at the target
-//			If I'm a combine elite, fire my combine ball at the target instead.
-// Input  : &inputdata - 
-//-----------------------------------------------------------------------------
-void CNPC_Combine::InputThrowGrenadeAtTarget( inputdata_t &inputdata )
-{
-	// Ignore if we're inside a scripted sequence
-	if ( m_NPCState == NPC_STATE_SCRIPT && m_hCine )
-		return;
-
-	CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, inputdata.value.String(), NULL, inputdata.pActivator, inputdata.pCaller );
-	if ( !pEntity )
-	{
-		DevMsg("%s (%s) received ThrowGrenadeAtTarget input, but couldn't find target entity '%s'\n", GetClassname(), GetDebugName(), inputdata.value.String() );
-		return;
-	}
-
-	m_hForcedGrenadeTarget = pEntity;
-	m_flNextGrenadeCheck = 0;
-
-	ClearSchedule( "Told to throw grenade via input" );
 }
 
 //-----------------------------------------------------------------------------
@@ -311,11 +308,27 @@ void CNPC_Combine::Spawn( void )
 	SetMoveType( MOVETYPE_STEP );
 	SetBloodColor( BLOOD_COLOR_RED );
 	m_flFieldOfView			= -0.2;// indicates the width of this NPC's forward view cone ( as a dotproduct result )
+	m_iHealth				= 200;
 	m_NPCState				= NPC_STATE_NONE;
 	m_flNextGrenadeCheck	= gpGlobals->curtime + 1;
 	m_flNextPainSoundTime	= 0;
 	m_flNextAlertSoundTime	= 0;
 	m_bShouldPatrol			= false;
+
+	if ( ShouldAutosquad() )
+	{
+		if ( m_SquadName == GetPlayerSquadName() )
+		{
+			CAI_Squad *pPlayerSquad = g_AI_SquadManager.FindSquad( GetPlayerSquadName() );
+			if ( pPlayerSquad && pPlayerSquad->NumMembers() >= MAX_PLAYER_SQUAD )
+				m_SquadName = NULL_STRING;
+		}
+		m_PlayerSquadEvaluateTimer.Force();
+	}
+
+	SetUse( &CNPC_Combine::CommanderUse );
+
+	m_bWasInPlayerSquad = IsInPlayerSquad();
 
 	//	CapabilitiesAdd( bits_CAP_TURN_HEAD | bits_CAP_MOVE_GROUND | bits_CAP_MOVE_JUMP | bits_CAP_MOVE_CLIMB);
 	// JAY: Disabled jump for now - hard to compare to HL1
@@ -336,6 +349,10 @@ void CNPC_Combine::Spawn( void )
 	CapabilitiesAdd( bits_CAP_DUCK );				// In reloading and cover
 
 	CapabilitiesAdd( bits_CAP_NO_HIT_SQUADMATES );
+
+#if defined ( COMBINE_DESTINY_NEW_FEATURES )
+	CapabilitiesAdd( bits_CAP_FRIENDLY_DMG_IMMUNE );
+#endif
 
 	m_bFirstEncounter	= true;// this is true when the grunt spawns, because he hasn't encountered an enemy yet.
 
@@ -368,6 +385,8 @@ bool CNPC_Combine::CreateBehaviors()
 	return BaseClass::CreateBehaviors();
 }
 
+#define COMMAND_POINT_CLASSNAME "info_target_command_point"
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CNPC_Combine::PostNPCInit()
@@ -379,6 +398,27 @@ void CNPC_Combine::PostNPCInit()
 		if( !GetActiveWeapon() || !FClassnameIs( GetActiveWeapon(), "weapon_ar2" ) )
 		{
 			DevWarning("**Combine Elite Soldier MUST be equipped with AR2\n");
+		}
+	}
+
+	if ( !gEntList.FindEntityByClassname( NULL, COMMAND_POINT_CLASSNAME ) )
+	{
+		CreateEntityByName( COMMAND_POINT_CLASSNAME );
+	}
+	
+	if ( IsInPlayerSquad() )
+	{
+		if ( m_pSquad->NumMembers() > MAX_PLAYER_SQUAD )
+			DevMsg( "Error: Spawning citizen in player squad but exceeds squad limit of %d members\n", MAX_PLAYER_SQUAD );
+
+		FixupPlayerSquad();
+	}
+	else
+	{
+		if ( AI_IsSinglePlayer() )
+		{
+			m_FollowBehavior.SetFollowTarget( UTIL_GetLocalPlayer() );
+			m_FollowBehavior.SetParameters( AIF_SIMPLE );
 		}
 	}
 
@@ -418,6 +458,16 @@ void CNPC_Combine::GatherConditions()
 			}
 		}
 	}
+
+#if defined ( COMBINE_DESTINY_NEW_FEATURES )
+	PredictPlayerPush();
+
+	if ( GetMotor()->IsDeceleratingToGoal() && IsCurTaskContinuousMove() && 
+		 HasCondition( COND_PLAYER_PUSHING) && IsCurSchedule( SCHED_MOVE_AWAY ) )
+	{
+		ClearSchedule( "Being pushed by player" );
+	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -426,6 +476,54 @@ void CNPC_Combine::GatherConditions()
 void CNPC_Combine::PrescheduleThink()
 {
 	BaseClass::PrescheduleThink();
+
+	UpdatePlayerSquad();
+	UpdateFollowCommandPoint();
+
+	if ( !npc_combine_insignia.GetBool() && npc_combine_squad_marker.GetBool() && IsInPlayerSquad() )
+	{
+		Vector mins = WorldAlignMins() * .5 + GetAbsOrigin();
+		Vector maxs = WorldAlignMaxs() * .5 + GetAbsOrigin();
+		
+		float rMax = 255;
+		float gMax = 255;
+		float bMax = 255;
+
+		float rMin = 255;
+		float gMin = 128;
+		float bMin = 0;
+
+		const float TIME_FADE = 1.0;
+		float timeInSquad = gpGlobals->curtime - m_flTimeJoinedPlayerSquad;
+		timeInSquad = MIN( TIME_FADE, MAX( timeInSquad, 0 ) );
+
+		float fade = ( 1.0 - timeInSquad / TIME_FADE );
+
+		float r = rMin + ( rMax - rMin ) * fade;
+		float g = gMin + ( gMax - gMin ) * fade;
+		float b = bMin + ( bMax - bMin ) * fade;
+
+		// THIS IS A PLACEHOLDER UNTIL WE HAVE A REAL DESIGN & ART -- DO NOT REMOVE
+		NDebugOverlay::Line( Vector( mins.x, GetAbsOrigin().y, GetAbsOrigin().z+1 ), Vector( maxs.x, GetAbsOrigin().y, GetAbsOrigin().z+1 ), r, g, b, false, .11 );
+		NDebugOverlay::Line( Vector( GetAbsOrigin().x, mins.y, GetAbsOrigin().z+1 ), Vector( GetAbsOrigin().x, maxs.y, GetAbsOrigin().z+1 ), r, g, b, false, .11 );
+	}
+	if( GetEnemy() && g_ai_combine_show_enemy.GetBool() )
+	{
+		NDebugOverlay::Line( EyePosition(), GetEnemy()->EyePosition(), 255, 0, 0, false, .1 );
+	}
+	
+	if ( DebuggingCommanderMode() )
+	{
+		if ( HaveCommandGoal() )
+		{
+			CBaseEntity *pCommandPoint = gEntList.FindEntityByClassname( NULL, COMMAND_POINT_CLASSNAME );
+			
+			if ( pCommandPoint )
+			{
+				NDebugOverlay::Cross3D(pCommandPoint->GetAbsOrigin(), 16, 0, 255, 255, false, 0.1 );
+			}
+		}
+	}
 
 	// Speak any queued sentences
 	m_Sentences.UpdateSentenceQueue();
@@ -439,32 +537,32 @@ void CNPC_Combine::PrescheduleThink()
 		ClearCondition( COND_COMBINE_ON_FIRE );
 	}
 
-	extern ConVar ai_debug_shoot_positions;
-	if ( ai_debug_shoot_positions.GetBool() )
-		NDebugOverlay::Cross3D( EyePosition(), 16, 0, 255, 0, false, 0.1 );
-
-	if( gpGlobals->curtime >= m_flStopMoveShootTime )
-	{
-		// Time to stop move and shoot and start facing the way I'm running.
-		// This makes the combine look attentive when disengaging, but prevents
-		// them from always running around facing you.
-		//
-		// Only do this if it won't be immediately shut off again.
-		if( GetNavigator()->GetPathTimeToGoal() > 1.0f )
-		{
-			m_MoveAndShootOverlay.SuspendMoveAndShoot( 5.0f );
-			m_flStopMoveShootTime = FLT_MAX;
-		}
-	}
-
-	if( m_flGroundSpeed > 0 && GetState() == NPC_STATE_COMBAT && m_MoveAndShootOverlay.IsSuspended() )
-	{
-		// Return to move and shoot when near my goal so that I 'tuck into' the location facing my enemy.
-		if( GetNavigator()->GetPathTimeToGoal() <= 1.0f )
-		{
-			m_MoveAndShootOverlay.SuspendMoveAndShoot( 0 );
-		}
-	}
+	//extern ConVar ai_debug_shoot_positions;
+	//if ( ai_debug_shoot_positions.GetBool() )
+	//	NDebugOverlay::Cross3D( EyePosition(), 16, 0, 255, 0, false, 0.1 );
+	//
+	//if( gpGlobals->curtime >= m_flStopMoveShootTime )
+	//{
+	//	// Time to stop move and shoot and start facing the way I'm running.
+	//	// This makes the combine look attentive when disengaging, but prevents
+	//	// them from always running around facing you.
+	//	//
+	//	// Only do this if it won't be immediately shut off again.
+	//	if( GetNavigator()->GetPathTimeToGoal() > 1.0f )
+	//	{
+	//		m_MoveAndShootOverlay.SuspendMoveAndShoot( 5.0f );
+	//		m_flStopMoveShootTime = FLT_MAX;
+	//	}
+	//}
+	//
+	//if( m_flGroundSpeed > 0 && GetState() == NPC_STATE_COMBAT && m_MoveAndShootOverlay.IsSuspended() )
+	//{
+	//	// Return to move and shoot when near my goal so that I 'tuck into' the location facing my enemy.
+	//	if( GetNavigator()->GetPathTimeToGoal() <= 1.0f )
+	//	{
+	//		m_MoveAndShootOverlay.SuspendMoveAndShoot( 0 );
+	//	}
+	//}
 }
 
 
@@ -583,7 +681,7 @@ bool CNPC_Combine::OverrideMoveFacing( const AILocalMoveGoal_t &move, float flIn
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Combine::Classify ( void )
 {
-	return CLASS_COMBINE;
+	return CLASS_PLAYER_ALLY;
 }
 
 
@@ -1276,10 +1374,12 @@ void CNPC_Combine::BuildScheduleTestBits( void )
 {
 	BaseClass::BuildScheduleTestBits();
 
-	if (gpGlobals->curtime < m_flNextAttack)
+	if ( IsCurSchedule( SCHED_RANGE_ATTACK1 ) )
 	{
-		ClearCustomInterruptCondition( COND_CAN_RANGE_ATTACK1 );
-		ClearCustomInterruptCondition( COND_CAN_RANGE_ATTACK2 );
+		SetCustomInterruptCondition( COND_RECEIVED_ORDERS );
+#if defined ( COMBINE_DESTINY_NEW_FEATURES )
+		SetCustomInterruptCondition( COND_PLAYER_PUSHING );
+#endif
 	}
 
 	SetCustomInterruptCondition( COND_COMBINE_HIT_BY_BUGBAIT );
@@ -1288,6 +1388,23 @@ void CNPC_Combine::BuildScheduleTestBits( void )
 	{
 		SetCustomInterruptCondition( COND_COMBINE_ON_FIRE );
 	}
+
+#if defined ( COMBINE_DESTINY_NEW_FEATURES )
+	if ( ( ConditionInterruptsCurSchedule( COND_GIVE_WAY ) || 
+	   IsCurSchedule(SCHED_HIDE_AND_RELOAD ) || 
+	   IsCurSchedule(SCHED_RELOAD ) || 
+	   IsCurSchedule(SCHED_STANDOFF ) || 
+	   IsCurSchedule(SCHED_TAKE_COVER_FROM_ENEMY ) || 
+	   IsCurSchedule(SCHED_COMBAT_FACE ) || 
+	   IsCurSchedule(SCHED_ALERT_FACE )  ||
+	   IsCurSchedule(SCHED_COMBAT_STAND ) || 
+	   IsCurSchedule(SCHED_ALERT_FACE_BESTSOUND) ||
+	   IsCurSchedule(SCHED_ALERT_STAND) ) )
+	{
+		SetCustomInterruptCondition( COND_HEAR_MOVE_AWAY );
+		SetCustomInterruptCondition( COND_PLAYER_PUSHING );
+	}
+#endif
 }
 
 
@@ -1494,189 +1611,20 @@ int CNPC_Combine::SelectCombatSchedule()
 	// -----------
 	// new enemy
 	// -----------
-	if ( HasCondition( COND_NEW_ENEMY ) )
+
+	CBaseEntity *pEnemy = GetEnemy();
+
+	float flDist = ( pEnemy->WorldSpaceCenter() - WorldSpaceCenter() ).LengthSqr();
+	if ( flDist < 15625.0f )
 	{
-		CBaseEntity *pEnemy = GetEnemy();
-		bool bFirstContact = false;
-		float flTimeSinceFirstSeen = gpGlobals->curtime - GetEnemies()->FirstTimeSeen( pEnemy );
-
-		if( flTimeSinceFirstSeen < 3.0f )
-			bFirstContact = true;
-
-		if ( m_pSquad && pEnemy )
-		{
-			if ( HasCondition( COND_SEE_ENEMY ) )
-			{
-				AnnounceEnemyType( pEnemy );
-			}
-
-			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlot( SQUAD_SLOT_ATTACK1 ) )
-			{
-				// Start suppressing if someone isn't firing already (SLOT_ATTACK1). This means
-				// I'm the guy who spotted the enemy, I should react immediately.
-				return SCHED_COMBINE_SUPPRESS;
-			}
-
-			if ( m_pSquad->IsLeader( this ) || ( m_pSquad->GetLeader() && m_pSquad->GetLeader()->GetEnemy() != pEnemy ) )
-			{
-				// I'm the leader, but I didn't get the job suppressing the enemy. We know this because
-				// This code only runs if the code above didn't assign me SCHED_COMBINE_SUPPRESS.
-				if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
-				{
-					return SCHED_RANGE_ATTACK1;
-				}
-
-				if( HasCondition(COND_WEAPON_HAS_LOS) && IsStrategySlotRangeOccupied( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
-				{
-					// If everyone else is attacking and I have line of fire, wait for a chance to cover someone.
-					if( OccupyStrategySlot( SQUAD_SLOT_OVERWATCH ) )
-					{
-						return SCHED_COMBINE_ENTER_OVERWATCH;
-					}
-				}
-			}
-			else
-			{
-				if ( m_pSquad->GetLeader() && FOkToMakeSound( SENTENCE_PRIORITY_MEDIUM ) )
-				{
-					JustMadeSound( SENTENCE_PRIORITY_MEDIUM );	// squelch anything that isn't high priority so the leader can speak
-				}
-
-				// First contact, and I'm solo, or not the squad leader.
-				if( HasCondition( COND_SEE_ENEMY ) && CanGrenadeEnemy() )
-				{
-					if( OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
-					{
-						return SCHED_RANGE_ATTACK2;
-					}
-				}
-
-				if( !bFirstContact && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
-				{
-					if( random->RandomInt(0, 100) < 60 )
-					{
-						return SCHED_ESTABLISH_LINE_OF_FIRE;
-					}
-					else
-					{
-						return SCHED_COMBINE_PRESS_ATTACK;
-					}
-				}
-
-				return SCHED_TAKE_COVER_FROM_ENEMY;
-			}
-		}
+		return SCHED_MOVE_AWAY;
 	}
 
-	// ---------------------
-	// no ammo
-	// ---------------------
-	if ( ( HasCondition ( COND_NO_PRIMARY_AMMO ) || HasCondition ( COND_LOW_PRIMARY_AMMO ) ) && !HasCondition( COND_CAN_MELEE_ATTACK1) )
+	if ( ( HasCondition( COND_NO_PRIMARY_AMMO ) || HasCondition( COND_LOW_PRIMARY_AMMO ) ) && !HasCondition( COND_CAN_MELEE_ATTACK1 ) )
 	{
 		return SCHED_HIDE_AND_RELOAD;
 	}
-
-	// ----------------------
-	// LIGHT DAMAGE
-	// ----------------------
-	if ( HasCondition( COND_LIGHT_DAMAGE ) )
-	{
-		if ( GetEnemy() != NULL )
-		{
-			// only try to take cover if we actually have an enemy!
-
-			// FIXME: need to take cover for enemy dealing the damage
-
-			// A standing guy will either crouch or run.
-			// A crouching guy tries to stay stuck in.
-			if( !IsCrouching() )
-			{
-				if( GetEnemy() && random->RandomFloat( 0, 100 ) < 50 && CouldShootIfCrouching( GetEnemy() ) )
-				{
-					Crouch();
-				}
-				else
-				{
-					//!!!KELLY - this grunt was hit and is going to run to cover.
-					// m_Sentences.Speak( "COMBINE_COVER" );
-					return SCHED_TAKE_COVER_FROM_ENEMY;
-				}
-			}
-		}
-		else
-		{
-			// How am I wounded in combat with no enemy?
-			Assert( GetEnemy() != NULL );
-		}
-	}
-
-	// If I'm scared of this enemy run away
-	if ( IRelationType( GetEnemy() ) == D_FR )
-	{
-		if (HasCondition( COND_SEE_ENEMY )	|| 
-			HasCondition( COND_SEE_FEAR )	|| 
-			HasCondition( COND_LIGHT_DAMAGE ) || 
-			HasCondition( COND_HEAVY_DAMAGE ))
-		{
-			FearSound();
-			//ClearCommandGoal();
-			return SCHED_RUN_FROM_ENEMY;
-		}
-
-		// If I've seen the enemy recently, cower. Ignore the time for unforgettable enemies.
-		AI_EnemyInfo_t *pMemory = GetEnemies()->Find( GetEnemy() );
-		if ( (pMemory && pMemory->bUnforgettable) || (GetEnemyLastTimeSeen() > (gpGlobals->curtime - 5.0)) )
-		{
-			// If we're facing him, just look ready. Otherwise, face him.
-			if ( FInAimCone( GetEnemy()->EyePosition() ) )
-				return SCHED_COMBAT_STAND;
-
-			return SCHED_FEAR_FACE;
-		}
-	}
-
-	int attackSchedule = SelectScheduleAttack();
-	if ( attackSchedule != SCHED_NONE )
-		return attackSchedule;
-
-	if (HasCondition(COND_ENEMY_OCCLUDED))
-	{
-		// stand up, just in case
-		Stand();
-		DesireStand();
-
-		if( GetEnemy() && !(GetEnemy()->GetFlags() & FL_NOTARGET) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
-		{
-			// Charge in and break the enemy's cover!
-			return SCHED_ESTABLISH_LINE_OF_FIRE;
-		}
-
-		// If I'm a long, long way away, establish a LOF anyway. Once I get there I'll
-		// start respecting the squad slots again.
-		float flDistSq = GetEnemy()->WorldSpaceCenter().DistToSqr( WorldSpaceCenter() );
-		if ( flDistSq > Square(3000) )
-			return SCHED_ESTABLISH_LINE_OF_FIRE;
-
-		// Otherwise tuck in.
-		Remember( bits_MEMORY_INCOVER );
-		return SCHED_COMBINE_WAIT_IN_COVER;
-	}
-
-	// --------------------------------------------------------------
-	// Enemy not occluded but isn't open to attack
-	// --------------------------------------------------------------
-	if ( HasCondition( COND_SEE_ENEMY ) && !HasCondition( COND_CAN_RANGE_ATTACK1 ) )
-	{
-		if ( (HasCondition( COND_TOO_FAR_TO_ATTACK ) || IsUsingTacticalVariant(TACTICAL_VARIANT_PRESSURE_ENEMY) ) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ))
-		{
-			return SCHED_COMBINE_PRESS_ATTACK;
-		}
-
-		AnnounceAssault(); 
-		return SCHED_COMBINE_ASSAULT;
-	}
-
-	return SCHED_NONE;
+	return SelectScheduleAttack();
 }
 
 
@@ -1699,38 +1647,18 @@ int CNPC_Combine::SelectSchedule( void )
 	if ( nSched != SCHED_NONE )
 		return nSched;
 
-	if ( m_hForcedGrenadeTarget )
+	nSched = SelectPriorityAction();
+	if (nSched != SCHED_NONE )
+		return nSched;
+
+	if ( ShouldDeferToFollowBehavior() )
 	{
-		if ( m_flNextGrenadeCheck < gpGlobals->curtime )
-		{
-			Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
-
-			if ( IsElite() )
-			{
-				if ( FVisible( m_hForcedGrenadeTarget ) )
-				{
-					m_vecAltFireTarget = vecTarget;
-					m_hForcedGrenadeTarget = NULL;
-					return SCHED_COMBINE_AR2_ALTFIRE;
-				}
-			}
-			else
-			{
-				// If we can, throw a grenade at the target. 
-				// Ignore grenade count / distance / etc
-				if ( CheckCanThrowGrenade( vecTarget ) )
-				{
-					m_hForcedGrenadeTarget = NULL;
-					return SCHED_COMBINE_FORCED_GRENADE_THROW;
-				}
-			}
-		}
-
-		// Can't throw at the target, so lets try moving to somewhere where I can see it
-		if ( !FVisible( m_hForcedGrenadeTarget ) )
-		{
-			return SCHED_COMBINE_MOVE_TO_FORCED_GREN_LOS;
-		}
+		DevMsg( "( DeferSchedulingToBehavior( &m_FollowBehavior  Combine\n" );
+		DeferSchedulingToBehavior( &(GetFollowBehavior()) );
+	}
+	else if ( !BehaviorSelectSchedule() && m_NPCState == NPC_STATE_COMBAT)
+	{
+		DevMsg( "( SelectSchedule m_NPCState == NPC_STATE_COMBAT  Combine\n" );
 	}
 
 	if ( m_NPCState != NPC_STATE_SCRIPT)
@@ -1822,12 +1750,6 @@ int CNPC_Combine::SelectSchedule( void )
 	switch	( m_NPCState )
 	{
 	case NPC_STATE_IDLE:
-		{
-			if ( m_bShouldPatrol )
-				return SCHED_COMBINE_PATROL;
-		}
-		// NOTE: Fall through!
-
 	case NPC_STATE_ALERT:
 		{
 			if( HasCondition(COND_LIGHT_DAMAGE) || HasCondition(COND_HEAVY_DAMAGE) )
@@ -1852,18 +1774,12 @@ int CNPC_Combine::SelectSchedule( void )
 					}
 				}
 			}
-
-			// Don't patrol if I'm in the middle of an assault, because I'll never return to the assault. 
-			if ( !m_AssaultBehavior.HasAssaultCue() )
-			{
-				if( m_bShouldPatrol || HasCondition( COND_COMBINE_SHOULD_PATROL ) )
-					return SCHED_COMBINE_PATROL;
-			}
 		}
 		break;
 
 	case NPC_STATE_COMBAT:
 		{
+			DevMsg( "( NPC_STATE_COMBAT  Combine\n" );
 			int nSched = SelectCombatSchedule();
 			if ( nSched != SCHED_NONE )
 				return nSched;
@@ -1916,128 +1832,17 @@ int CNPC_Combine::SelectScheduleAttack()
 	if ( HasCondition( COND_COMBINE_DROP_GRENADE ) )
 		return SCHED_COMBINE_DROP_GRENADE;
 
-	// Kick attack?
-	if ( HasCondition( COND_CAN_MELEE_ATTACK1 ) )
+	if ( !HasCondition( COND_CAN_RANGE_ATTACK1 ) || HasCondition( COND_RECEIVED_ORDERS ) || !OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
 	{
-		return SCHED_MELEE_ATTACK1;
+		return SCHED_NONE;
 	}
 
-	// If I'm fighting a combine turret (it's been hacked to attack me), I can't really
-	// hurt it with bullets, so become grenade happy.
-	if ( GetEnemy() && GetEnemy()->Classify() == CLASS_COMBINE && FClassnameIs(GetEnemy(), "npc_turret_floor") )
+	if ( CanGrenadeEnemy() && OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
 	{
-		// Don't do this until I've been fighting the turret for a few seconds
-		float flTimeAtFirstHand = GetEnemies()->TimeAtFirstHand(GetEnemy());
-		if ( flTimeAtFirstHand != AI_INVALID_TIME )
-		{
-			float flTimeEnemySeen = gpGlobals->curtime - flTimeAtFirstHand;
-			if ( flTimeEnemySeen > 4.0 )
-			{
-				if ( CanGrenadeEnemy() && OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
-					return SCHED_RANGE_ATTACK2;
-			}
-		}
-
-		// If we're not in the viewcone of the turret, run up and hit it. Do this a bit later to
-		// give other squadmembers a chance to throw a grenade before I run in.
-		if ( !GetEnemy()->MyNPCPointer()->FInViewCone( this ) && OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
-			return SCHED_COMBINE_CHARGE_TURRET;
+		return SCHED_RANGE_ATTACK2;
 	}
 
-	// When fighting against the player who's wielding a mega-physcannon, 
-	// always close the distance if possible
-	// But don't do it if you're in a nav-limited hint group
-	if ( ShouldChargePlayer() )
-	{
-		float flDistSq = GetEnemy()->WorldSpaceCenter().DistToSqr( WorldSpaceCenter() );
-		if ( flDistSq <= COMBINE_MEGA_PHYSCANNON_ATTACK_DISTANCE_SQ )
-		{
-			if( HasCondition(COND_SEE_ENEMY) )
-			{
-				if ( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
-					return SCHED_RANGE_ATTACK1;
-			}
-			else
-			{
-				if ( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
-					return SCHED_COMBINE_PRESS_ATTACK;
-			}
-		}
-
-		if ( HasCondition(COND_SEE_ENEMY) && !IsUnreachable( GetEnemy() ) )
-		{
-			return SCHED_COMBINE_CHARGE_PLAYER;
-		}
-	}
-
-	// Can I shoot?
-	if ( HasCondition(COND_CAN_RANGE_ATTACK1) )
-	{
-
-		// JAY: HL1 behavior missing?
-#if 0
-		if ( m_pSquad )
-		{
-			// if the enemy has eluded the squad and a squad member has just located the enemy
-			// and the enemy does not see the squad member, issue a call to the squad to waste a 
-			// little time and give the player a chance to turn.
-			if ( MySquadLeader()->m_fEnemyEluded && !HasConditions ( bits_COND_ENEMY_FACING_ME ) )
-			{
-				MySquadLeader()->m_fEnemyEluded = FALSE;
-				return SCHED_GRUNT_FOUND_ENEMY;
-			}
-		}
-#endif
-
-		// Engage if allowed
-		if ( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
-		{
-			return SCHED_RANGE_ATTACK1;
-		}
-
-		// Throw a grenade if not allowed to engage with weapon.
-		if ( CanGrenadeEnemy() )
-		{
-			if ( OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
-			{
-				return SCHED_RANGE_ATTACK2;
-			}
-		}
-
-		DesireCrouch();
-		return SCHED_TAKE_COVER_FROM_ENEMY;
-	}
-
-	if ( GetEnemy() && !HasCondition(COND_SEE_ENEMY) )
-	{
-		// We don't see our enemy. If it hasn't been long since I last saw him,
-		// and he's pretty close to the last place I saw him, throw a grenade in 
-		// to flush him out. A wee bit of cheating here...
-
-		float flTime;
-		float flDist;
-
-		flTime = gpGlobals->curtime - GetEnemies()->LastTimeSeen( GetEnemy() );
-		flDist = ( GetEnemy()->GetAbsOrigin() - GetEnemies()->LastSeenPosition( GetEnemy() ) ).Length();
-
-		//Msg("Time: %f   Dist: %f\n", flTime, flDist );
-		if ( flTime <= COMBINE_GRENADE_FLUSH_TIME && flDist <= COMBINE_GRENADE_FLUSH_DIST && CanGrenadeEnemy( false ) && OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
-		{
-			return SCHED_RANGE_ATTACK2;
-		}
-	}
-
-	if (HasCondition(COND_WEAPON_SIGHT_OCCLUDED))
-	{
-		// If they are hiding behind something that we can destroy, start shooting at it.
-		CBaseEntity *pBlocker = GetEnemyOccluder();
-		if ( pBlocker && pBlocker->GetHealth() > 0 && OccupyStrategySlot( SQUAD_SLOT_ATTACK_OCCLUDER ) )
-		{
-			return SCHED_SHOOT_ENEMY_COVER;
-		}
-	}
-
-	return SCHED_NONE;
+	return SCHED_RANGE_ATTACK1;
 }
 
 //-----------------------------------------------------------------------------
@@ -2285,15 +2090,6 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 				return SCHED_COMBINE_COMBAT_FAIL;
 			}
 			return SCHED_FAIL;
-		}
-
-	case SCHED_COMBINE_PATROL:
-		{
-			// If I have an enemy, don't go off into random patrol mode.
-			if ( GetEnemy() && GetEnemy()->IsAlive() )
-				return SCHED_COMBINE_PATROL_ENEMY;
-
-			return SCHED_COMBINE_PATROL;
 		}
 	}
 
@@ -2565,7 +2361,7 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 //=========================================================
 // PainSound
 //=========================================================
-void CNPC_Combine::PainSound ( void )
+void CNPC_Combine::PainSound ( const CTakeDamageInfo& info )
 {
 	// NOTE: The response system deals with this at the moment
 	if ( GetFlags() & FL_DISSOLVING )
@@ -3278,6 +3074,739 @@ bool CNPC_Combine::IsRunningApproachEnemySchedule()
 bool CNPC_Combine::ShouldPickADeathPose( void ) 
 { 
 	return !IsCrouching(); 
+}
+
+bool CNPC_Combine::IsCommandable()
+{
+	return ( !HasSpawnFlags(SF_COMBINE_NOT_COMMANDABLE) && IsInPlayerSquad() );
+}
+
+bool CNPC_Combine::CanJoinPlayerSquad()
+{
+	if (!AI_IsSinglePlayer())
+		return false;
+
+	if (m_NPCState == NPC_STATE_SCRIPT || m_NPCState == NPC_STATE_PRONE)
+		return false;
+
+	if (HasSpawnFlags(SF_COMBINE_NOT_COMMANDABLE))
+		return false;
+
+	if (IsInAScript())
+		return false;
+
+	// Don't bother people who don't want to be bothered
+	if (!CanBeUsedAsAFriend())
+		return false;
+
+	if (IRelationType(UTIL_GetLocalPlayer()) != D_LI)
+		return false;
+
+	return true;
+}
+
+bool CNPC_Combine::HaveCommandGoal() const
+{
+	if (GetCommandGoal() != vec3_invalid)
+		return true;
+	return false;
+}
+
+void CNPC_Combine::CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	m_OnPlayerUse.FireOutput( pActivator, pCaller );
+
+	// Under these conditions, soldiers will refuse to go with the player.
+	if ( !AI_IsSinglePlayer() || !CanJoinPlayerSquad() )
+	{	
+		m_bSimpleUse = false;
+		return;
+	}
+	
+	if ( pActivator == UTIL_GetLocalPlayer() )
+	{
+
+		if ( npc_combine_auto_player_squad_allow_use.GetBool() )
+		{
+			if ( !ShouldAutosquad() )
+				TogglePlayerSquadState();
+			else if ( !IsInPlayerSquad() && npc_combine_auto_player_squad_allow_use.GetBool() )
+				AddToPlayerSquad();
+		}
+	}
+}
+
+void CNPC_Combine::AddToPlayerSquad()
+{
+	Assert( !IsInPlayerSquad() );
+
+	AddToSquad( AllocPooledString(PLAYER_SQUADNAME) );
+	m_hSavedFollowGoalEnt = m_FollowBehavior.GetFollowGoal();
+	m_FollowBehavior.SetFollowGoalDirect( NULL );
+
+	FixupPlayerSquad();
+
+	SetCondition( COND_PLAYER_ADDED_TO_SQUAD );
+}
+
+void CNPC_Combine::RemoveFromPlayerSquad()
+{
+	Assert( IsInPlayerSquad() );
+
+	ClearFollowTarget();
+	ClearCommandGoal();
+	if ( m_iszOriginalSquad != NULL_STRING && strcmp( STRING( m_iszOriginalSquad ), PLAYER_SQUADNAME ) != 0 )
+		AddToSquad( m_iszOriginalSquad );
+	else
+		RemoveFromSquad();
+	
+	if ( m_hSavedFollowGoalEnt )
+		m_FollowBehavior.SetFollowGoal( m_hSavedFollowGoalEnt );
+
+	SetCondition( COND_PLAYER_REMOVED_FROM_SQUAD );
+
+	// Don't evaluate the player squad for 2 seconds. 
+	m_PlayerSquadEvaluateTimer.Set( 2.0 );
+}
+
+void CNPC_Combine::TogglePlayerSquadState()
+{
+	if ( !AI_IsSinglePlayer() )
+		return;
+
+	if ( !IsInPlayerSquad() )
+	{
+		AddToPlayerSquad();
+
+		if ( !HaveCommandGoal() )
+		{
+			m_FollowBehavior.GetFollowTarget();
+			UTIL_GetLocalPlayer();
+		}
+	}
+	else
+	{
+		RemoveFromPlayerSquad();
+	}
+}
+
+struct SquadCandidate_t
+{
+	CNPC_Combine *pCombine;
+	bool		  bIsInSquad;
+	float		  distSq;
+	int			  iSquadIndex;
+};
+
+void CNPC_Combine::UpdatePlayerSquad()
+{
+	if ( !AI_IsSinglePlayer() )
+		return;
+
+	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	if ( ( pPlayer->GetAbsOrigin().AsVector2D() - GetAbsOrigin().AsVector2D() ).LengthSqr() < Square(20*12) )
+		m_flTimeLastCloseToPlayer = gpGlobals->curtime;
+
+	if ( !m_PlayerSquadEvaluateTimer.Expired() )
+		return;
+
+	m_PlayerSquadEvaluateTimer.Set( 2.0 );
+
+	// Remove stragglers
+	CAI_Squad *pPlayerSquad = g_AI_SquadManager.FindSquad( MAKE_STRING( PLAYER_SQUADNAME ) );
+	if ( pPlayerSquad )
+	{
+		CUtlVectorFixed<CNPC_Combine *, MAX_PLAYER_SQUAD> squadMembersToRemove;
+		AISquadIter_t iter;
+
+		for ( CAI_BaseNPC *pPlayerSquadMember = pPlayerSquad->GetFirstMember(&iter); pPlayerSquadMember; pPlayerSquadMember = pPlayerSquad->GetNextMember(&iter) )
+		{
+			if ( pPlayerSquadMember->GetClassname() != GetClassname() )
+				continue;
+
+			CNPC_Combine *pCombine = assert_cast<CNPC_Combine *>(pPlayerSquadMember);
+
+			if ( !pCombine->m_bNeverLeavePlayerSquad &&
+				pCombine->m_FollowBehavior.GetFollowTarget() &&
+				 !pCombine->m_FollowBehavior.FollowTargetVisible() &&
+				 pCombine->m_FollowBehavior.GetNumFailedFollowAttempts() > 0 && 
+				 gpGlobals->curtime - pCombine->m_FollowBehavior.GetTimeFailFollowStarted() > 20 &&
+				 ( fabsf((pCombine->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().z - pCombine->GetAbsOrigin().z )) > 196 ||
+				   ( pCombine->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().AsVector2D() - pCombine->GetAbsOrigin().AsVector2D() ).LengthSqr() > Square(50*12) ) )
+			{
+				if ( DebuggingCommanderMode() )
+				{
+					DevMsg( "Player follower is lost (%d, %f, %d)\n", 
+						 pCombine->m_FollowBehavior.GetNumFailedFollowAttempts(), 
+						 gpGlobals->curtime - pCombine->m_FollowBehavior.GetTimeFailFollowStarted(),
+						 (int)((pCombine->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().AsVector2D() - pCombine->GetAbsOrigin().AsVector2D() ).Length()) );
+				}
+
+				squadMembersToRemove.AddToTail( pCombine );
+			}
+		}
+
+		for ( int i = 0; i < squadMembersToRemove.Count(); i++ )
+		{
+			squadMembersToRemove[i]->RemoveFromPlayerSquad();
+		}
+	}
+
+	// Autosquadding
+	const float JOIN_PLAYER_XY_TOLERANCE_SQ = Square(36*12);
+	const float UNCONDITIONAL_JOIN_PLAYER_XY_TOLERANCE_SQ = Square(12*12);
+	const float UNCONDITIONAL_JOIN_PLAYER_Z_TOLERANCE = 5*12;
+	const float SECOND_TIER_JOIN_DIST_SQ = Square(48*12);
+	if ( pPlayer && ShouldAutosquad() && !(pPlayer->GetFlags() & FL_NOTARGET ) && pPlayer->IsAlive() )
+	{
+		CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
+		CUtlVector<SquadCandidate_t> candidates;
+		const Vector &vPlayerPos = pPlayer->GetAbsOrigin();
+		bool bFoundNewGuy = false;
+		int i;
+
+		for ( i = 0; i < g_AI_Manager.NumAIs(); i++ )
+		{
+			if ( ppAIs[i]->GetState() == NPC_STATE_DEAD )
+				continue;
+
+			if ( ppAIs[i]->GetClassname() != GetClassname() )
+				continue;
+
+			CNPC_Combine *pCombine = assert_cast<CNPC_Combine *>(ppAIs[i]);
+			int iNew;
+
+			if ( pCombine->IsInPlayerSquad() )
+			{
+				iNew = candidates.AddToTail();
+				candidates[iNew].pCombine = pCombine;
+				candidates[iNew].bIsInSquad = true;
+				candidates[iNew].distSq = 0;
+				candidates[iNew].iSquadIndex = pCombine->GetSquad()->GetSquadIndex( pCombine );
+			}
+			else
+			{
+				float distSq = (vPlayerPos.AsVector2D() - pCombine->GetAbsOrigin().AsVector2D()).LengthSqr();
+				if ( distSq > JOIN_PLAYER_XY_TOLERANCE_SQ && 
+					( pCombine->m_flTimeJoinedPlayerSquad == 0 || gpGlobals->curtime - pCombine->m_flTimeJoinedPlayerSquad > 60.0 ) &&
+					( pCombine->m_flTimeLastCloseToPlayer == 0 || gpGlobals->curtime - pCombine->m_flTimeLastCloseToPlayer > 15.0 ) )
+					continue;
+
+				if ( !pCombine->CanJoinPlayerSquad() )
+					continue;
+
+				bool bShouldAdd = false;
+
+				if ( pCombine->HasCondition( COND_SEE_PLAYER ) )
+					bShouldAdd = true;
+				else
+				{
+					bool bPlayerVisible = pCombine->FVisible( pPlayer );
+					if ( bPlayerVisible )
+					{
+						if ( pCombine->HasCondition( COND_HEAR_PLAYER ) )
+							bShouldAdd = true;
+						else if ( distSq < UNCONDITIONAL_JOIN_PLAYER_XY_TOLERANCE_SQ && fabsf(vPlayerPos.z - pCombine->GetAbsOrigin().z) < UNCONDITIONAL_JOIN_PLAYER_Z_TOLERANCE )
+							bShouldAdd = true;
+					}
+				}
+
+				if ( bShouldAdd )
+				{
+					// @TODO (toml 05-25-04): probably everyone in a squad should be a candidate if one of them sees the player
+					AI_Waypoint_t *pPathToPlayer = pCombine->GetPathfinder()->BuildRoute( pCombine->GetAbsOrigin(), vPlayerPos, pPlayer, 5*12, NAV_NONE, true );
+					GetPathfinder()->UnlockRouteNodes( pPathToPlayer );
+
+					if ( !pPathToPlayer )
+						continue;
+
+					CAI_Path tempPath;
+					tempPath.SetWaypoints( pPathToPlayer ); // path object will delete waypoints
+
+					iNew = candidates.AddToTail();
+					candidates[iNew].pCombine = pCombine;
+					candidates[iNew].bIsInSquad = false;
+					candidates[iNew].distSq = distSq;
+					candidates[iNew].iSquadIndex = -1;
+					
+					bFoundNewGuy = true;
+				}
+			}
+		}
+		
+		if ( bFoundNewGuy )
+		{
+			// Look for second order guys
+			int initialCount = candidates.Count();
+			for ( i = 0; i < initialCount; i++ )
+				candidates[i].pCombine->AddSpawnFlags( SF_COMBINE_NOT_COMMANDABLE ); // Prevents double-add
+			for ( i = 0; i < initialCount; i++ )
+			{
+				if ( candidates[i].iSquadIndex == -1 )
+				{
+					for ( int j = 0; j < g_AI_Manager.NumAIs(); j++ )
+					{
+						if ( ppAIs[j]->GetState() == NPC_STATE_DEAD )
+							continue;
+
+						if ( ppAIs[j]->GetClassname() != GetClassname() )
+							continue;
+
+						if ( ppAIs[j]->HasSpawnFlags( SF_COMBINE_NOT_COMMANDABLE ) )
+							continue; 
+
+						CNPC_Combine *pCombine = assert_cast<CNPC_Combine *>(ppAIs[j]);
+
+						float distSq = (vPlayerPos - pCombine->GetAbsOrigin()).Length2DSqr();
+						if ( distSq > JOIN_PLAYER_XY_TOLERANCE_SQ )
+							continue;
+
+						distSq = (candidates[i].pCombine->GetAbsOrigin() - pCombine->GetAbsOrigin()).Length2DSqr();
+						if ( distSq > SECOND_TIER_JOIN_DIST_SQ )
+							continue;
+
+						if ( !pCombine->CanJoinPlayerSquad() )
+							continue;
+
+						if ( !pCombine->FVisible( pPlayer ) )
+							continue;
+
+						int iNew = candidates.AddToTail();
+						candidates[iNew].pCombine = pCombine;
+						candidates[iNew].bIsInSquad = false;
+						candidates[iNew].distSq = distSq;
+						candidates[iNew].iSquadIndex = -1;
+						pCombine->AddSpawnFlags( SF_COMBINE_NOT_COMMANDABLE ); // Prevents double-add
+					}
+				}
+			}
+			for ( i = 0; i < candidates.Count(); i++ )
+				candidates[i].pCombine->RemoveSpawnFlags( SF_COMBINE_NOT_COMMANDABLE );
+
+			if ( candidates.Count() > MAX_PLAYER_SQUAD )
+			{
+				for ( i = MAX_PLAYER_SQUAD; i < candidates.Count(); i++ )
+				{
+					if ( candidates[i].pCombine->IsInPlayerSquad() )
+					{
+						candidates[i].pCombine->RemoveFromPlayerSquad();
+					}
+				}
+			}
+
+			if ( candidates.Count() )
+			{
+				CNPC_Combine *pClosest = NULL;
+				float closestDistSq = FLT_MAX;
+				int nJoined = 0;
+
+				for ( i = 0; i < candidates.Count() && i < MAX_PLAYER_SQUAD; i++ )
+				{
+					if ( !candidates[i].pCombine->IsInPlayerSquad() )
+					{
+						candidates[i].pCombine->AddToPlayerSquad();
+						nJoined++;
+
+						if ( candidates[i].distSq < closestDistSq )
+						{
+							pClosest = candidates[i].pCombine;
+							closestDistSq = candidates[i].distSq;
+						}
+					}
+				}							
+			}
+		}
+	}
+}
+
+void CNPC_Combine::FixupPlayerSquad()
+{
+	if ( !AI_IsSinglePlayer() )
+		return;
+
+	m_flTimeJoinedPlayerSquad = gpGlobals->curtime;
+	m_bWasInPlayerSquad = true;
+	if ( m_pSquad->NumMembers() > MAX_PLAYER_SQUAD )
+	{
+		CAI_BaseNPC *pFirstMember = m_pSquad->GetFirstMember(NULL);
+		m_pSquad->RemoveFromSquad( pFirstMember );
+		pFirstMember->ClearCommandGoal();
+
+		CNPC_Combine *pFirstMemberCombine = dynamic_cast< CNPC_Combine * >( pFirstMember );
+		if ( pFirstMemberCombine )
+		{
+			pFirstMemberCombine->ClearFollowTarget();
+		}
+		else
+		{
+			CAI_FollowBehavior *pOldMemberFollowBehavior;
+			if ( pFirstMember->GetBehavior( &pOldMemberFollowBehavior ) )
+			{
+				pOldMemberFollowBehavior->SetFollowTarget( NULL );
+			}
+		}
+	}
+
+	ClearFollowTarget();
+
+	CAI_BaseNPC *pLeader = NULL;
+	AISquadIter_t iter;
+	for ( CAI_BaseNPC *pAllyNpc = m_pSquad->GetFirstMember(&iter); pAllyNpc; pAllyNpc = m_pSquad->GetNextMember(&iter) )
+	{
+		if ( pAllyNpc->IsCommandable() )
+		{
+			pLeader = pAllyNpc;
+			break;
+		}
+	}
+
+	if ( pLeader && pLeader != this )
+	{
+		const Vector &commandGoal = pLeader->GetCommandGoal();
+		if ( commandGoal != vec3_invalid )
+		{
+			SetCommandGoal( commandGoal );
+			SetCondition( COND_RECEIVED_ORDERS ); 
+			OnMoveOrder();
+		}
+		else
+		{
+			CAI_FollowBehavior *pLeaderFollowBehavior;
+			if ( pLeader->GetBehavior( &pLeaderFollowBehavior ) )
+			{
+				m_FollowBehavior.SetFollowTarget( pLeaderFollowBehavior->GetFollowTarget() );
+				m_FollowBehavior.SetParameters( m_FollowBehavior.GetFormation() );
+			}
+
+		}
+	}
+	else
+	{
+		m_FollowBehavior.SetFollowTarget( UTIL_GetLocalPlayer() );
+		m_FollowBehavior.SetParameters( AIF_SIMPLE );
+	}
+}
+
+void CNPC_Combine::ClearFollowTarget()
+{
+	m_FollowBehavior.SetFollowTarget( NULL );
+	m_FollowBehavior.SetParameters( AIF_SIMPLE );
+}
+
+void CNPC_Combine::UpdateFollowCommandPoint()
+{
+	if ( !AI_IsSinglePlayer() )
+		return;
+
+	if ( IsInPlayerSquad() )
+	{
+		if ( HaveCommandGoal() )
+		{
+			CBaseEntity *pFollowTarget = m_FollowBehavior.GetFollowTarget();
+			CBaseEntity *pCommandPoint = gEntList.FindEntityByClassname( NULL, COMMAND_POINT_CLASSNAME );
+			
+			if( !pCommandPoint )
+			{
+				DevMsg("**\nVERY BAD THING\nCommand point vanished! Creating a new one\n**\n");
+				pCommandPoint = CreateEntityByName( COMMAND_POINT_CLASSNAME );
+			}
+
+			if ( pFollowTarget != pCommandPoint )
+			{
+				pFollowTarget = pCommandPoint;
+				m_FollowBehavior.SetFollowTarget( pFollowTarget );
+				m_FollowBehavior.SetParameters( AIF_COMMANDER );
+			}
+			
+			if ( ( pCommandPoint->GetAbsOrigin() - GetCommandGoal() ).LengthSqr() > 0.01 )
+			{
+				UTIL_SetOrigin( pCommandPoint, GetCommandGoal(), false );
+			}
+		}
+		else
+		{
+			if ( IsFollowingCommandPoint() )
+				ClearFollowTarget();
+			if ( m_FollowBehavior.GetFollowTarget() != UTIL_GetLocalPlayer() )
+			{
+				DevMsg( "Expected to be following player, but not\n" );
+				m_FollowBehavior.SetFollowTarget( UTIL_GetLocalPlayer() );
+				m_FollowBehavior.SetParameters( AIF_SIMPLE );
+			}
+		}
+	}
+	else if ( IsFollowingCommandPoint() )
+		ClearFollowTarget();
+}
+
+bool CNPC_Combine::IsFollowingCommandPoint()
+{
+	CBaseEntity *pFollowTarget = m_FollowBehavior.GetFollowTarget();
+	if ( pFollowTarget )
+		return FClassnameIs( pFollowTarget, COMMAND_POINT_CLASSNAME );
+	return false;
+}
+
+struct SquadMemberInfo_t
+{
+	CNPC_Combine *	pMember;
+	bool			bSeesPlayer;
+	float			distSq;
+};
+
+int __cdecl CombineSquadSortFunc( const SquadMemberInfo_t *pLeft, const SquadMemberInfo_t *pRight )
+{
+	if ( pLeft->bSeesPlayer && !pRight->bSeesPlayer )
+	{
+		return -1;
+	}
+
+	if ( !pLeft->bSeesPlayer && pRight->bSeesPlayer )
+	{
+		return 1;
+	}
+
+	return ( pLeft->distSq - pRight->distSq );
+}
+
+CAI_BaseNPC* CNPC_Combine::GetSquadCommandRepresentative()
+{
+	if ( !AI_IsSinglePlayer() )
+		return NULL;
+
+	if ( IsInPlayerSquad() )
+	{
+		static float lastTime;
+		static AIHANDLE hCurrent;
+
+		if ( gpGlobals->curtime - lastTime > 2.0 || !hCurrent || !hCurrent->IsInPlayerSquad() ) // hCurrent will be NULL after level change
+		{
+			lastTime = gpGlobals->curtime;
+			hCurrent = NULL;
+
+			CUtlVectorFixed<SquadMemberInfo_t, MAX_SQUAD_MEMBERS> candidates;
+			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+
+			if ( pPlayer )
+			{
+				AISquadIter_t iter;
+				for ( CAI_BaseNPC *pAllyNpc = m_pSquad->GetFirstMember(&iter); pAllyNpc; pAllyNpc = m_pSquad->GetNextMember(&iter) )
+				{
+					if ( pAllyNpc->IsCommandable() && dynamic_cast<CNPC_Combine *>(pAllyNpc) )
+					{
+						int i = candidates.AddToTail();
+						candidates[i].pMember = (CNPC_Combine *)(pAllyNpc);
+						candidates[i].bSeesPlayer = pAllyNpc->HasCondition( COND_SEE_PLAYER );
+						candidates[i].distSq = ( pAllyNpc->GetAbsOrigin() - pPlayer->GetAbsOrigin() ).LengthSqr();
+					}
+				}
+
+				if ( candidates.Count() > 0 )
+				{
+					candidates.Sort( CombineSquadSortFunc );
+					hCurrent = candidates[0].pMember;
+				}
+			}
+		}
+
+		if ( hCurrent != NULL )
+		{
+			Assert( dynamic_cast<CNPC_Combine *>(hCurrent.Get()) && hCurrent->IsInPlayerSquad() );
+			return hCurrent;
+		}
+	}
+	return NULL;
+}
+
+void CNPC_Combine::SetSquad( CAI_Squad* pSquad )
+{
+	bool bWasInPlayerSquad = IsInPlayerSquad();
+
+	BaseClass::SetSquad( pSquad );
+
+	if( IsInPlayerSquad() && !bWasInPlayerSquad )
+	{
+		m_OnJoinedPlayerSquad.FireOutput(this, this);
+		if ( npc_combine_insignia.GetBool() )
+			AddInsignia();
+	}
+	else if ( !IsInPlayerSquad() && bWasInPlayerSquad )
+	{
+		if ( npc_combine_insignia.GetBool() )
+			RemoveInsignia();
+		m_OnLeftPlayerSquad.FireOutput(this, this);
+	}
+}
+
+void CNPC_Combine::AddInsignia()
+{
+	CBaseEntity *pMark = CreateEntityByName( "squadinsignia" );
+	pMark->SetOwnerEntity( this );
+	pMark->Spawn();
+}
+
+void CNPC_Combine::RemoveInsignia()
+{
+	// This is crap right now.
+	CBaseEntity *FirstEnt();
+	CBaseEntity *pEntity = gEntList.FirstEnt();
+
+	while( pEntity )
+	{
+		if( pEntity->GetOwnerEntity() == this )
+		{
+			// Is this my insignia?
+			CSquadInsignia *pInsignia = dynamic_cast<CSquadInsignia *>(pEntity);
+
+			if( pInsignia )
+			{
+				UTIL_Remove( pInsignia );
+				return;
+			}
+		}
+
+		pEntity = gEntList.NextEnt( pEntity );
+	}
+}
+
+#if defined ( COMBINE_DESTINY_NEW_FEATURES )
+void CNPC_Combine::Touch( CBaseEntity* pOther )
+{
+	BaseClass::Touch(pOther);
+
+	// Did the player touch me?
+	if (pOther->IsPlayer() || (pOther->VPhysicsGetObject() && (pOther->VPhysicsGetObject()->GetGameFlags() & FVPHYSICS_PLAYER_HELD)))
+	{
+		// Ignore if pissed at player
+		if (m_afMemory & bits_MEMORY_PROVOKED)
+			return;
+
+		TestPlayerPushing((pOther->IsPlayer()) ? pOther : AI_GetSinglePlayer());
+	}
+}
+#endif
+
+bool CNPC_Combine::IgnorePlayerPushing( void )
+{
+	// If the NPC's on a func_tank that the player cannot man, ignore player pushing
+	if ( m_FuncTankBehavior.IsMounted() )
+	{
+		CFuncTank *pTank = m_FuncTankBehavior.GetFuncTank();
+		if ( pTank && !pTank->IsControllable() )
+			return true;
+	}
+
+	return false;
+}
+
+#if defined ( COMBINE_DESTINY_NEW_FEATURES )
+void CNPC_Combine::PredictPlayerPush()
+{
+	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	if ( pPlayer && pPlayer->GetSmoothedVelocity().LengthSqr() >= Square(140))
+	{
+		Vector predictedPosition = pPlayer->WorldSpaceCenter() + pPlayer->GetSmoothedVelocity() * .4;
+		Vector delta = WorldSpaceCenter() - predictedPosition;
+		if ( delta.z < GetHullHeight() * .5 && delta.Length2DSqr() < Square(GetHullWidth() * 1.414)  )
+			TestPlayerPushing( pPlayer );
+	}
+}
+#endif
+
+int CNPC_Combine::SelectPriorityAction()
+{
+	if ( GetGroundEntity() && !IsInAScript() )
+	{
+		if ( GetGroundEntity()->IsPlayer() )
+		{
+			return NEXT_SCHEDULE;
+		}
+
+		if ( GetGroundEntity()->IsNPC() && 
+			 IRelationType( GetGroundEntity() ) == D_LI && 
+			 WorldSpaceCenter().z - GetGroundEntity()->WorldSpaceCenter().z > GetHullHeight() * .5 )
+		{
+			return NEXT_SCHEDULE;
+		}
+	}
+
+	int schedule = SelectSchedulePlayerPush();
+	if (schedule != SCHED_NONE)
+	{
+		if (GetFollowBehavior().IsRunning())
+			KeepRunningBehavior();
+		return schedule;
+	}
+
+	return SCHED_NONE;
+}
+
+int CNPC_Combine::SelectSchedulePlayerPush()
+{
+	if ( HasCondition( COND_PLAYER_PUSHING ) && !IsInAScript() && !IgnorePlayerPushing() )
+	{
+		m_bMovingAwayFromPlayer = true;
+		return SCHED_MOVE_AWAY;
+	}
+
+	return SCHED_NONE;
+}
+
+bool CNPC_Combine::ShouldDeferToFollowBehavior()
+{
+	if ( !GetFollowBehavior().CanSelectSchedule() || !GetFollowBehavior().FarFromFollowTarget() )
+		return false;
+		
+	if ( m_StandoffBehavior.CanSelectSchedule() && !m_StandoffBehavior.IsBehindBattleLines( GetFollowBehavior().GetFollowTarget()->GetAbsOrigin() ) )
+		return false;
+
+	if ( HasCondition(COND_BETTER_WEAPON_AVAILABLE) && !GetActiveWeapon() )
+	{
+		// Unarmed allies should arm themselves as soon as the opportunity presents itself.
+		return false;
+	}
+
+	// Even though assault and act busy are placed ahead of the follow behavior in precedence, the below
+	// code is necessary because we call ShouldDeferToFollowBehavior BEFORE we call the generic
+	// BehaviorSelectSchedule, which tries the behaviors in priority order.
+	if ( m_AssaultBehavior.CanSelectSchedule() && hl2_episodic.GetBool() )
+	{
+		return false;
+	}
+
+	if ( hl2_episodic.GetBool() )
+	{
+		if ( m_ActBusyBehavior.CanSelectSchedule() && m_ActBusyBehavior.IsCombatActBusy() )
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+extern ConVar ai_new_aiming;
+
+bool CNPC_Combine::IsValidReasonableFacing(const Vector& vecSightDir, float sightDist)
+{
+	if( !GetActiveWeapon() )
+	{
+		// If I'm not armed, it doesn't matter if I'm looking at another citizen.
+		return true;
+	}
+
+	if( ai_new_aiming.GetBool() )
+	{
+		Vector vecEyePositionCentered = GetAbsOrigin();
+		vecEyePositionCentered.z = EyePosition().z;
+
+		if( IsSquadmateInSpread(vecEyePositionCentered, vecEyePositionCentered + vecSightDir * 240.0f, VECTOR_CONE_15DEGREES.x, 12.0f * 3.0f) )
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------

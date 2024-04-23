@@ -26,102 +26,14 @@ public:
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 
-	int DrawModel( int flags )
-	{
-		//FIXME: This sucks, but I can't easily create temp ents...
+	bool InSwing( void );
 
-		if ( m_bActive )
-		{
-			Vector	vecOrigin;
-			QAngle	vecAngles;
-			float	color[3];
-
-			color[0] = color[1] = color[2] = random->RandomFloat( 0.1f, 0.2f );
-
-			GetAttachment( 1, vecOrigin, vecAngles );
-
-			Vector	vForward;
-			AngleVectors( vecAngles, &vForward );
-
-			Vector vEnd = vecOrigin - vForward * 1.0f;
-
-			IMaterial *pMaterial = materials->FindMaterial( "effects/stunstick", NULL, false );
-
-			CMatRenderContextPtr pRenderContext( materials );
-			pRenderContext->Bind( pMaterial );
-			DrawHalo( pMaterial, vEnd, random->RandomFloat( 4.0f, 6.0f ), color );
-
-			color[0] = color[1] = color[2] = random->RandomFloat( 0.9f, 1.0f );
-
-			DrawHalo( pMaterial, vEnd, random->RandomFloat( 2.0f, 3.0f ), color );
-		}
-
-		return BaseClass::DrawModel( flags );
-	}
+	int DrawModel( int flags );
 
 	// Do part of our effect
-	void ClientThink( void )
-	{
-		// Update our effects
-		if ( m_bActive && 
-			gpGlobals->frametime != 0.0f &&
-			( random->RandomInt( 0, 5 ) == 0 ) )
-		{
-			Vector	vecOrigin;
-			QAngle	vecAngles;
+	void ClientThink( void );
 
-			GetAttachment( 1, vecOrigin, vecAngles );
-
-			Vector	vForward;
-			AngleVectors( vecAngles, &vForward );
-
-			Vector vEnd = vecOrigin - vForward * 1.0f;
-
-			// Inner beams
-			BeamInfo_t beamInfo;
-
-			beamInfo.m_vecStart = vEnd;
-			Vector	offset = RandomVector( -6, 2 );
-
-			offset += Vector(2,2,2);
-			beamInfo.m_vecEnd = vecOrigin + offset;
-
-			beamInfo.m_pStartEnt= cl_entitylist->GetEnt( BEAMENT_ENTITY( entindex() ) );
-			beamInfo.m_pEndEnt	= cl_entitylist->GetEnt( BEAMENT_ENTITY( entindex() ) );
-			beamInfo.m_nStartAttachment = 1;
-			beamInfo.m_nEndAttachment = 2;
-			
-			beamInfo.m_nType = TE_BEAMTESLA;
-			beamInfo.m_pszModelName = "sprites/physbeam.vmt";
-			beamInfo.m_flHaloScale = 0.0f;
-			beamInfo.m_flLife = 0.01f;
-			beamInfo.m_flWidth = random->RandomFloat( 0.5f, 2.0f );
-			beamInfo.m_flEndWidth = 0;
-			beamInfo.m_flFadeLength = 0.0f;
-			beamInfo.m_flAmplitude = random->RandomFloat( 1, 2 );
-			beamInfo.m_flBrightness = 255.0;
-			beamInfo.m_flSpeed = 0.0;
-			beamInfo.m_nStartFrame = 0.0;
-			beamInfo.m_flFrameRate = 1.0f;
-			beamInfo.m_flRed = 255.0f;;
-			beamInfo.m_flGreen = 255.0f;
-			beamInfo.m_flBlue = 255.0f;
-			beamInfo.m_nSegments = 8;
-			beamInfo.m_bRenderable = true;
-			beamInfo.m_nFlags = (FBEAM_ONLYNOISEONCE|FBEAM_SHADEOUT);
-			
-			beams->CreateBeamPoints( beamInfo );
-		}
-	}
-
-	void OnDataChanged( DataUpdateType_t updateType )
-	{
-		BaseClass::OnDataChanged( updateType );
-		if ( updateType == DATA_UPDATE_CREATED )
-		{
-			SetNextClientThink( CLIENT_THINK_ALWAYS );
-		}
-	}
+	void OnDataChanged( DataUpdateType_t updateType );
 	
 	//-----------------------------------------------------------------------------
 	// Purpose: 
@@ -143,15 +55,152 @@ public:
 	// Purpose: 
 	// Output : RenderGroup_t
 	//-----------------------------------------------------------------------------
-	RenderGroup_t GetRenderGroup( void )
-	{
-		return RENDER_GROUP_TRANSLUCENT_ENTITY;
-	}
+	RenderGroup_t GetRenderGroup( void );
 
 private:
 	CNetworkVar( bool, m_bActive );
 };
 
+bool C_WeaponStunStick::InSwing()
+{
+	int activity = GetActivity();
+
+	// FIXME: This is needed until the actual animation works
+	if ( ShouldDrawUsingViewModel() == false )
+		return true;
+
+	// These are the swing activities this weapon can play
+	if ( activity == GetPrimaryAttackActivity() || 
+		 activity == GetSecondaryAttackActivity() ||
+		 activity == ACT_VM_MISSCENTER ||
+		 activity == ACT_VM_MISSCENTER2 )
+		return true;
+
+	return false;
+}
+
+int C_WeaponStunStick::DrawModel( int flags )
+{
+	//FIXME: This sucks, but I can't easily create temp ents...
+	
+	DevMsg( "DrawModel\n" );
+	
+	if ( m_bActive )
+	{
+		Vector	vecOrigin;
+		QAngle	vecAngles;
+		float	color[3];
+
+		color[0] = color[1] = color[2] = random->RandomFloat( 0.1f, 0.2f );
+
+		GetAttachment( 1, vecOrigin, vecAngles );
+
+		Vector	vForward;
+		AngleVectors( vecAngles, &vForward );
+
+		Vector vEnd = vecOrigin - vForward * 1.0f;
+
+		IMaterial *pMaterial = materials->FindMaterial( "effects/stunstick", NULL, false );
+
+		CMatRenderContextPtr pRenderContext( materials );
+		pRenderContext->Bind( pMaterial );
+		DrawHalo( pMaterial, vEnd, random->RandomFloat( 4.0f, 6.0f ), color );
+
+		color[0] = color[1] = color[2] = random->RandomFloat( 0.9f, 1.0f );
+
+		DrawHalo( pMaterial, vEnd, random->RandomFloat( 2.0f, 3.0f ), color );
+	}
+
+	return BaseClass::DrawModel( flags );
+}
+
+static bool gm_bSwungLastFrame;
+static float gm_flFadeTime;
+
+void C_WeaponStunStick::ClientThink( void )
+{
+	if ( InSwing() == false )
+	{
+		if ( gm_bSwungLastFrame )
+		{
+			// Start fading
+			gm_flFadeTime = gpGlobals->curtime;
+			gm_bSwungLastFrame = false;
+		}
+
+		return;
+	}	
+
+	// Remember if we were swinging last frame
+	gm_bSwungLastFrame = InSwing();
+
+	if ( IsEffectActive( EF_NODRAW ) )
+		return;
+
+	if ( m_bActive && 
+		gpGlobals->frametime != 0.0f &&
+		( random->RandomInt( 0, 5 ) == 0 ) )
+	{
+		Vector	vecOrigin;
+		QAngle	vecAngles;
+
+		GetAttachment( 1, vecOrigin, vecAngles );
+
+		Vector	vForward;
+		AngleVectors( vecAngles, &vForward );
+
+		Vector vEnd = vecOrigin - vForward * 1.0f;
+
+		// Inner beams
+		BeamInfo_t beamInfo;
+
+		beamInfo.m_vecStart = vEnd;
+		Vector	offset = RandomVector( -6, 2 );
+
+		offset += Vector(2,2,2);
+		beamInfo.m_vecEnd = vecOrigin + offset;
+
+		beamInfo.m_pStartEnt= cl_entitylist->GetEnt( BEAMENT_ENTITY( entindex() ) );
+		beamInfo.m_pEndEnt	= cl_entitylist->GetEnt( BEAMENT_ENTITY( entindex() ) );
+		beamInfo.m_nStartAttachment = 1;
+		beamInfo.m_nEndAttachment = 2;
+		
+		beamInfo.m_nType = TE_BEAMTESLA;
+		beamInfo.m_pszModelName = "sprites/physbeam.vmt";
+		beamInfo.m_flHaloScale = 0.0f;
+		beamInfo.m_flLife = 0.01f;
+		beamInfo.m_flWidth = random->RandomFloat( 0.5f, 2.0f );
+		beamInfo.m_flEndWidth = 0;
+		beamInfo.m_flFadeLength = 0.0f;
+		beamInfo.m_flAmplitude = random->RandomFloat( 1, 2 );
+		beamInfo.m_flBrightness = 255.0;
+		beamInfo.m_flSpeed = 0.0;
+		beamInfo.m_nStartFrame = 0.0;
+		beamInfo.m_flFrameRate = 1.0f;
+		beamInfo.m_flRed = 255.0f;;
+		beamInfo.m_flGreen = 255.0f;
+		beamInfo.m_flBlue = 255.0f;
+		beamInfo.m_nSegments = 8;
+		beamInfo.m_bRenderable = true;
+		beamInfo.m_nFlags = (FBEAM_ONLYNOISEONCE|FBEAM_SHADEOUT);
+		
+		beams->CreateBeamPoints( beamInfo );
+	}
+}
+
+void C_WeaponStunStick::OnDataChanged( DataUpdateType_t updateType )
+{
+	BaseClass::OnDataChanged( updateType );
+	if ( updateType == DATA_UPDATE_CREATED )
+	{
+		SetNextClientThink( CLIENT_THINK_ALWAYS );
+	}
+}
+
+RenderGroup_t C_WeaponStunStick::GetRenderGroup( void )
+{
+	return RENDER_GROUP_TRANSLUCENT_ENTITY;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 

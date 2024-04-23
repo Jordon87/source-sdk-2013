@@ -4454,6 +4454,11 @@ int CAI_BaseNPC::SelectAlertSchedule()
 //-----------------------------------------------------------------------------
 int CAI_BaseNPC::SelectCombatSchedule()
 {
+	CAI_BaseNPC *pNPC = (g_AI_Manager.AccessAIs())[1];
+
+	if ( pNPC->IsPlayerAlly() )
+		DevMsg( "Select CombatSchedule BaseNPC*PlayerAlly*\n" );
+
 	if ( m_hForcedInteractionPartner )
 		return SelectInteractionSchedule();
 
@@ -4463,12 +4468,16 @@ int CAI_BaseNPC::SelectCombatSchedule()
 
 	if ( HasCondition(COND_NEW_ENEMY) && gpGlobals->curtime - GetEnemies()->FirstTimeSeen(GetEnemy()) < 2.0 )
 	{
+		if ( pNPC->IsPlayerAlly() )
+			DevMsg( "SCHED_WAKE_ANGRY BaseNPC\n" );
+
 		return SCHED_WAKE_ANGRY;
 	}
 	
 	if ( HasCondition( COND_ENEMY_DEAD ) )
 	{
 		// clear the current (dead) enemy and try to find another.
+		DevMsg( "SetEnemy( NULL ) BaseNPC\n" );
 		SetEnemy( NULL );
 		 
 		if ( ChooseEnemy() )
@@ -4476,6 +4485,9 @@ int CAI_BaseNPC::SelectCombatSchedule()
 			ClearCondition( COND_ENEMY_DEAD );
 			return SelectSchedule();
 		}
+
+		if ( pNPC->IsPlayerAlly() )
+			DevMsg( " SetState( NPC_STATE_ALERT ) BaseNPC\n" );
 
 		SetState( NPC_STATE_ALERT );
 		return SelectSchedule();
@@ -4489,6 +4501,10 @@ int CAI_BaseNPC::SelectCombatSchedule()
 			HasCondition( COND_HEAVY_DAMAGE ))
 		{
 			FearSound();
+
+			if ( pNPC->IsPlayerAlly() )
+				DevMsg( " SCHED_RUN_FROM_ENEMY BaseNPC\n" );
+			
 			//ClearCommandGoal();
 			return SCHED_RUN_FROM_ENEMY;
 		}
@@ -4499,7 +4515,13 @@ int CAI_BaseNPC::SelectCombatSchedule()
 		{
 			// If we're facing him, just look ready. Otherwise, face him.
 			if ( FInAimCone( GetEnemy()->EyePosition() ) )
+				if ( pNPC->IsPlayerAlly() )
+					DevMsg( " SCHED_COMBAT_STAND BaseNPC\n" );
+
 				return SCHED_COMBAT_STAND;
+
+			if ( pNPC->IsPlayerAlly() )
+				DevMsg( " SCHED_FEAR_FACE BaseNPC\n" );
 
 			return SCHED_FEAR_FACE;
 		}
@@ -4508,27 +4530,50 @@ int CAI_BaseNPC::SelectCombatSchedule()
 	// Check if need to reload
 	if ( HasCondition( COND_LOW_PRIMARY_AMMO ) || HasCondition( COND_NO_PRIMARY_AMMO ) )
 	{
+		if ( pNPC->IsPlayerAlly() )
+			DevMsg( " SCHED_HIDE_AND_RELOAD BaseNPC\n" );
+
 		return SCHED_HIDE_AND_RELOAD;
 	}
 
 	// Can we see the enemy?
 	if ( !HasCondition(COND_SEE_ENEMY) )
 	{
+		if ( pNPC->IsPlayerAlly() )
+			DevMsg( " !HasCondition(COND_SEE_ENEMY) BaseNPC\n" );
+
 		// enemy is unseen, but not occluded!
 		// turn to face enemy
 		if ( !HasCondition(COND_ENEMY_OCCLUDED) )
+			if ( pNPC->IsPlayerAlly() )
+				DevMsg( "!HasCondition(COND_ENEMY_OCCLUDED)*Return SCHED_COMBAT_FACE* BaseNPC\n" );
+
 			return SCHED_COMBAT_FACE;
 
 		// chase!
-		if ( GetActiveWeapon() || (CapabilitiesGet() & (bits_CAP_INNATE_RANGE_ATTACK1|bits_CAP_INNATE_RANGE_ATTACK2)))
-			return SCHED_ESTABLISH_LINE_OF_FIRE;
-		else if ( (CapabilitiesGet() & (bits_CAP_INNATE_MELEE_ATTACK1|bits_CAP_INNATE_MELEE_ATTACK2)))
-			return SCHED_CHASE_ENEMY;
-		else
-			return SCHED_TAKE_COVER_FROM_ENEMY;
+		if ( !GetActiveWeapon() || (CapabilitiesGet() & (bits_CAP_INNATE_RANGE_ATTACK1|bits_CAP_INNATE_RANGE_ATTACK2)))
+		{
+			if ( (CapabilitiesGet() & (bits_CAP_INNATE_MELEE_ATTACK1|bits_CAP_INNATE_MELEE_ATTACK2)))
+			{
+				if ( pNPC->IsPlayerAlly() )
+					DevMsg( "SCHED_CHASE_ENEMY  BaseNPC\n" );
+				return SCHED_CHASE_ENEMY;
+			}
+			else
+			{
+				if ( pNPC->IsPlayerAlly() )
+					DevMsg( "SCHED_TAKE_COVER_FROM_ENEMY  BaseNPC\n" );
+				return SCHED_TAKE_COVER_FROM_ENEMY;
+			}
+		}
+		if (pNPC->IsPlayerAlly())
+			DevMsg("SCHED_ESTABLISH_LINE_OF_FIRE  BaseNPC\n");
+		return SCHED_ESTABLISH_LINE_OF_FIRE;
 	}
-	
+
 	if ( HasCondition(COND_TOO_CLOSE_TO_ATTACK) ) 
+		if ( pNPC->IsPlayerAlly() )
+			DevMsg( "SCHED_BACK_AWAY_FROM_ENEMY  BaseNPC\n" );
 		return SCHED_BACK_AWAY_FROM_ENEMY;
 	
 	if ( HasCondition( COND_WEAPON_PLAYER_IN_SPREAD ) || 
@@ -4547,8 +4592,17 @@ int CAI_BaseNPC::SelectCombatSchedule()
 	// we can see the enemy
 	if ( HasCondition(COND_CAN_RANGE_ATTACK1) )
 	{
+		if ( pNPC->IsPlayerAlly() )
+			DevMsg( "( HasCondition(COND_CAN_RANGE_ATTACK1)  BaseNPC\n" );
+
 		if ( !UseAttackSquadSlots() || OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+			if (pNPC->IsPlayerAlly())
+				DevMsg( "SCHED_RANGE_ATTACK1  BaseNPC\n" );
+
 			return SCHED_RANGE_ATTACK1;
+
+		if (pNPC->IsPlayerAlly())
+			DevMsg( "SCHED_COMBAT_FACE *After firing at enemy*  BaseNPC\n" );
 		return SCHED_COMBAT_FACE;
 	}
 

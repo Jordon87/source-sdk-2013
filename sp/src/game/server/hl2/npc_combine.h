@@ -26,11 +26,7 @@
 #define SF_COMBINE_NO_LOOK	(1 << 16)
 #define SF_COMBINE_NO_GRENADEDROP ( 1 << 17 )
 #define SF_COMBINE_NO_AR2DROP ( 1 << 18 )
-
-
-#if defined ( COMBINEDESTINY_DLL )
-class CNPC_CombineS_Ally;
-#endif
+#define SF_COMBINE_NOT_COMMANDABLE	( 1 << 20 )
 
 //=========================================================
 //	>> CNPC_Combine
@@ -73,8 +69,8 @@ public:
 	void InputStartPatrolling( inputdata_t &inputdata );
 	void InputStopPatrolling( inputdata_t &inputdata );
 	void InputAssault( inputdata_t &inputdata );
+	void InputSetCommandable( inputdata_t &inputdata );
 	void InputHitByBugbait( inputdata_t &inputdata );
-	void InputThrowGrenadeAtTarget( inputdata_t &inputdata );
 
 	bool			UpdateEnemyMemory( CBaseEntity *pEnemy, const Vector &position, CBaseEntity *pInformer = NULL );
 
@@ -131,7 +127,7 @@ public:
 	// Sounds
 	// -------------
 	void			DeathSound( void );
-	void			PainSound( void );
+	void			PainSound( const CTakeDamageInfo& info );
 	void			IdleSound( void );
 	void			AlertSound( void );
 	void			LostEnemySound( void );
@@ -154,9 +150,40 @@ public:
 
 	virtual bool	ShouldPickADeathPose( void );
 
+	// Commander Mode
+	bool 			IsCommandable();
+	bool			CanJoinPlayerSquad();
+	bool			HaveCommandGoal() const;
+	void 			CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void			AddToPlayerSquad();
+	void			RemoveFromPlayerSquad();
+	void 			TogglePlayerSquadState();
+	void			UpdatePlayerSquad();
+	void 			FixupPlayerSquad();
+	void 			ClearFollowTarget();
+	void 			UpdateFollowCommandPoint();
+	bool			IsFollowingCommandPoint();
+	CAI_BaseNPC *	GetSquadCommandRepresentative();
+	void			SetSquad( CAI_Squad* pSquad );
+	void			AddInsignia();
+	void			RemoveInsignia();
+
+#if defined ( COMBINE_DESTINY_NEW_FEATURES )
+	void			Touch( CBaseEntity* pOther );
+#endif
+	bool			IgnorePlayerPushing(void);
+#if defined ( COMBINE_DESTINY_NEW_FEATURES )
+	void			PredictPlayerPush();
+#endif
+	int				SelectPriorityAction();
+	int				SelectSchedulePlayerPush();
+	bool			ShouldDeferToFollowBehavior();
+	bool			IsValidReasonableFacing(const Vector& vecSightDir, float sightDist);
 protected:
 	void			SetKickDamage( int nDamage ) { m_nKickDamage = nDamage; }
 	CAI_Sentence< CNPC_Combine > *GetSentences() { return &m_Sentences; }
+
+	virtual CAI_FollowBehavior& GetFollowBehavior(void) { return m_FollowBehavior; }
 
 private:
 	//=========================================================
@@ -260,10 +287,28 @@ private:
 	virtual bool IsWaitingToRappel( void ) { return m_RappelBehavior.IsWaitingToRappel(); }
 	void BeginRappel() { m_RappelBehavior.BeginRappel(); }
 
-#if defined ( COMBINEDESTINY_DLL )
-	friend class CNPC_CombineS_Ally;
-#endif
 private:
+	string_t		m_iszOriginalSquad;
+
+	float			m_flTimeJoinedPlayerSquad;
+
+	Vector			m_vAutoSummonAnchor;
+
+	float			m_flTimeLastCloseToPlayer;
+
+	COutputEvent	m_OnJoinedPlayerSquad;
+	COutputEvent	m_OnPlayerUse;
+	COutputEvent	m_OnLeftPlayerSquad;
+
+	CHandle<CAI_FollowGoal>	m_hSavedFollowGoalEnt;
+
+	bool			m_bNeverLeavePlayerSquad;
+
+	CSimpleSimTimer m_PlayerSquadEvaluateTimer;
+	bool			m_bWasInPlayerSquad;
+	bool			m_bSimpleUse;
+
+	bool			m_bMovingAwayFromPlayer;
 
 	int				m_nKickDamage;
 	Vector			m_vecTossVelocity;

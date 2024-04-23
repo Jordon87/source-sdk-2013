@@ -684,6 +684,8 @@ bool CNPC_PlayerCompanion::ShouldIgnoreSound( CSound *pSound )
 //-----------------------------------------------------------------------------
 int CNPC_PlayerCompanion::SelectSchedule()
 {
+	DevMsg( "CNPC_PlayerCompanion: SelectSchedule() \n" );
+
 	m_bMovingAwayFromPlayer = false;
 
 #ifdef HL2_EPISODIC
@@ -810,10 +812,12 @@ int CNPC_PlayerCompanion::SelectScheduleDanger()
 //-----------------------------------------------------------------------------
 int CNPC_PlayerCompanion::SelectSchedulePriorityAction()
 {
+	DevMsg( "CNPC_PlayerCompanion:  SelectSchedulePriorityAction() \n" );
 	if ( GetGroundEntity() && !IsInAScript() )
 	{
 		if ( GetGroundEntity()->IsPlayer() )
 		{
+			DevMsg( "CNPC_PlayerCompanion SCHED_PC_GET_COMPANION 1 \n" );
 			return SCHED_PC_GET_OFF_COMPANION;
 		}
 
@@ -821,6 +825,7 @@ int CNPC_PlayerCompanion::SelectSchedulePriorityAction()
 			 IRelationType( GetGroundEntity() ) == D_LI && 
 			 WorldSpaceCenter().z - GetGroundEntity()->WorldSpaceCenter().z > GetHullHeight() * .5 )
 		{
+			DevMsg( "CNPC_PlayerCompanion SCHED_PC_GET_COMPANION 2 \n" );
 			return SCHED_PC_GET_OFF_COMPANION;
 		}
 	}
@@ -828,11 +833,16 @@ int CNPC_PlayerCompanion::SelectSchedulePriorityAction()
 	int schedule = SelectSchedulePlayerPush();
 	if ( schedule != SCHED_NONE )
 	{
+		DevMsg( "( KeepRunningBehavior()  AI_Behavior\n" );
 		if ( GetFollowBehavior().IsRunning() )
 			KeepRunningBehavior();
+			DevMsg(" m_bCalledBehaviorSelectSchedule = true;\n");
+
+		DevMsg( "CNPC_PlayerCompanion   3 \n" );
 		return schedule;
 	}
 
+	DevMsg( "CNPC_PlayerCompanion  4 \n" );
 	return SCHED_NONE;
 }
 
@@ -873,6 +883,7 @@ bool CNPC_PlayerCompanion::IgnorePlayerPushing( void )
 //-----------------------------------------------------------------------------
 int CNPC_PlayerCompanion::SelectScheduleCombat()
 {
+	DevMsg( "CNPC_PlayerCompanion:  SelectScheduleCombat() \n" );
 	if ( CanReload() && (HasCondition ( COND_NO_PRIMARY_AMMO ) || HasCondition(COND_LOW_PRIMARY_AMMO)) )
 	{
 		return SCHED_HIDE_AND_RELOAD;
