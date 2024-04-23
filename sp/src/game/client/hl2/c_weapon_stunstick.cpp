@@ -83,8 +83,6 @@ int C_WeaponStunStick::DrawModel( int flags )
 {
 	//FIXME: This sucks, but I can't easily create temp ents...
 	
-	DevMsg( "DrawModel\n" );
-	
 	if ( m_bActive )
 	{
 		Vector	vecOrigin;
