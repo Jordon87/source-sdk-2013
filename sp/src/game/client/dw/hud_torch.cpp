@@ -151,7 +151,7 @@ CHudTorch::CHudTorch (const char * pElementName) :
 // Purpose:
 //------------------------------------------------------------------------
  
-void CHudTorch:: Init()
+void CHudTorch::Init()
 {
 	Reset();
 }
@@ -160,7 +160,7 @@ void CHudTorch:: Init()
 // Purpose:
 //-----------------------------------------------------------------------
  
-void CHudTorch:: Reset (void)
+void CHudTorch::Reset (void)
 {
 	m_flHull = HULL_INIT;
 	m_nHullLow = -1;
@@ -174,7 +174,7 @@ void CHudTorch:: Reset (void)
 // Purpose:
 //------------------------------------------------------------------------
  
-void CHudTorch:: OnThink (void)
+void CHudTorch::OnThink (void)
 {
 	float newHull = 0;
 	C_BaseHLPlayer *pPlayer = (C_BaseHLPlayer *)C_BasePlayer::GetLocalPlayer();

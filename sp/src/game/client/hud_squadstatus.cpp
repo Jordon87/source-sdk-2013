@@ -40,11 +40,7 @@ protected:
 	virtual void Paint();
 
 private:
-#if defined ( DANGEROUSWORLD_CLIENT_DLL )
-	CPanelAnimationVar( vgui::HFont, m_hTextFont, "TextFont", "HudSelectionNumbers" );
-#else
 	CPanelAnimationVar( vgui::HFont, m_hTextFont, "TextFont", "Default" );
-#endif
 	CPanelAnimationVarAliasType( float, text_xpos, "text_xpos", "8", "proportional_float" );
 	CPanelAnimationVarAliasType( float, text_ypos, "text_ypos", "20", "proportional_float" );
 

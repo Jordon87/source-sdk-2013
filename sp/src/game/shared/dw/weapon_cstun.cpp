@@ -56,16 +56,16 @@ ConVar    sk_npc_dmg_cstun("sk_npc_dmg_cstun", "0", FCVAR_REPLICATED);
 #define	STUNSTICK_RANGE				75.0f
 #define	STUNSTICK_REFIRE			0.8f
 #define	STUNSTICK_BEAM_MATERIAL		"sprites/lgtning.vmt"
-#define STUNSTICK_GLOW_MATERIAL		"sprites/light_glow02_add"
+#define STUNSTICK_GLOW_MATERIAL		"sprites/light_glow02_add.vmt"
 #define STUNSTICK_GLOW_MATERIAL2	"effects/blueflare1"
 #define STUNSTICK_GLOW_MATERIAL_NOZ	"sprites/light_glow02_add_noz"
 
 //-----------------------------------------------------------------------------
 // CWeaponStunStick
 //-----------------------------------------------------------------------------
-IMPLEMENT_NETWORKCLASS_ALIASED(WeaponCStun, DT_WeaponCStun)
+IMPLEMENT_NETWORKCLASS_ALIASED(WeaponCstun, DT_WeaponCstun)
 
-BEGIN_NETWORK_TABLE(CWeaponCStun, DT_WeaponCStun)
+BEGIN_NETWORK_TABLE(CWeaponCstun, DT_WeaponCstun)
 #ifdef CLIENT_DLL
 RecvPropInt(RECVINFO(m_bActive)),
 #else
@@ -74,22 +74,22 @@ SendPropInt(SENDINFO(m_bActive), 1, SPROP_UNSIGNED),
 
 END_NETWORK_TABLE()
 
-BEGIN_PREDICTION_DATA(CWeaponCStun)
+BEGIN_PREDICTION_DATA(CWeaponCstun)
 END_PREDICTION_DATA()
 
-LINK_ENTITY_TO_CLASS(weapon_cstun, CWeaponCStun);
+LINK_ENTITY_TO_CLASS(weapon_cstun, CWeaponCstun);
 PRECACHE_WEAPON_REGISTER(weapon_cstun);
 
 #ifndef CLIENT_DLL
 
-acttable_t	CWeaponCStun::m_acttable[] =
+acttable_t	CWeaponCstun::m_acttable[] =
 {
 	{ ACT_MELEE_ATTACK1, ACT_MELEE_ATTACK_SWING, true },
 	{ ACT_IDLE, ACT_IDLE_ANGRY_MELEE, false },
 	{ ACT_IDLE_ANGRY, ACT_IDLE_ANGRY_MELEE, false },
 };
 
-IMPLEMENT_ACTTABLE(CWeaponCStun);
+IMPLEMENT_ACTTABLE(CWeaponCstun);
 
 #endif
 
@@ -97,7 +97,7 @@ IMPLEMENT_ACTTABLE(CWeaponCStun);
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CWeaponCStun::CWeaponCStun(void)
+CWeaponCstun::CWeaponCstun(void)
 {
 	// HACK:  Don't call SetStunState because this tried to Emit a sound before
 	//  any players are connected which is a bug
@@ -111,7 +111,7 @@ CWeaponCStun::CWeaponCStun(void)
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CWeaponCStun::Spawn()
+void CWeaponCstun::Spawn()
 {
 	Precache();
 
@@ -119,17 +119,23 @@ void CWeaponCStun::Spawn()
 	AddSolidFlags(FSOLID_NOT_STANDABLE);
 }
 
-void CWeaponCStun::Precache()
+void CWeaponCstun::Precache()
 {
 	BaseClass::Precache();
 
+#ifdef HL2_DLL
 	PrecacheScriptSound("Weapon_StunStick.Activate");
 	PrecacheScriptSound("Weapon_StunStick.Deactivate");
+	PrecacheScriptSound("Weapon_StunStick.Melee_Hit");
+#endif
 
 	PrecacheModel(STUNSTICK_BEAM_MATERIAL);
-	PrecacheModel("sprites/light_glow02_add.vmt");
-	PrecacheModel("effects/blueflare1.vmt");
-	PrecacheModel("sprites/light_glow02_add_noz.vmt");
+	PrecacheModel(STUNSTICK_GLOW_MATERIAL);
+#ifdef CLIENT_DLL
+	PrecacheModel(STUNSTICK_GLOW_MATERIAL2);
+	PrecacheModel(STUNSTICK_GLOW_MATERIAL_NOZ);
+#endif
+
 }
 
 //-----------------------------------------------------------------------------
@@ -137,7 +143,7 @@ void CWeaponCStun::Precache()
 // Input  : hitActivity - currently played activity
 // Output : Damage amount
 //-----------------------------------------------------------------------------
-float CWeaponCStun::GetDamageForActivity(Activity hitActivity)
+float CWeaponCstun::GetDamageForActivity(Activity hitActivity)
 {
 	if ((GetOwner() != NULL) && (GetOwner()->IsPlayer()))
 		return sk_plr_dmg_cstun.GetFloat();
@@ -153,7 +159,7 @@ extern ConVar sk_crowbar_lead_time;
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CWeaponCStun::ImpactEffect(trace_t &traceHit)
+void CWeaponCstun::ImpactEffect(trace_t &traceHit)
 {
 
 	//#ifndef CLIENT_DLL
@@ -163,7 +169,8 @@ void CWeaponCStun::ImpactEffect(trace_t &traceHit)
 	data.m_vNormal = traceHit.plane.normal;
 	data.m_vOrigin = traceHit.endpos + (data.m_vNormal * 4.0f);
 
-	DispatchEffect("StunstickImpact", data);
+	EmitSound("Weapon_StunStick.Melee_Hit");
+	DispatchEffect("CstunImpact", data);
 
 	//#endif
 
@@ -174,7 +181,7 @@ void CWeaponCStun::ImpactEffect(trace_t &traceHit)
 #ifndef CLIENT_DLL
 
 
-int CWeaponCStun::WeaponMeleeAttack1Condition(float flDot, float flDist)
+int CWeaponCstun::WeaponMeleeAttack1Condition(float flDot, float flDist)
 {
 	// Attempt to lead the target (needed because citizens can't hit manhacks with the crowbar!)
 	CAI_BaseNPC *pNPC = GetOwner()->MyNPCPointer();
@@ -246,7 +253,7 @@ int CWeaponCStun::WeaponMeleeAttack1Condition(float flDot, float flDist)
 }
 
 
-void CWeaponCStun::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator)
+void CWeaponCstun::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator)
 {
 	switch (pEvent->event)
 	{
@@ -345,7 +352,7 @@ void CWeaponCStun::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatChar
 //-----------------------------------------------------------------------------
 // Purpose: Sets the state of the stun stick
 //-----------------------------------------------------------------------------
-void CWeaponCStun::SetStunState(bool state)
+void CWeaponCstun::SetStunState(bool state)
 {
 	m_bActive = state;
 
@@ -374,7 +381,7 @@ void CWeaponCStun::SetStunState(bool state)
 // Purpose: 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CWeaponCStun::Deploy(void)
+bool CWeaponCstun::Deploy(void)
 {
 	SetStunState(true);
 
@@ -384,7 +391,7 @@ bool CWeaponCStun::Deploy(void)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-bool CWeaponCStun::Holster(CBaseCombatWeapon *pSwitchingTo)
+bool CWeaponCstun::Holster(CBaseCombatWeapon *pSwitchingTo)
 {
 	if (BaseClass::Holster(pSwitchingTo) == false)
 		return false;
@@ -399,7 +406,7 @@ bool CWeaponCStun::Holster(CBaseCombatWeapon *pSwitchingTo)
 // Purpose: 
 // Input  : &vecVelocity - 
 //-----------------------------------------------------------------------------
-void CWeaponCStun::Drop(const Vector &vecVelocity)
+void CWeaponCstun::Drop(const Vector &vecVelocity)
 {
 	SetStunState(false);
 
@@ -413,7 +420,7 @@ void CWeaponCStun::Drop(const Vector &vecVelocity)
 // Purpose: 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CWeaponCStun::GetStunState(void)
+bool CWeaponCstun::GetStunState(void)
 {
 	return m_bActive;
 }
@@ -451,7 +458,7 @@ bool UTIL_GetWeaponAttachment(C_BaseCombatWeapon *pWeapon, int attachmentID, Vec
 //-----------------------------------------------------------------------------
 // Purpose: Sets up the attachment point lookup for the model
 //-----------------------------------------------------------------------------
-void CWeaponCStun::SetupAttachmentPoints(void)
+void CWeaponCstun::SetupAttachmentPoints(void)
 {
 	// Setup points for both types of views
 	if (ShouldDrawUsingViewModel())
@@ -490,7 +497,7 @@ void CWeaponCStun::SetupAttachmentPoints(void)
 //-----------------------------------------------------------------------------
 // Purpose: Draws the stunstick model (with extra effects)
 //-----------------------------------------------------------------------------
-int CWeaponCStun::DrawModel(int flags)
+int CWeaponCstun::DrawModel(int flags)
 {
 	if (ShouldDraw() == false)
 		return 0;
@@ -508,7 +515,7 @@ int CWeaponCStun::DrawModel(int flags)
 //-----------------------------------------------------------------------------
 // Purpose: Randomly adds extra effects
 //-----------------------------------------------------------------------------
-void CWeaponCStun::ClientThink(void)
+void CWeaponCstun::ClientThink(void)
 {
 	if (InSwing() == false)
 	{
@@ -581,7 +588,7 @@ void CWeaponCStun::ClientThink(void)
 //-----------------------------------------------------------------------------
 // Purpose: Starts the client-side version thinking
 //-----------------------------------------------------------------------------
-void CWeaponCStun::OnDataChanged(DataUpdateType_t updateType)
+void CWeaponCstun::OnDataChanged(DataUpdateType_t updateType)
 {
 	BaseClass::OnDataChanged(updateType);
 	if (updateType == DATA_UPDATE_CREATED)
@@ -594,7 +601,7 @@ void CWeaponCStun::OnDataChanged(DataUpdateType_t updateType)
 //-----------------------------------------------------------------------------
 // Purpose: Tells us we're always a translucent entity
 //-----------------------------------------------------------------------------
-RenderGroup_t CWeaponCStun::GetRenderGroup(void)
+RenderGroup_t CWeaponCstun::GetRenderGroup(void)
 {
 	return RENDER_GROUP_TWOPASS;
 }
@@ -602,7 +609,7 @@ RenderGroup_t CWeaponCStun::GetRenderGroup(void)
 //-----------------------------------------------------------------------------
 // Purpose: Tells us we're always a translucent entity
 //-----------------------------------------------------------------------------
-bool CWeaponCStun::InSwing(void)
+bool CWeaponCstun::InSwing(void)
 {
 	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
 	if (!pPlayer)
@@ -639,7 +646,7 @@ bool CWeaponCStun::InSwing(void)
 //-----------------------------------------------------------------------------
 // Purpose: Draw our special effects
 //-----------------------------------------------------------------------------
-void CWeaponCStun::DrawThirdPersonEffects(void)
+void CWeaponCstun::DrawThirdPersonEffects(void)
 {
 	Vector	vecOrigin;
 	QAngle	vecAngles;
@@ -732,7 +739,7 @@ void CWeaponCStun::DrawThirdPersonEffects(void)
 //-----------------------------------------------------------------------------
 // Purpose: Draw our special effects
 //-----------------------------------------------------------------------------
-void CWeaponCStun::DrawFirstPersonEffects(void)
+void CWeaponCstun::DrawFirstPersonEffects(void)
 {
 	Vector	vecOrigin;
 	QAngle	vecAngles;
@@ -791,7 +798,7 @@ void CWeaponCStun::DrawFirstPersonEffects(void)
 //-----------------------------------------------------------------------------
 // Purpose: Draw our special effects
 //-----------------------------------------------------------------------------
-void CWeaponCStun::DrawEffects(void)
+void CWeaponCstun::DrawEffects(void)
 {
 	if (ShouldDrawUsingViewModel())
 	{
@@ -806,7 +813,7 @@ void CWeaponCStun::DrawEffects(void)
 //-----------------------------------------------------------------------------
 // Purpose: Viewmodel was drawn
 //-----------------------------------------------------------------------------
-void CWeaponCStun::ViewModelDrawn(C_BaseViewModel *pBaseViewModel)
+void CWeaponCstun::ViewModelDrawn(C_BaseViewModel *pBaseViewModel)
 {
 	// Don't bother when we're not deployed
 	if (IsWeaponVisible())
@@ -821,7 +828,7 @@ void CWeaponCStun::ViewModelDrawn(C_BaseViewModel *pBaseViewModel)
 //-----------------------------------------------------------------------------
 // Purpose: Draw a cheap glow quad at our impact point (with sparks)
 //-----------------------------------------------------------------------------
-void StunstickImpactCallback(const CEffectData &data)
+void CstunImpactCallback(const CEffectData &data)
 {
 	float scale = random->RandomFloat(16, 32);
 
@@ -843,49 +850,6 @@ void StunstickImpactCallback(const CEffectData &data)
 	FX_Sparks(data.m_vOrigin, 1, 2, data.m_vNormal, 6, 64, 256);
 }
 
-DECLARE_CLIENT_EFFECT("StunstickImpact", StunstickImpactCallback);
+DECLARE_CLIENT_EFFECT("CstunImpact", CstunImpactCallback);
 
 #endif
-
-//-----------------------------------------------------------------------------
-// Purpose: Add in a view kick for this weapon
-//-----------------------------------------------------------------------------
-void CWeaponCStun::AddViewKick(void)
-{
-	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
-
-	if (pPlayer == NULL)
-		return;
-
-	QAngle punchAng;
-
-	punchAng.x = random->RandomFloat(1.0f, 2.0f);
-	punchAng.y = random->RandomFloat(-2.0f, -1.0f);
-	punchAng.z = 0.0f;
-
-	pPlayer->ViewPunch(punchAng);
-}
-
-float CWeaponCStun::GetRange(void)
-{
-	return STUNSTICK_RANGE;
-}
-
-float CWeaponCStun::GetFireRate(void)
-{
-	return STUNSTICK_REFIRE;
-}
-
-void CWeaponCStun::MeleeHit(trace_t &trace)
-{
-#ifndef CLIENT_DLL
-	WeaponSound(MELEE_HIT);
-#endif
-}
-
-void CWeaponCStun::MeleeHitWorld(trace_t &trace)
-{
-#ifndef CLIENT_DLL
-	WeaponSound(MELEE_HIT_WORLD);
-#endif
-}

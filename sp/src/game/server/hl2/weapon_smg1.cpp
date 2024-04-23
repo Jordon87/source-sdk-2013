@@ -152,6 +152,8 @@ void CWeaponSMG1::Precache( void )
 	UTIL_PrecacheOther("grenade_ar2");
 
 	BaseClass::Precache();
+
+	PrecacheParticleSystem("weapon_muzzle_smoke");
 }
 
 //-----------------------------------------------------------------------------

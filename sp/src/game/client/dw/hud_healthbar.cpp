@@ -66,17 +66,17 @@ DECLARE_HUDELEMENT (CHudHealthBar);
 // Purpose: Constructor
 //------------------------------------------------------------------------
  
-CHudHealthBar:: CHudHealthBar (const char * pElementName) : 
+CHudHealthBar::CHudHealthBar (const char * pElementName) : 
 	CHudElement (pElementName), BaseClass (NULL, "HudHealthBar")
 {
 	vgui:: Panel * pParent = g_pClientMode-> GetViewport ();
 	SetParent (pParent);
 
 	m_nTexture_BG = surface()->CreateNewTextureID();
-	surface()->DrawSetTextureFile( m_nTexture_BG, "vgui/hud/stamina_bg", true, false );	// Originally healhbar_bg
+	surface()->DrawSetTextureFile( m_nTexture_BG, "vgui/hud/health_bar", true, false );
 
 	m_nTexture_FG = surface()->CreateNewTextureID();
-	surface()->DrawSetTextureFile( m_nTexture_FG, "vgui/hud/stamina_fg", true, false ); // Originally healhbar_fg
+	surface()->DrawSetTextureFile( m_nTexture_FG, "vgui/hud/health_fg", true, false );
 
 	for (int i = 0;i <= 49;i++)
 	{
@@ -147,7 +147,7 @@ CHudHealthBar:: CHudHealthBar (const char * pElementName) :
 // Purpose:
 //------------------------------------------------------------------------
  
-void CHudHealthBar:: Init()
+void CHudHealthBar::Init()
 {
 	Reset();
 }
@@ -156,7 +156,7 @@ void CHudHealthBar:: Init()
 // Purpose:
 //-----------------------------------------------------------------------
  
-void CHudHealthBar:: Reset (void)
+void CHudHealthBar::Reset (void)
 {
 	m_flHull = 100;
 	m_nHullLow = -1;
@@ -170,7 +170,7 @@ void CHudHealthBar:: Reset (void)
 // Purpose:
 //------------------------------------------------------------------------
  
-void CHudHealthBar:: OnThink (void)
+void CHudHealthBar::OnThink (void)
 {
 	float newHull = 0;
 	C_BasePlayer * local = C_BasePlayer:: GetLocalPlayer ();

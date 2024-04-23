@@ -44,6 +44,7 @@ protected:
 	int		m_iAmmo2;
 	CHudTexture *m_iconPrimaryAmmo;
 	CHandle< C_BaseCombatWeapon > m_hCurrentActiveWeapon;
+	CHandle< C_BaseEntity > m_hCurrentVehicle;
  
 private:
 
@@ -80,8 +81,7 @@ CHudAmmoNH2::CHudAmmoNH2 (const char * pElementName) : CHudElement (pElementName
 
 	m_nTexture_BG = surface()->CreateNewTextureID();
 	m_nTexture_Line = surface()->CreateNewTextureID();
-	surface()->DrawSetTextureFile( m_nTexture_BG, "vgui/hud/stamina_bg", true, false );		// squad_bg
-	surface()->DrawSetTextureFile( m_nTexture_Line, "vgui/hud/stamina_fg", true, false );	// health_fg
+	surface()->DrawSetTextureFile( m_nTexture_BG, "vgui/hud/ammo_bar", true, false );
  
 	SetHiddenBits( HIDEHUD_HEALTH | HIDEHUD_PLAYERDEAD | HIDEHUD_NEEDSUIT | HIDEHUD_WEAPONSELECTION );
 }
@@ -115,11 +115,24 @@ void CHudAmmoNH2::Reset (void)
  
 void CHudAmmoNH2::OnThink (void)
 {
+	C_BaseCombatWeapon* wpn = GetActiveWeapon();
 
 	C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
 	UpdatePlayerAmmo( player );
 	
+	IClientVehicle *pVehicle = player ? player->GetVehicle() : NULL;
 
+	if ( !wpn || !player || pVehicle )
+	{
+		m_hCurrentActiveWeapon = NULL;
+		SetPaintEnabled( false );
+		SetPaintBackgroundEnabled( false );
+	}
+	else
+	{
+		SetPaintEnabled( true );
+		SetPaintBackgroundEnabled( true );
+	}
 }
  
  
@@ -153,8 +166,8 @@ void CHudAmmoNH2::Paint()
 	surface()->DrawPrintText(unicode,wcslen(unicode));
 
 	//draw line
-	surface()->DrawSetColor(line_color);
-	surface()->DrawSetTexture( m_nTexture_Line);
+	surface()->DrawSetColor( m_HullColor );
+	surface()->DrawSetTexture( m_nTexture_Line );
 	surface()->DrawTexturedRect( line_xpos, line_ypos, line_xpos + line_wide , line_ypos + line_tall );
 
 }
@@ -177,14 +190,12 @@ void CHudAmmoNH2::PaintBackground()
 void CHudAmmoNH2::UpdatePlayerAmmo( C_BasePlayer *player )
 {
 	// Clear out the vehicle entity
-	//m_hCurrentVehicle = NULL;
+	m_hCurrentVehicle = NULL;
 
 	C_BaseCombatWeapon *wpn = GetActiveWeapon();
 
 	if ( !wpn || !player || !wpn->UsesPrimaryAmmo() )
 	{
-		//SetPaintEnabled(false);
-		//SetPaintBackgroundEnabled(false);
 		g_pClientMode->GetViewportAnimationController()->RunAnimationCommand( this, "alpha", 0.0f, 0.0f, 0.4f, AnimationController::INTERPOLATOR_LINEAR);
 		return;
 	}

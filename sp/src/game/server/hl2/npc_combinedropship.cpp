@@ -419,7 +419,20 @@ END_DATADESC()
 void CCombineDropshipContainer::Precache()
 {
 	PrecacheModel( DROPSHIP_CONTAINER_MODEL );
-
+	PrecacheModel( "models/combine_strider.mdl ");
+	PrecacheModel( "models/gibs/strider_gib1.mdl" );
+	PrecacheModel( "models/gibs/strider_gib2.mdl" );
+	PrecacheModel( "models/gibs/strider_gib3.mdl" );
+	PrecacheModel( "models/gibs/strider_gib4.mdl" );
+	PrecacheModel( "models/gibs/strider_gib5.mdl" );
+	PrecacheModel( "models/gibs/strider_gib6.mdl" );
+	PrecacheModel( "models/gibs/strider_gib7.mdl" );
+	PrecacheModel( "models/gibs/strider_head.mdl" );
+	PrecacheModel( "models/gibs/strider_weapon.mdl" );
+	PrecacheModel( "models/gibs/strider_left_leg.mdl" );
+	PrecacheModel( "models/gibs/strider_right_leg.mdl" );
+	PrecacheModel( "models/gibs/strider_back_leg.mdl" );
+	PrecacheModel( "sprites/physbeam.vmt" );
 	// Set this here to quiet base prop warnings
 	SetModel( DROPSHIP_CONTAINER_MODEL );
 

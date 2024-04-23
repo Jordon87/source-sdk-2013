@@ -11,6 +11,7 @@
 #include "game.h"
 #include "in_buttons.h"
 #include "gamestats.h"
+#include "particle_parse.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -113,6 +114,12 @@ void CHLMachineGun::PrimaryAttack( void )
 
 	// Register a muzzleflash for the AI
 	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
+
+	if (m_nShotsFired >= 5)
+	{
+		//We shot >5, clean up and start the muzzle smoking effect (like l4d)
+		DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
+	}
 }
 
 //-----------------------------------------------------------------------------

@@ -30,14 +30,14 @@ public:
 	void Spawn( void )
 	{ 
 		Precache( );
-		SetModel( "models/items/hevsuit.mdl" );
+		SetModel( "models/item/hevsuit.mdl" );
 		BaseClass::Spawn( );
 		
 		CollisionProp()->UseTriggerBounds( false, 0 );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/hevsuit.mdl");
+		PrecacheModel ("models/item/hevsuit.mdl");
 	}
 	bool MyTouch( CBasePlayer *pPlayer )
 	{

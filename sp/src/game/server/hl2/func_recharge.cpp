@@ -26,10 +26,6 @@ static ConVar	sk_suitcharger( "sk_suitcharger","0" );
 static ConVar	sk_suitcharger_citadel( "sk_suitcharger_citadel","0" );
 static ConVar	sk_suitcharger_citadel_maxarmor( "sk_suitcharger_citadel_maxarmor","0" );
 
-#if defined ( DANGEROUSWORLD_DLL )
-static ConVar	sk_suitcharger_dw("sk_suitcharger_dw", "0");
-#endif
-
 #define SF_CITADEL_RECHARGER	0x2000
 #define SF_KLEINER_RECHARGER	0x4000 // Gives only 25 health
 
@@ -96,9 +92,6 @@ END_DATADESC()
 
 LINK_ENTITY_TO_CLASS(func_recharge, CRecharge);
 
-#if defined ( DANGEROUSWORLD_DLL )
-LINK_ENTITY_TO_CLASS(func_recharge_dw, CRecharge);
-#endif
 
 bool CRecharge::KeyValue( const char *szKeyName, const char *szValue )
 {
@@ -165,11 +158,7 @@ float CRecharge::MaxJuice()	const
 {
 	if ( HasSpawnFlags( SF_CITADEL_RECHARGER ) )
 	{
-#if defined ( DANGEROUSWORLD_DLL )
-		return sk_suitcharger_dw.GetFloat();
-#else
 		return sk_suitcharger_citadel.GetFloat();
-#endif
 	}
 	
 	return sk_suitcharger.GetFloat();
@@ -288,10 +277,6 @@ void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	int nIncrementArmor = 1;
 	if ( HasSpawnFlags(	SF_CITADEL_RECHARGER ) )
 	{
-#if defined ( DANGEROUSWORLD_DLL )
-		nMaxArmor = 100;
-		nIncrementArmor = 1;
-#else
 		nMaxArmor = sk_suitcharger_citadel_maxarmor.GetInt();
 		nIncrementArmor = 10;
 
@@ -300,7 +285,6 @@ void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 		{
 			pActivator->TakeHealth( 5, DMG_GENERIC );
 		}
-#endif
 	}
 
 	if (pl->ArmorValue() < nMaxArmor)

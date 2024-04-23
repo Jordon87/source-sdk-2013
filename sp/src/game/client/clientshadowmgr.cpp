@@ -1336,6 +1336,11 @@ void CClientShadowMgr::InitDepthTextureShadows()
 {
 	VPROF_BUDGET( "CClientShadowMgr::InitDepthTextureShadows", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 
+	CFastTimer timer;
+	timer.Start();
+
+	m_nDepthTextureResolution = r_flashlightdepthres.GetInt();
+
 	if( !m_bDepthTextureActive )
 	{
 		m_bDepthTextureActive = true;
@@ -1388,6 +1393,9 @@ void CClientShadowMgr::InitDepthTextureShadows()
 
 		materials->EndRenderTargetAllocation();
 	}
+
+	timer.End();
+	DevMsg("InitDepthTextureShadows took %.2f msec\n", timer.GetDuration().GetMillisecondsF());
 }
 
 void CClientShadowMgr::ShutdownDepthTextureShadows() 

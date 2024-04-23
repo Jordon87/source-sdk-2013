@@ -174,17 +174,6 @@ void CBaseHLBludgeonWeapon::Hit( trace_t &traceHit, Activity nHitActivity, bool 
 		{
 			gamestats->Event_WeaponHit( pPlayer, !bIsSecondary, GetClassname(), info );
 		}
-
-#if defined ( DANGEROUSWORLD_DLL )
-		if (!pHitEntity->IsWorld())
-		{
-			MeleeHit(traceHit);
-		}
-		else
-		{
-			MeleeHitWorld(traceHit);
-		}
-#endif
 	}
 
 	// Apply an impact effect
@@ -365,11 +354,6 @@ void CBaseHLBludgeonWeapon::Swing( int bIsSecondary )
 
 	gamestats->Event_WeaponFired( pOwner, !bIsSecondary, GetClassname() );
 
-#if defined ( DANGEROUSWORLD_DLL )
-	//Play swing sound
-	WeaponSound(SINGLE);
-#endif
-
 	// -------------------------
 	//	Miss
 	// -------------------------
@@ -395,8 +379,6 @@ void CBaseHLBludgeonWeapon::Swing( int bIsSecondary )
 	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
 	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
 
-#if !defined ( DANGEROUSWORLD_DLL )
 	//Play swing sound
 	WeaponSound( SINGLE );
-#endif
 }

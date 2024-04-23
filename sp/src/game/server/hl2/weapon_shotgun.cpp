@@ -18,6 +18,7 @@
 #include "soundent.h"
 #include "vstdlib/random.h"
 #include "gamestats.h"
+#include "particle_parse.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -156,6 +157,7 @@ IMPLEMENT_ACTTABLE(CWeaponShotgun);
 void CWeaponShotgun::Precache( void )
 {
 	CBaseCombatWeapon::Precache();
+	PrecacheParticleSystem( "weapon_muzzle_smoke" );
 }
 
 //-----------------------------------------------------------------------------
@@ -487,6 +489,8 @@ void CWeaponShotgun::PrimaryAttack( void )
 		// pump so long as some rounds are left.
 		m_bNeedPump = true;
 	}
+
+	DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
 
 	m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );

@@ -905,7 +905,7 @@ LINK_ENTITY_TO_CLASS( sniperbullet, CSniperBullet );
 void CProtoSniper::Precache( void )
 {
 	PrecacheModel("models/combine_soldier.mdl");
-	sHaloSprite = PrecacheModel("sprites/light_glow03.vmt");
+	sHaloSprite = PrecacheModel("sprites/redglow3.vmt");
 	sFlashSprite = PrecacheModel( "sprites/muzzleflash1.vmt" );
 	PrecacheModel("effects/bluelaser1.vmt");	
 

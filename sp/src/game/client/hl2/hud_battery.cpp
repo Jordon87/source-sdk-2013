@@ -54,6 +54,7 @@ DECLARE_HUD_MESSAGE( CHudBattery, Battery );
 //-----------------------------------------------------------------------------
 CHudBattery::CHudBattery( const char *pElementName ) : BaseClass(NULL, "HudSuit"), CHudElement( pElementName )
 {
+	SetPaintBackgroundEnabled( false );
 	SetHiddenBits( HIDEHUD_HEALTH | HIDEHUD_NEEDSUIT );
 }
 
@@ -73,8 +74,6 @@ void CHudBattery::Init( void )
 //-----------------------------------------------------------------------------
 void CHudBattery::Reset( void )
 {
-	SetLabelText(g_pVGuiLocalize->Find("#Valve_Hud_SUIT"));
-	SetDisplayValue(m_iBat);
 }
 
 //-----------------------------------------------------------------------------

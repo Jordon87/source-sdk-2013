@@ -17,17 +17,17 @@ using namespace vgui;
 //-----------------------------------------------------------------------------
 // Purpose: Displays the secondary ammunition level
 //-----------------------------------------------------------------------------
-class CHudSecondaryAmmoNH2 : public CHudNumericDisplay, public CHudElement
+class CHudSecondaryAmmo : public CHudNumericDisplay, public CHudElement
 {
-	DECLARE_CLASS_SIMPLE(CHudSecondaryAmmoNH2, CHudNumericDisplay);
+	DECLARE_CLASS_SIMPLE(CHudSecondaryAmmo, CHudNumericDisplay);
 
 public:
-	CHudSecondaryAmmoNH2(const char *pElementName) : BaseClass(NULL, "HudAmmoSecondary"), CHudElement(pElementName)
+	CHudSecondaryAmmo(const char *pElementName) : BaseClass(NULL, "HudAmmoSecondary"), CHudElement(pElementName)
 	{
 		m_iAmmo = -1;
 
 		m_nTexture_BG = surface()->CreateNewTextureID();
-		surface()->DrawSetTextureFile(m_nTexture_BG, "vgui/hud/stamina_bg", true, false);	// Originally healhbar_bg
+		surface()->DrawSetTextureFile(m_nTexture_BG, "vgui/hud/ammo_sec_bar", true, false);	// Originally healhbar_bg
 
 		SetHiddenBits(HIDEHUD_HEALTH | HIDEHUD_WEAPONSELECTION | HIDEHUD_PLAYERDEAD | HIDEHUD_NEEDSUIT);
 	}
@@ -57,6 +57,9 @@ public:
 		m_hCurrentActiveWeapon = NULL;
 		SetAlpha(0);
 		UpdateAmmoState();
+		SetPaintEnabled( true );
+		SetPaintBackgroundEnabled( true );
+		SetBgColor(Color(255,255,255));
 	}
 
 	virtual void Paint(void)
@@ -136,4 +139,4 @@ private:
 	int m_nTexture_BG;
 };
 
-DECLARE_HUDELEMENT(CHudSecondaryAmmoNH2);
+DECLARE_HUDELEMENT(CHudSecondaryAmmo);

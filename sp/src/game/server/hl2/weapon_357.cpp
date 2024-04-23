@@ -34,6 +34,7 @@ public:
 
 	CWeapon357( void );
 
+	void	Precache( void );
 	void	PrimaryAttack( void );
 	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 
@@ -88,6 +89,12 @@ void CWeapon357::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChara
 				break;
 			}
 	}
+}
+
+void CWeapon357::Precache(void)
+{
+	BaseClass::Precache();
+	PrecacheParticleSystem( "weapon_muzzle_smoke" );
 }
 
 //-----------------------------------------------------------------------------
@@ -157,4 +164,7 @@ void CWeapon357::PrimaryAttack( void )
 		// HEV suit - indicate out of ammo condition
 		pPlayer->SetSuitUpdate( "!HEV_AMO0", FALSE, 0 ); 
 	}
+
+	DispatchParticleEffect("weapon_muzzle_smoke", PATTACH_POINT_FOLLOW, pPlayer->GetViewModel(), "muzzle", true);
+
 }
