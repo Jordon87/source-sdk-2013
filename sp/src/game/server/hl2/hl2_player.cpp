@@ -1388,8 +1388,6 @@ CHL2_Player::~CHL2_Player( void )
 
 bool CHL2_Player::CommanderFindGoal( commandgoal_t *pGoal )
 {
-	DevMsg( "CommanderFindGoal Player\n" );
-
 	CAI_BaseNPC *pAllyNpc;
 	trace_t	tr;
 	Vector	vecTarget;
@@ -1584,20 +1582,15 @@ void CHL2_Player::CommanderUpdate()
 //----------------------------------------------------------------------------- 
 bool CHL2_Player::CommanderExecuteOne( CAI_BaseNPC *pNpc, const commandgoal_t &goal, CAI_BaseNPC **Allies, int numAllies )
 {
-	DevMsg( "CommanderExecuteOne Player\n" );
-
 	if ( goal.m_pGoalEntity )
 	{
-		DevMsg( "pNpc->TargetOrder Player\n" );
 		return pNpc->TargetOrder( goal.m_pGoalEntity, Allies, numAllies );
 	}
 	else if ( pNpc->IsInPlayerSquad() )
 	{
-		DevMsg( "pNpc->MoveOrder Player\n" );
 		pNpc->MoveOrder( goal.m_vecGoalLocation, Allies, numAllies );
 	}
-	
-	DevMsg( "CommanderExecuteOne returning True Player\n" );
+
 	return true;
 }
 
@@ -1605,8 +1598,6 @@ bool CHL2_Player::CommanderExecuteOne( CAI_BaseNPC *pNpc, const commandgoal_t &g
 //---------------------------------------------------------
 void CHL2_Player::CommanderExecute( CommanderCommand_t command )
 {
-	DevMsg( "CommanderExecute Player\n" );
-
 	CAI_BaseNPC *pPlayerSquadLeader = GetSquadCommandRepresentative();
 
 	if ( !pPlayerSquadLeader )
@@ -1621,34 +1612,28 @@ void CHL2_Player::CommanderExecute( CommanderCommand_t command )
 
 	if ( command == CC_TOGGLE )
 	{
-		DevMsg( "Command = CC_TOGGLE\n" );
 		if ( pPlayerSquadLeader->GetCommandGoal() != vec3_invalid )
 		{
-			DevMsg( "Command = CC_FOLLOW\n" );
 			command = CC_FOLLOW;
 		}
 		else
 		{
-			DevMsg( "Command = CC_SEND\n" );
 			command = CC_SEND;
 		}
 	}
 	else
 	{
 		if ( command == CC_FOLLOW && pPlayerSquadLeader->GetCommandGoal() == vec3_invalid )
-			DevMsg( "CommanderExecute Returning Player\n" );
 			return;
 	}
 
 	if ( command == CC_FOLLOW )
 	{
-		DevMsg( "Command == CC_FOLLOW Player\n" );
 		goal.m_pGoalEntity = this;
 		goal.m_vecGoalLocation = vec3_invalid;
 	}
 	else
 	{
-		DevMsg( "Command is not CC_Follow Player\n" );
 		goal.m_pGoalEntity = NULL;
 		goal.m_vecGoalLocation = vec3_invalid;
 
@@ -1671,7 +1656,6 @@ void CHL2_Player::CommanderExecute( CommanderCommand_t command )
 	for ( CAI_BaseNPC *pAllyNpc = m_pPlayerAISquad->GetFirstMember(&iter); pAllyNpc; pAllyNpc = m_pPlayerAISquad->GetNextMember(&iter) )
 	{
 		if ( pAllyNpc->IsCommandable() )
-			DevMsg( "pAllyNpc->IsCommandable Player\n" );
 			Allies.AddToTail( pAllyNpc );
 	}
 
@@ -1686,17 +1670,13 @@ void CHL2_Player::CommanderExecute( CommanderCommand_t command )
 	bool bHandled = false;
 	if( pTargetNpc )
 	{
-		DevMsg( "pTargetNpc is valid Player\n" );
 		bHandled = !CommanderExecuteOne( pTargetNpc, goal, Allies.Base(), Allies.Count() );
 	}
 	
 	for ( i = 0; !bHandled && i < Allies.Count(); i++ )
 	{
-		DevMsg( "Looping i = 0; !bHandled && i < Allies.Count(); i++ Player\n" );
-
 		if ( Allies[i] != pTargetNpc && Allies[i]->IsPlayerAlly() )
 		{
-			DevMsg("( Allies[i] != pTargetNpc && Allies[i]->IsPlayerAlly() ) Player\n");
 			bHandled = !CommanderExecuteOne( Allies[i], goal, Allies.Base(), Allies.Count() );
 		}
 		Assert( nAIs == g_AI_Manager.NumAIs() ); // not coded to support mutating set of NPCs
@@ -1708,7 +1688,6 @@ void CHL2_Player::CommanderExecute( CommanderCommand_t command )
 //-----------------------------------------------------------------------------
 void CHL2_Player::CommanderMode()
 {
-	DevMsg( "CommanderMode Player\n" );
 	float commandInterval = gpGlobals->realtime - m_RealTimeLastSquadCommand;
 	m_RealTimeLastSquadCommand = gpGlobals->realtime;
 	if ( commandInterval < player_squad_double_tap_time.GetFloat() )

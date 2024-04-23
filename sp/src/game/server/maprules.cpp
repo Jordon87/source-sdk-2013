@@ -346,8 +346,6 @@ void CGameText::InputDisplay( inputdata_t &inputdata )
 
 void CGameText::Display( CBaseEntity *pActivator )
 {
-	DevMsg( "( CGameText Display\n" );
-
 	if ( !CanFireForActivator( pActivator ) )
 		return;
 

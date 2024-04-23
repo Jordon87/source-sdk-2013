@@ -501,14 +501,12 @@ bool CAI_FollowBehavior::PlayerIsPushing()
 bool CAI_FollowBehavior::IsFollowTargetInRange( float rangeMultiplier )
 {
 	if ( !GetFollowTarget()->IsPlayer() && HasCondition( COND_RECEIVED_ORDERS ) )
-		DevMsg( "CAI_FollowBehavior: !GetFollowTarget()->IsPlayer() && HasCondition( COND_RECEIVED_ORDERS ) \n" );
 		return false;
 
 	if( GetNpcState() == NPC_STATE_COMBAT )
 	{
 		if( IsFollowGoalInRange( MAX( m_FollowNavGoal.coverTolerance, m_FollowNavGoal.enemyLOSTolerance ) * rangeMultiplier, GetGoalZRange(), GetGoalFlags() ) )
 		{
-			DevMsg( "CAI_FollowBehavior:IsFollowGoalInRange( max( m_FollowNavGoal.coverTolerance, m_FollowNavGoal.enemyLOSTolerance \n" );
 			return true;
 		}
 	}

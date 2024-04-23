@@ -1109,7 +1109,7 @@ public:
 	virtual CAI_BaseNPC *GetSquadCommandRepresentative()				{ return NULL; }
 
 	virtual bool TargetOrder( CBaseEntity *pTarget, CAI_BaseNPC **Allies, int numAllies ) { OnTargetOrder(); return true; }
-	virtual void MoveOrder( const Vector &vecDest, CAI_BaseNPC **Allies, int numAllies ) { SetCommandGoal( vecDest ); SetCondition( COND_RECEIVED_ORDERS ); OnMoveOrder(); DevMsg("CAI_BaseNpc MoveOrder\n"); }
+	virtual void MoveOrder( const Vector &vecDest, CAI_BaseNPC **Allies, int numAllies ) { SetCommandGoal( vecDest ); SetCondition( COND_RECEIVED_ORDERS ); OnMoveOrder(); }
 
 	// Return true if you're willing to be idly talked to by other friends.
 	virtual bool CanBeUsedAsAFriend( void );

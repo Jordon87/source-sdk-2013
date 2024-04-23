@@ -373,8 +373,6 @@ CAI_BaseNPC *CAI_Squad::GetSquadMemberNearestTo( const Vector &vecLocation )
 //-------------------------------------
 bool CAI_Squad::SquadIsMember( CBaseEntity *pMember )
 {
-	DevMsg( "SquadIsMember Squad\n" );
-
 	CAI_BaseNPC *pNPC = pMember->MyNPCPointer();
 	if ( pNPC && pNPC->GetSquad() == this )
 		return true;

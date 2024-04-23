@@ -455,8 +455,6 @@ void CNPC_Citizen::PrecacheAllOfType( CitizenType_t type )
 //-----------------------------------------------------------------------------
 void CNPC_Citizen::Spawn()
 {
-	DevMsg( "Spawn()  Citizen\n" );
-
 	BaseClass::Spawn();
 
 #ifdef _XBOX
@@ -1167,8 +1165,6 @@ int CNPC_Citizen::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 //-----------------------------------------------------------------------------
 int CNPC_Citizen::SelectSchedule()
 {
-	DevMsg( "CNPC_Citizen:  SelectSchedule() \n" );
-
 	// If we can't move, we're on a train, and should be sitting.
 	if ( GetMoveType() == MOVETYPE_NONE )
 	{
@@ -1192,7 +1188,6 @@ int CNPC_Citizen::SelectSchedule()
 //-----------------------------------------------------------------------------
 int CNPC_Citizen::SelectSchedulePriorityAction()
 {
-	DevMsg( "CNPC_Citizen:  SelectSchedulePriorityAction() \n" );
 	int schedule = SelectScheduleHeal();
 	if ( schedule != SCHED_NONE )
 		return schedule;
@@ -1421,7 +1416,6 @@ int CNPC_Citizen::SelectScheduleManhackCombat()
 //-----------------------------------------------------------------------------
 int CNPC_Citizen::SelectScheduleCombat()
 {
-	DevMsg( "CNPC_Citizen:  SelectScheduleCombat() \n" );
 	int schedule = SelectScheduleManhackCombat();
 	if ( schedule != SCHED_NONE )
 		return schedule;

@@ -409,7 +409,7 @@ void CNPC_Combine::PostNPCInit()
 	if ( IsInPlayerSquad() )
 	{
 		if ( m_pSquad->NumMembers() > MAX_PLAYER_SQUAD )
-			DevMsg( "Error: Spawning citizen in player squad but exceeds squad limit of %d members\n", MAX_PLAYER_SQUAD );
+			DevMsg( "Error: Spawning soldier in player squad but exceeds squad limit of %d members\n", MAX_PLAYER_SQUAD );
 
 		FixupPlayerSquad();
 	}
@@ -1653,12 +1653,11 @@ int CNPC_Combine::SelectSchedule( void )
 
 	if ( ShouldDeferToFollowBehavior() )
 	{
-		DevMsg( "( DeferSchedulingToBehavior( &m_FollowBehavior  Combine\n" );
 		DeferSchedulingToBehavior( &(GetFollowBehavior()) );
 	}
 	else if ( !BehaviorSelectSchedule() && m_NPCState == NPC_STATE_COMBAT)
 	{
-		DevMsg( "( SelectSchedule m_NPCState == NPC_STATE_COMBAT  Combine\n" );
+		return nSched;
 	}
 
 	if ( m_NPCState != NPC_STATE_SCRIPT)
@@ -1779,7 +1778,6 @@ int CNPC_Combine::SelectSchedule( void )
 
 	case NPC_STATE_COMBAT:
 		{
-			DevMsg( "( NPC_STATE_COMBAT  Combine\n" );
 			int nSched = SelectCombatSchedule();
 			if ( nSched != SCHED_NONE )
 				return nSched;
