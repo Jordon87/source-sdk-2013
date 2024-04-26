@@ -33,6 +33,7 @@
 #include "hl2_gamerules.h"
 #include "decals.h"
 #include "in_buttons.h"
+#include "particle_parse.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -271,6 +272,7 @@ void CBaseHeadcrab::Spawn( void )
 	else
 	{
 		m_bHidden = false;
+		DispatchParticleEffect( "1187dec_xen", GetAbsOrigin() + Vector( 0, 0, 5 ), GetAbsAngles() );
 	}
 
 	CapabilitiesClear();
