@@ -123,23 +123,11 @@ END_DATADESC()
 
 void CNPC_John::SelectModel()
 {
-	// HBN reporter use John NPC as entity support.
-	// Every npc_john entity whose name matches 'reporter'
-	// will have their model changed for a different model.
-	if (FStrEq(STRING(GetEntityName()), "reporter"))
+	char *szModel = (char *)STRING(GetModelName());
+	if (!szModel || !*szModel)
 	{
-		SetModelName(AllocPooledString("models/humans/group01/female_03.mdl"));
+		SetModelName(AllocPooledString(JOHH_MODEL));
 	}
-
-	// For the Rogue Train bonus map, the John NPC
-	// is used for Markus.
-
-	if (FStrEq(STRING(GetEntityName()), "markus"))
-	{
-		SetModelName(AllocPooledString("models/monk.mdl"));
-	}
-
-	SetModelName(AllocPooledString(JOHH_MODEL));
 }
 
 void CNPC_John::Precache(void)
