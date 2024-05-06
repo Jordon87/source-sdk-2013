@@ -1230,28 +1230,31 @@ void C_BasePlayer::UpdateFlashlight()
 			m_pFlashlight->TurnOn();
 		}
 
+		Vector vecOrigin = EyePosition();
 		Vector vecForward, vecRight, vecUp;
 		QAngle angOrigin;
 
 		if (GetViewModel())
 		{
-			int iMuzzle = LookupAttachment("muzzle");
+			int iMuzzle = GetViewModel()->LookupAttachment("muzzle");
 
-			if (iMuzzle != -1)
+			if (iMuzzle > 0)
 			{
-				GetViewModel()->GetAttachment(iMuzzle, EyePosition(), angOrigin);
+				GetViewModel()->GetAttachment(iMuzzle, vecOrigin, angOrigin);
 			
-				::FormatViewModelAttachment(EyePosition(), true);
+				::FormatViewModelAttachment(vecOrigin, true);
 				AngleVectors(angOrigin, &vecForward, &vecRight, &vecUp);
 			
-				EyePosition() = vecForward * -35.0f + EyePosition();
+				vecOrigin += vecForward * -35.0f;
 			}
+			else
+				EyeVectors( &vecForward, &vecRight, &vecUp );
 		}
-
-		EyeVectors( &vecForward, &vecRight, &vecUp );
+		else
+			EyeVectors( &vecForward, &vecRight, &vecUp );
 
 		// Update the light with the new position and direction.		
-		m_pFlashlight->UpdateLight( EyePosition(), vecForward, vecRight, vecUp, FLASHLIGHT_DISTANCE );
+		m_pFlashlight->UpdateLight( vecOrigin, vecForward, vecRight, vecUp, FLASHLIGHT_DISTANCE );
 	}
 	else if (m_pFlashlight)
 	{
