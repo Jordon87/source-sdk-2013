@@ -220,7 +220,7 @@ void CMainMenuPanel::OnCommand(const char* command)
 	}
 
 	if (!_stricmp(command, "Quit"))
-		engine->ClientCmd("startupmenu");
+		engine->ClientCmd("gamemenucommand quit");
 	else
 		Msg("The Fuck? \n");
 }
