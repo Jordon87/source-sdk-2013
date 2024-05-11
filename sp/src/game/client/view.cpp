@@ -780,6 +780,12 @@ void CViewRender::SetUpViews()
 		pPlayer->CalcViewModelView ( ViewModelOrigin, ViewModelAngles );
 	}
 
+	if ( pPlayer )
+	{
+		// 1187: Must be called after CalcViewModelView since we depend on viewmodel's angles.
+		pPlayer->CalcViewRealism( &view );
+	}
+
 	// Disable spatial partition access
 	partition->SuppressLists( PARTITION_ALL_CLIENT_EDICTS, true );
 

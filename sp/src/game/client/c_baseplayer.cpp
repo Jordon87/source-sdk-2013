@@ -1400,6 +1400,13 @@ void C_BasePlayer::CreateWaterEffects( void )
 //-----------------------------------------------------------------------------
 void C_BasePlayer::OverrideView( CViewSetup *pSetup )
 {
+}
+
+//-----------------------------------------------------------------------------
+// 1187: Calculates view realism.
+//-----------------------------------------------------------------------------
+void C_BasePlayer::CalcViewRealism( CViewSetup *pSetup )
+{
 	if (!cl_viewrealism.GetInt() || camhack_control.GetInt())
 	{
 		return;
