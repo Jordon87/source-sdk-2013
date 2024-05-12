@@ -288,6 +288,9 @@ public:
 	// Called when not in tactical mode. Allows view to be overriden for things like driving a tank.
 	virtual void				OverrideView( CViewSetup *pSetup );
 
+	// 1187: Calculates view realism.
+	virtual void				CalcViewRealism( CViewSetup *pSetup );
+
 	// returns the player name
 	const char *				GetPlayerName();
 	virtual const Vector		GetPlayerMins( void ) const; // uses local player

@@ -1400,6 +1400,13 @@ void C_BasePlayer::CreateWaterEffects( void )
 //-----------------------------------------------------------------------------
 void C_BasePlayer::OverrideView( CViewSetup *pSetup )
 {
+}
+
+//-----------------------------------------------------------------------------
+// 1187: Calculates view realism.
+//-----------------------------------------------------------------------------
+void C_BasePlayer::CalcViewRealism( CViewSetup *pSetup )
+{
 	if (!cl_viewrealism.GetInt() || camhack_control.GetInt())
 	{
 		return;
@@ -1409,7 +1416,7 @@ void C_BasePlayer::OverrideView( CViewSetup *pSetup )
 	{
 		int iPlayerEyes = GetViewModel(0)->LookupAttachment("1187eyefix");
 
-		if (iPlayerEyes)
+		if (iPlayerEyes > 0)
 		{
 			GetViewModel(0)->GetAttachment(iPlayerEyes, Vector(0,0,0), pSetup->angles);
 		}
