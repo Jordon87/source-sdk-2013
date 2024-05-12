@@ -2126,8 +2126,6 @@ bool CNPC_Vortigaunt::TeleportEffect()
 	if (!v2)
 		return false;
 
-	return false;
-
 	Vector vecStart, vecEnd;
 
 	vecStart = v2->GetAbsOrigin();
@@ -2156,8 +2154,10 @@ bool CNPC_Vortigaunt::TeleportEffect()
 	angTeleport = GetAbsAngles();
 	DispatchParticleEffect("1187dec_teleport", vecTeleport, angTeleport, this);
 
+	Teleport(&v2->GetAbsOrigin(), NULL, NULL);
 	UTIL_DropToFloor(this, MASK_NPCSOLID);
 
+	vecTeleport = GetAbsOrigin() + Vector(0, 0, 30);
 	DispatchParticleEffect("1187dec_teleport", vecTeleport, angTeleport, this);
 
 	return true;
@@ -2166,22 +2166,43 @@ bool CNPC_Vortigaunt::TeleportEffect()
 CBaseEntity* CNPC_Vortigaunt::FUN_10353E10()
 {
 	CBaseEntity *pEntity = NULL;
-	int i;
+	int i = 0;
 	CBaseEntity *v4[32];
+	int unk_0x1444_index = -1; // Index of unk_0x1444 in v4.
 
-	for (i = 0; i < 32; i++)
+	// First, get all existing teleport destinations.
+	while (i < ARRAYSIZE(v4) && (pEntity = gEntList.FindEntityByClassname(pEntity, "info_vort_teleport")) != NULL)
 	{
-		pEntity = gEntList.FindEntityByName(pEntity, "info_vort_teleport");
-		if (!pEntity)
-			break;
-
-		v4[i + 1] = pEntity == unk_0x1444 && i ? v4[i] : pEntity;
+		if (unk_0x1444_index == -1 && pEntity == unk_0x1444)
+			unk_0x1444_index = i;
+		v4[i++] = pEntity;
 	}
-	
-	if (i > 0)
-		return v4[RandomInt(0, i - 1) + 1];
 
-	return pEntity;
+	// Base case: No destination exists.
+	if (i == 0)
+		return NULL;
+
+	// Case with only one destination available.
+	if (i == 1)
+		return v4[0];
+
+	// Case where there is no unk_0x1444. This is the first time we choose a destination.
+	if (unk_0x1444_index == -1)
+		return v4[RandomInt(0, i - 1)];
+
+	// Case where unk_0x1444 is the first element. Choose any destination except the first one.
+	if (unk_0x1444_index == 0)
+		return v4[RandomInt(1, i - 1)];
+
+	// Case where unk_0x1444 is not the first element.
+
+	// Erase unk_0x1444 by moving all its successors down.
+	for (int j = unk_0x1444_index; j < i - 1; ++j)
+		v4[j] = v4[j + 1];
+
+	--i; // unk_0x1444 has been erased. One less destination.
+
+	return v4[RandomInt(0, i - 1)]; // Choose any destination.
 }
 
 #define COS_30	0.866025404f // sqrt(3) / 2
