@@ -586,6 +586,38 @@ public:
 };
 LINK_ENTITY_TO_CLASS(item_ammo_healthpack, CItem_HealthRounds);
 
+class CItem_Grenade : public CItem
+{
+public:
+	DECLARE_CLASS(CItem_Grenade, CItem);
+
+	void Spawn(void)
+	{
+		Precache();
+		SetModel("models/Weapons/w_grenade.mdl");
+		BaseClass::Spawn();
+	}
+	void Precache(void)
+	{
+		PrecacheModel("models/Weapons/w_grenade.mdl");
+	}
+	bool MyTouch(CBasePlayer* pPlayer)
+	{
+		if (ITEM_GiveAmmo(pPlayer, 1.0f, "grenade"))
+		{
+			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
+			{
+				UTIL_Remove(this);
+			}
+			return true;
+		}
+		return false;
+	}
+};
+LINK_ENTITY_TO_CLASS(item_grenade, CItem_Grenade);
+LINK_ENTITY_TO_CLASS(item_ammo_grenade, CItem_Grenade);
+LINK_ENTITY_TO_CLASS(weapon_frag, CItem_Grenade);
+
 // ========================================================================
 //	>> CItem_AR2AltFireRound
 // ========================================================================
