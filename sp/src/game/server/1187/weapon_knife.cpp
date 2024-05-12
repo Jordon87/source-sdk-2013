@@ -93,7 +93,7 @@ void CWeaponKnife::ItemPostFrame(void)
 			}
 		}
 
-		if ((pOwner->m_nButtons & IN_ATTACK3) != 0 && GetActivity() == ACT_VM_IDLE)
+		if ((pOwner->m_nButtons & IN_MELEE) != 0 && GetActivity() == ACT_VM_IDLE)
 		{
 			if (m_flNextPrimaryAttack - 0.2f <= gpGlobals->curtime && m_flNextSecondaryAttack - 0.2f <= gpGlobals->curtime)
 			{

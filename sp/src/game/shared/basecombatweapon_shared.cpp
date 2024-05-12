@@ -1590,6 +1590,19 @@ selects and deploys each weapon as you pass it. (sjb)
 //-----------------------------------------------------------------------------
 bool CBaseCombatWeapon::Deploy( )
 {
+	DisableIronsights();
+
+#ifndef CLIENT_DLL
+	if (!GetHasFlashlight() && GetOwner() && GetOwner()->IsPlayer())
+	{
+		CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+		if (pPlayer->FlashlightIsOn())
+		{
+			pPlayer->FlashlightTurnOff();
+		}
+	}
+#endif
+
 	MDLCACHE_CRITICAL_SECTION();
 	return DefaultDeploy( (char*)GetViewModel(), (char*)GetWorldModel(), GetDrawActivity(), (char*)GetAnimPrefix() );
 }
@@ -1831,7 +1844,7 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 		}
 	}
 
-	if ((pOwner->m_nButtons & IN_ATTACK3) != 0)
+	if ((pOwner->m_nButtons & IN_MELEE) != 0)
 	{
 		if (gpGlobals->curtime - 0.1f >= m_flNextPrimaryAttack && gpGlobals->curtime - 0.1f >= m_flNextSecondaryAttack)
 		{

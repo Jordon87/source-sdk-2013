@@ -4939,3 +4939,7 @@ void  CGameMovement::TryTouchGround( const Vector& start, const Vector& end, con
 	UTIL_TraceRay( ray, fMask, mv->m_nPlayerHandle.Get(), collisionGroup, &pm );
 }
 
+static CGameMovement g_GameMovement;
+IGameMovement* g_pGameMovement = (IGameMovement*)&g_GameMovement;
+
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CGameMovement, IGameMovement, INTERFACENAME_GAMEMOVEMENT, g_GameMovement);
