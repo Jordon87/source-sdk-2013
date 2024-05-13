@@ -26,6 +26,7 @@
 #define SF_COMBINE_NO_LOOK	(1 << 16)
 #define SF_COMBINE_NO_GRENADEDROP ( 1 << 17 )
 #define SF_COMBINE_NO_AR2DROP ( 1 << 18 )
+#define SF_COMBINE_IS_MERC_HEAVY ( 1 << 19 ) // Could also be named SF_COMBINE_IS_ELITE to keep consitency with the CNPC_Combine class.
 
 //=========================================================
 //	>> CNPC_Combine
@@ -78,7 +79,7 @@ public:
 	void			Activate();
 
 	Class_T			Classify( void );
-	bool			IsElite() { return m_fIsElite; }
+	bool			IsElite() { return HasSpawnFlags( SF_COMBINE_IS_MERC_HEAVY ); }
 	void			DelayAltFireAttack( float flDelay );
 	void			DelaySquadAltFireAttack( float flDelay );
 	float			MaxYawSpeed( void );
