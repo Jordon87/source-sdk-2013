@@ -963,6 +963,166 @@ Class_T  CHL2_Player::Classify ( void )
 	}
 }
 
+void CHL2_Player::SetAnimation( PLAYER_ANIM playerAnim )
+{
+// Needs fixing a bit. Animation of legs will always run even if staying idle.
+
+	int animDesired;
+	float speed = GetAbsVelocity().Length2D();
+
+	if (GetFlags() & (FL_FROZEN | FL_ATCONTROLS))
+	{
+		speed = 0;
+		playerAnim = PLAYER_IDLE;
+	}
+
+	Activity idealActivity = ACT_RUN;
+
+	if (playerAnim == PLAYER_JUMP)
+	{
+		idealActivity = ACT_JUMP;
+	}
+	else if (playerAnim == PLAYER_DIE)
+	{
+		if ( m_lifeState == LIFE_ALIVE )
+			return;
+	}
+	else if (playerAnim <= PLAYER_WALK)
+	{
+		if (!(GetFlags() & FL_ONGROUND) && (idealActivity == ACT_JUMP, GetActivity() != ACT_JUMP))
+		{
+			if ( ( m_nButtons & IN_DUCK ) != 0 || (GetFlags() & FL_DUCKING) != 0 )
+			{
+				if ( speed <= 10.0f )
+				{
+					idealActivity = ACT_COVER_LOW;
+				}
+				else if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
+				{
+					idealActivity = ACT_MP_AIRWALK;
+				}
+				else if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
+				{
+					idealActivity = ACT_MP_WALK_PDA;
+				}
+				else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
+				{
+					idealActivity = ACT_MP_AIRWALK_SECONDARY;
+				}
+				else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
+				{
+					idealActivity = ACT_MP_AIRWALK_PRIMARY;
+				}
+				else if ( ( m_nButtons & IN_FORWARD ) != 0 )
+				{
+					idealActivity = ACT_WALK_CROUCH;
+				}
+				else if ( ( m_nButtons & IN_BACK ) != 0 )
+				{
+					idealActivity = ACT_MP_CROUCH_SECONDARY;
+				}
+				else if ( ( m_nButtons & IN_MOVELEFT ) != 0 )
+				{
+					idealActivity = ACT_MP_WALK_PRIMARY;
+				}
+				else
+				{
+					idealActivity = (m_nButtons & IN_MOVERIGHT) != 0 ? ACT_MP_WALK_MELEE : ACT_WALK_CROUCH;
+				}
+			}
+			else if ( speed <= 10.0f )
+			{
+				idealActivity = ACT_IDLE;
+			}
+			else if ( ( m_nButtons & IN_SPEED ) != 0 )
+			{
+				if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
+				{
+					idealActivity = ACT_MP_SPRINT;
+				}
+				else if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
+				{
+					idealActivity = ACT_MP_RUN_PDA;
+				}
+				else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
+				{
+					idealActivity = ACT_MP_SWIM_SECONDARY;
+				}
+				else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
+				{
+					idealActivity = ACT_MP_SWIM_PRIMARY;
+				}
+				else if ( ( m_nButtons & IN_FORWARD ) != 0 )
+				{
+					idealActivity = ACT_RUN;
+				}
+				else if ( ( m_nButtons & IN_BACK ) != 0 )
+				{
+					idealActivity = ACT_MP_RUN_SECONDARY;
+				}
+				else if ( ( m_nButtons & IN_MOVELEFT ) != 0 )
+				{
+					idealActivity = ACT_MP_RUN_PRIMARY;
+				}
+				else
+				{
+					idealActivity = ( m_nButtons & IN_MOVERIGHT ) != 0 ? ACT_MP_RUN_MELEE : ACT_RUN;
+				}
+			}
+			else if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
+			{
+				idealActivity = ACT_MP_AIRWALK;
+			}
+			else if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
+			{
+				idealActivity = ACT_MP_WALK_PDA;
+			}
+			else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
+			{
+				idealActivity = ACT_MP_AIRWALK_SECONDARY;
+			}
+			else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
+			{
+				idealActivity = ACT_MP_AIRWALK_PRIMARY;
+			}
+			else if ( ( m_nButtons & IN_FORWARD ) != 0 )
+			{
+				idealActivity = ACT_WALK;
+			}
+			else if ( ( m_nButtons & IN_BACK ) != 0 )
+			{
+				idealActivity = ACT_MP_WALK_SECONDARY;
+			}
+			else if ( ( m_nButtons & IN_MOVELEFT ) != 0 )
+			{
+				idealActivity = ACT_MP_WALK_PRIMARY;
+			}
+			else
+			{
+				idealActivity = (m_nButtons & IN_MOVERIGHT) != 0 ? ACT_MP_WALK_MELEE : ACT_WALK;
+			}
+		}
+	}
+
+	Activity weaponAct = Weapon_TranslateActivity( idealActivity );
+	
+	animDesired = SelectWeightedSequence( weaponAct );
+
+	if ( animDesired == -1 )
+	{
+		animDesired = SelectWeightedSequence( idealActivity );
+		if ( animDesired == -1 )
+			animDesired = 0;
+	}
+
+	if ( GetSequence() != animDesired )
+	{
+		m_flPlaybackRate = 1.0f;
+		ResetSequence( animDesired );
+		SetCycle( 0 );
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose:  This is a generic function (to be implemented by sub-classes) to
 //			 handle specific interactions between different types of characters

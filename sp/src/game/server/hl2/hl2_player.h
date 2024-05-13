@@ -121,6 +121,7 @@ public:
 	WeaponProficiency_t CalcWeaponProficiency( CBaseCombatWeapon *pWeapon );
 
 	Class_T				Classify ( void );
+	virtual void		SetAnimation( PLAYER_ANIM playerAnim );
 
 	// from CBasePlayer
 	virtual void		SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs, int pvssize );
