@@ -1,0 +1,59 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "eleveneightyseven.1187_sewersoldier"
+    {
+      time 0.825000 24.838017
+      param "eleveneightyseven.1187_sewersoldier"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "wav"
+  {
+    event speak "npc_john.1187_johnd217"
+    {
+      time 5.908333 9.349172
+      param "npc_john.1187_johnd217"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187_johnd218"
+    {
+      time 19.341984 22.209354
+      param "npc_john.1187_johnd218"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "look"
+  {
+    event lookat "Look at !player"
+    {
+      time 18.541668 23.041666
+      param "!player"
+    }
+    event lookat "Look at !player"
+    {
+      time 5.541668 10.041666
+      param "!player"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "20"
+  "RampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

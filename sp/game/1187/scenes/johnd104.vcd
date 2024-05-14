@@ -1,0 +1,202 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event gesture "shiftrightbig"
+    {
+      time 2.064103 9.765202
+      param "shiftrightbig"
+      absolutetags playback_time
+      {
+        "apex" 0.087678
+        "loop" 0.131516
+        "end" 0.771252
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.256410
+        "loop" 0.384615
+        "end" 0.641026
+      }
+      sequenceduration 2.633333
+    }
+    event speak "npc_john.1187d2_john_tv1_01"
+    {
+      time 2.440476 3.643242
+      param "npc_john.1187d2_john_tv1_01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187d2_john_tv1_02"
+    {
+      time 4.119048 5.830273
+      param "npc_john.1187d2_john_tv1_02"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187d2_john_tv1_03"
+    {
+      time 8.142858 9.453742
+      param "npc_john.1187d2_john_tv1_03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event flexanimation "Facial Animation"
+    {
+      time 0.078432 2.490196
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_rightleft" range 30.0 -30.0 
+        {
+          0.2000 0.6700
+          1.7333 0.1800
+        }
+        "head_updown" range 15.0 -15.0 
+        {
+          0.5103 0.7300
+          1.7308 0.4900
+        }
+      }
+    }
+    event flexanimation "Facial Animation"
+    {
+      time 6.441177 7.931373
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_rightleft" range 30.0 -30.0 
+        {
+          0.8436 0.8300
+        }
+        "head_updown" range 15.0 -15.0 
+        {
+          0.3718 0.3100
+        }
+      }
+    }
+    event gesture "g_palm_out_l"
+    {
+      time 8.196079 10.962746
+      param "g_palm_out_l"
+      absolutetags playback_time
+      {
+        "apex" 0.121951
+        "accent" 0.231707
+        "loop" 0.390244
+        "end" 0.780488
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.121951
+        "accent" 0.231707
+        "loop" 0.390244
+        "end" 0.780488
+      }
+      sequenceduration 2.766667
+    }
+    event gesture "bg_up_l"
+    {
+      time 8.323530 9.923531
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+  }
+  channel "anis"
+  {
+    event face "Face !player"
+    {
+      time 0.056560 6.365384
+      param "!player"
+    }
+    event lookat "Look at !player"
+    {
+      time 2.269231 6.378205
+      param "!player"
+    }
+    event gesture "bg_up_l"
+    {
+      time 3.035823 4.635822
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event gesture "bg_up_r"
+    {
+      time 4.397436 6.484616
+      param "bg_up_r"
+      absolutetags playback_time
+      {
+        "apex" 0.065241
+        "extreme" 0.212034
+        "loop" 0.463099
+        "end" 0.729918
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event lookat "Look at !player"
+    {
+      time 7.935898 10.907617
+      param "!player"
+    }
+    event lookat "Look at tv6"
+    {
+      time 6.284314 8.225491
+      param "tv6"
+    }
+  }
+  channel "lookat"
+  {
+  }
+}
+
+mapname "C:\Program Files\Steam\steamapps\sourcemods\1187\maps\1187d2.bsp"
+scalesettings
+{
+  "SceneRampTool" "100"
+  "GestureTool" "100"
+  "ExpressionTool" "78"
+  "RampTool" "100"
+  "CChoreoView" "68"
+}
+fps 60
+snap off
+ignorePhonemes off

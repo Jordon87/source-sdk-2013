@@ -1,0 +1,299 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187d10_mercs05"
+    {
+      time 8.516665 9.846416
+      param "npc_john.1187d10_mercs05"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187d10_mercs06"
+    {
+      time 10.150001 11.524944
+      param "npc_john.1187d10_mercs06"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "ani"
+  {
+    event gesture "bg_up_l"
+    {
+      time 8.916666 10.516666
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event gesture "bg_down"
+    {
+      time 10.050000 12.016667
+      param "bg_down"
+      absolutetags playback_time
+      {
+        "apex" 0.086207
+        "extreme" 0.241379
+        "loop" 0.482759
+        "end" 0.672414
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.086207
+        "extreme" 0.241379
+        "loop" 0.482759
+        "end" 0.672414
+      }
+      sequenceduration 1.966667
+    }
+    event gesture "bg_up_r"
+    {
+      time 10.683333 12.283334
+      param "bg_up_r"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+  }
+  channel "lookat"
+  {
+    event lookat "Look at chris"
+    {
+      time 4.273333 12.099998
+      param "chris"
+    }
+    event lookat "Look at !enemy"
+    {
+      time 0.116666 4.450000
+      param "!enemy"
+    }
+  }
+  faceposermodel "models\Humans\Group01\Male_04.mdl"
+}
+
+actor "chris"
+{
+  channel "voice"
+  {
+    event speak "npc_chris.1187d10_mercs01"
+    {
+      time 0.220000 0.841950
+      param "npc_chris.1187d10_mercs01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_chris.1187d10_mercs02"
+    {
+      time 1.100000 2.984921
+      param "npc_chris.1187d10_mercs02"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_chris.1187d10_mercs03"
+    {
+      time 3.629412 5.594242
+      param "npc_chris.1187d10_mercs03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_chris.1187d10_mercs04"
+    {
+      time 5.808974 7.336162
+      param "npc_chris.1187d10_mercs04"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "ani"
+  {
+    event gesture "bg_up_r"
+    {
+      time 0.063334 1.850001
+      param "bg_up_r"
+      absolutetags playback_time
+      {
+        "apex" 0.076215
+        "extreme" 0.247698
+        "loop" 0.381073
+        "end" 0.529851
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event gesture "bg_up_l"
+    {
+      time 3.550000 5.150001
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event gesture "g_head_back"
+    {
+      time 1.300000 3.099999
+      param "g_head_back"
+      absolutetags playback_time
+      {
+        "apex" 0.188679
+        "accent" 0.792453
+        "loop" 0.811321
+        "end" 0.830189
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.188679
+        "accent" 0.792453
+        "loop" 0.811321
+        "end" 0.830189
+      }
+      sequenceduration 1.800000
+    }
+    event gesture "hg_puncuate_down"
+    {
+      time 1.833333 3.466666
+      param "hg_puncuate_down"
+      absolutetags playback_time
+      {
+        "apex" 0.333333
+        "extreme" 0.541667
+        "loop" 0.552500
+        "end" 0.562500
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.333333
+        "extreme" 0.541667
+        "loop" 0.562500
+        "end" 0.562500
+      }
+      sequenceduration 1.633333
+    }
+    event gesture "bg_right"
+    {
+      time 4.133334 6.333334
+      param "bg_right"
+      absolutetags playback_time
+      {
+        "apex" 0.153846
+        "extreme" 0.292308
+        "loop" 0.476923
+        "end" 0.723077
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.153846
+        "extreme" 0.292308
+        "loop" 0.476923
+        "end" 0.723077
+      }
+      sequenceduration 2.200000
+    }
+    event gesture "bg_up_l"
+    {
+      time 6.216666 7.816667
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+  }
+  channel "lookat"
+  {
+    event lookat "Look at !enemy"
+    {
+      time 0.050000 3.416667
+      param "!enemy"
+    }
+    event lookat "Look at john"
+    {
+      time 3.266667 5.833334
+      param "john"
+    }
+    event lookat "Look at !enemy"
+    {
+      time 5.650000 8.800000
+      param "!enemy"
+    }
+    event lookat "Look at john"
+    {
+      time 8.650000 12.116666
+      param "john"
+    }
+  }
+  faceposermodel "models\Humans\Group03\male_02.mdl"
+}
+
+mapname "C:\Program Files\Steam\steamapps\sourcemods\1187\maps\1187d10.bsp"
+scalesettings
+{
+  "SceneRampTool" "100"
+  "GestureTool" "100"
+  "ExpressionTool" "100"
+  "RampTool" "100"
+  "CChoreoView" "40"
+}
+fps 60
+snap off
+ignorePhonemes off

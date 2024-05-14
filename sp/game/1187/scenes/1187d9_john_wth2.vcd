@@ -1,0 +1,66 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187d9_john_wth201"
+    {
+      time 0.766666 1.501473
+      param "npc_john.1187d9_john_wth201"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "ani"
+  {
+    event flexanimation "Facial Animation"
+    {
+      time 0.116666 2.369444
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_rightleft" range 30.0 -30.0 
+        {
+          1.2105 0.7300
+        }
+      }
+    }
+    event gesture "bg_up_r"
+    {
+      time 0.630555 2.230556
+      param "bg_up_r"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+  }
+  channel "lookat"
+  {
+  }
+  faceposermodel "models\Humans\Group01\Male_04.mdl"
+}
+
+scalesettings
+{
+  "CChoreoView" "60"
+  "SceneRampTool" "100"
+  "RampTool" "100"
+  "ExpressionTool" "22"
+  "GestureTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

@@ -1,0 +1,77 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.JOHN_KILLED_MINIHEADCRAB1"
+    {
+      time 0.037037 2.041164
+      param "npc_john.JOHN_KILLED_MINIHEADCRAB1"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "facial"
+  {
+    event gesture "bg_up_r"
+    {
+      time 0.080460 1.680460
+      param "bg_up_r"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+    }
+    event gesture "bg_up_l"
+    {
+      time 0.845679 2.445679
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+  }
+  channel "lookat"
+  {
+    event lookat "Look at !self"
+    {
+      time 0.026666 2.423465
+      param "!self"
+    }
+  }
+}
+
+scalesettings
+{
+  "SceneRampTool" "100"
+  "RampTool" "100"
+  "GestureTool" "100"
+  "ExpressionTool" "64"
+  "CChoreoView" "108"
+}
+fps 60
+snap off
+ignorePhonemes off

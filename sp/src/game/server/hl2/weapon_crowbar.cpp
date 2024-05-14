@@ -32,15 +32,6 @@ LINK_ENTITY_TO_CLASS( weapon_crowbar, CWeaponCrowbar );
 PRECACHE_WEAPON_REGISTER( weapon_crowbar );
 #endif
 
-acttable_t CWeaponCrowbar::m_acttable[] = 
-{
-	{ ACT_MELEE_ATTACK1,	ACT_MELEE_ATTACK_SWING, true },
-	{ ACT_IDLE,				ACT_IDLE_ANGRY_MELEE,	false },
-	{ ACT_IDLE_ANGRY,		ACT_IDLE_ANGRY_MELEE,	false },
-};
-
-IMPLEMENT_ACTTABLE(CWeaponCrowbar);
-
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------

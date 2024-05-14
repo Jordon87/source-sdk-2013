@@ -1,0 +1,47 @@
+// Choreo version 1
+actor "gman"
+{
+  channel "animations"
+  {
+    event gesture "G_tiefidget"
+    {
+      time 3.782456 6.749122
+      param "G_tiefidget"
+      absolutetags playback_time
+      {
+        "apex" 0.238636
+        "accent" 0.468636
+        "loop" 0.478636
+        "end" 0.488636
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.238636
+        "accent" 0.477273
+        "loop" 0.488636
+        "end" 0.488636
+      }
+      sequenceduration 2.966667
+    }
+  }
+  channel "look at"
+  {
+    event lookat "Look at !player"
+    {
+      time 0.006666 7.680000
+      param "!player"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "76"
+  "RampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

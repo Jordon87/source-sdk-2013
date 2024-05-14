@@ -1,0 +1,54 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187d8_marissa_john_01"
+    {
+      time 0.916667 2.840454
+      param "npc_john.1187d8_marissa_john_01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "anis"
+  {
+  }
+  channel "lookat"
+  {
+    event lookat "Look at !player"
+    {
+      time 0.416667 2.916667
+      param "!player"
+    }
+  }
+  faceposermodel "models\Humans\Group01\Male_04.mdl"
+}
+
+actor "marissa"
+{
+  channel "voice"
+  {
+  }
+  channel "anis"
+  {
+  }
+  channel "lookat"
+  {
+  }
+  faceposermodel "models\Humans\Group02\Female_06.mdl"
+  active "0"
+}
+
+scalesettings
+{
+  "GestureTool" "100"
+  "ExpressionTool" "34"
+  "RampTool" "100"
+  "SceneRampTool" "100"
+  "CChoreoView" "16"
+}
+fps 60
+snap off
+ignorePhonemes off

@@ -1,0 +1,75 @@
+// Choreo version 1
+actor "John"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187d10_enh_ambush401"
+    {
+      time 0.400000 2.670703
+      param "npc_john.1187d10_enh_ambush401"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "ani"
+  {
+  }
+  channel "lookat"
+  {
+    event lookat "Look at !enemy"
+    {
+      time 0.035714 6.238095
+      param "!enemy"
+    }
+  }
+  faceposermodel "models\Humans\Group01\Male_04.mdl"
+}
+
+actor "chris"
+{
+  channel "voice"
+  {
+    event speak "npc_chris.1187d10_enh_ambush402"
+    {
+      time 3.059524 4.165148
+      param "npc_chris.1187d10_enh_ambush402"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_chris.1187d10_enh_ambush403"
+    {
+      time 4.357143 6.260250
+      param "npc_chris.1187d10_enh_ambush403"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "ani"
+  {
+  }
+  channel "lookat"
+  {
+    event lookat "Look at !enemy"
+    {
+      time 0.047619 6.261905
+      param "!enemy"
+    }
+  }
+  faceposermodel "models\Humans\Group03\male_02.mdl"
+}
+
+mapname "C:\Program Files\Steam\steamapps\sourcemods\1187\maps\1187d10.bsp"
+scalesettings
+{
+  "CChoreoView" "72"
+  "RampTool" "100"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

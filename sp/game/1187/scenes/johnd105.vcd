@@ -1,0 +1,81 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187_johnd109"
+    {
+      time 0.426667 4.318050
+      param "npc_john.1187_johnd109"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "anis"
+  {
+    event flexanimation "Facial Animation"
+    {
+      time 0.800000 1.300000
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_updown" range 15.0 -15.0 
+        {
+          0.2000 0.6923
+          0.3918 0.4231
+        }
+      }
+    }
+    event flexanimation "Facial Animation"
+    {
+      time 1.880000 2.380000
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_updown" range 15.0 -15.0 
+        {
+          0.2000 0.6923
+        }
+        "jaw_drop" 
+        {
+          0.2245 0.4200
+        }
+        "mouth_drop" combo 
+        {
+          0.2265 0.7100
+        }
+        {
+        }
+      }
+    }
+    event flexanimation "Facial Animation"
+    {
+      time 2.473334 4.860001
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_updown" range 15.0 -15.0 
+        {
+          0.4776 0.2019
+        }
+        "head_tilt" range 15.0 -15.0 
+        {
+          0.2918 0.8200
+        }
+      }
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "RampTool" "100"
+  "ExpressionTool" "98"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

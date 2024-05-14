@@ -1,0 +1,319 @@
+// Choreo version 1
+actor "reporter"
+{
+  channel "voice"
+  {
+    event speak "hbn.hbn_intro"
+    {
+      time 0.466667 15.572132
+      param "hbn.hbn_intro"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_01"
+    {
+      time 11.833333 13.647959
+      param "hbn.hbn_news1_01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_02"
+    {
+      time 13.966666 16.285963
+      param "hbn.hbn_news1_02"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_03"
+    {
+      time 17.122221 19.950068
+      param "hbn.hbn_news1_03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_04"
+    {
+      time 20.461111 23.237551
+      param "hbn.hbn_news1_04"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_05"
+    {
+      time 23.239393 25.157421
+      param "hbn.hbn_news1_05"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_06"
+    {
+      time 25.161631 28.645237
+      param "hbn.hbn_news1_06"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_07"
+    {
+      time 28.651514 32.686844
+      param "hbn.hbn_news1_07"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_08"
+    {
+      time 32.808079 34.182476
+      param "hbn.hbn_news1_08"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_09"
+    {
+      time 35.666664 40.318409
+      param "hbn.hbn_news1_09"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_10"
+    {
+      time 40.916664 47.395870
+      param "hbn.hbn_news1_10"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_11"
+    {
+      time 48.633331 49.660339
+      param "hbn.hbn_news1_11"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_12"
+    {
+      time 49.850002 55.889050
+      param "hbn.hbn_news1_12"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_13"
+    {
+      time 56.648804 59.602478
+      param "hbn.hbn_news1_13"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_15"
+    {
+      time 61.902477 66.003586
+      param "hbn.hbn_news1_15"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_14"
+    {
+      time 59.635811 61.815857
+      param "hbn.hbn_news1_14"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_16"
+    {
+      time 66.652481 68.574883
+      param "hbn.hbn_news1_16"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_17"
+    {
+      time 68.585815 70.966858
+      param "hbn.hbn_news1_17"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_18"
+    {
+      time 72.688904 75.903732
+      param "hbn.hbn_news1_18"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_19"
+    {
+      time 75.922226 79.043335
+      param "hbn.hbn_news1_19"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_20"
+    {
+      time 79.286934 81.933960
+      param "hbn.hbn_news1_20"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_21"
+    {
+      time 81.999046 85.348709
+      param "hbn.hbn_news1_21"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_22"
+    {
+      time 86.269882 90.843216
+      param "hbn.hbn_news1_22"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_23"
+    {
+      time 91.186554 96.784561
+      param "hbn.hbn_news1_23"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_24"
+    {
+      time 97.541664 102.609756
+      param "hbn.hbn_news1_24"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_25"
+    {
+      time 104.208344 105.186646
+      param "hbn.hbn_news1_25"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_26"
+    {
+      time 105.708328 110.218552
+      param "hbn.hbn_news1_26"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news1_27"
+    {
+      time 112.458336 114.347000
+      param "hbn.hbn_news1_27"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_outro"
+    {
+      time 111.500008 126.605453
+      param "hbn.hbn_outro"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "anima"
+  {
+    event gesture "b_accent_fwd2"
+    {
+      time 11.550000 14.283334
+      param "b_accent_fwd2"
+      absolutetags playback_time
+      {
+        "apex" 0.098765
+        "extreme" 0.296296
+        "loop" 0.518519
+        "end" 0.654321
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.098765
+        "extreme" 0.296296
+        "loop" 0.518519
+        "end" 0.654321
+      }
+      sequenceduration 2.733333
+    }
+    event gesture "P_shiftright"
+    {
+      time 0.416668 126.945847
+      param "P_shiftright"
+      absolutetags playback_time
+      {
+        "apex" 0.004295
+        "loop" 0.005905
+        "end" 0.964426
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.301887
+        "loop" 0.415094
+        "end" 0.716981
+      }
+      sequenceduration 1.800000
+    }
+    event flexanimation "Facial Animation"
+    {
+      time 5.833328 116.944443
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "jaw_clencher" 
+        {
+        }
+        "jaw_drop" disabled 
+        {
+          2.3000 0.1000
+          107.1000 0.1400
+        }
+      }
+    }
+  }
+  channel "lookat\"
+  {
+    event lookat "Look at cam1"
+    {
+      time -0.200000 126.916672
+      param "cam1"
+    }
+    active "0"
+  }
+  faceposermodel "models\Humans\Group01\Female_03.mdl"
+}
+
+mapname "C:\Program Files\Valve\Steam\SteamApps\SourceMods\1187DEMO2\maps\1187demo1.bsp"
+scalesettings
+{
+  "CChoreoView" "4"
+  "ExpressionTool" "2"
+  "GestureTool" "100"
+  "RampTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

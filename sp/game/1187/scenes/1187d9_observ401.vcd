@@ -1,0 +1,179 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187_wp_observ_402"
+    {
+      time 3.231884 3.758142
+      param "npc_john.1187_wp_observ_402"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187_wp_observ_403"
+    {
+      time 4.282609 5.823085
+      param "npc_john.1187_wp_observ_403"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187_wp_observ_404"
+    {
+      time 6.174676 7.236739
+      param "npc_john.1187_wp_observ_404"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "ani"
+  {
+    event gesture "bg_down"
+    {
+      time 3.079710 5.046377
+      param "bg_down"
+      absolutetags playback_time
+      {
+        "apex" 0.086207
+        "extreme" 0.241379
+        "loop" 0.482759
+        "end" 0.672414
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.086207
+        "extreme" 0.241379
+        "loop" 0.482759
+        "end" 0.672414
+      }
+      sequenceduration 1.966667
+    }
+    event gesture "bg_up_r"
+    {
+      time 4.442029 6.042028
+      param "bg_up_r"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event gesture "g_plead_01_left"
+    {
+      time 5.789092 7.965904
+      param "g_plead_01_left"
+      absolutetags playback_time
+      {
+        "apex" 0.249231
+        "accent" 0.405000
+        "loop" 0.623077
+        "end" 0.778847
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.275862
+        "accent" 0.448276
+        "loop" 0.689655
+        "end" 0.862069
+      }
+      sequenceduration 1.966667
+    }
+    event flexanimation "Facial Animation"
+    {
+      time 7.096491 9.631579
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_rightleft" range 30.0 -30.0 
+        {
+          0.2944 0.7500
+          1.8000 0.7000
+          2.2361 0.3500
+        }
+        "head_updown" range 15.0 -15.0 
+        {
+          0.2639 0.3900
+          1.7583 0.1600
+        }
+      }
+    }
+    event flexanimation "Facial Animation"
+    {
+      time 6.008772 7.508772
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "inner_raiser" combo 
+        {
+          0.1583 0.5900
+          1.2167 0.6200
+        }
+        {
+        }
+        "outer_raiser" combo 
+        {
+          0.1028 0.5600
+          1.2000 0.6700
+        }
+        {
+        }
+      }
+    }
+  }
+  channel "lookat"
+  {
+    event lookat "Look at dell08"
+    {
+      time 0.000000 9.587720
+      param "dell08"
+    }
+  }
+  faceposermodel "models\Humans\Group01\Male_04.mdl"
+}
+
+actor "chris"
+{
+  channel "voice"
+  {
+    event speak "npc_chris.1187_wp_observ_401"
+    {
+      time 0.200000 1.866304
+      param "npc_chris.1187_wp_observ_401"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "ani"
+  {
+  }
+  channel "lookat"
+  {
+  }
+  faceposermodel "models\Humans\Group03\male_02.mdl"
+}
+
+mapname "C:\Program Files\Steam\steamapps\sourcemods\1187\maps\1187d9.bsp"
+scalesettings
+{
+  "CChoreoView" "76"
+  "SceneRampTool" "100"
+  "RampTool" "100"
+  "ExpressionTool" "72"
+  "GestureTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

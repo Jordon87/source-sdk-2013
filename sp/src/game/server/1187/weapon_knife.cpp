@@ -33,15 +33,6 @@ public:
 IMPLEMENT_SERVERCLASS_ST(CWeaponKnife, DT_WeaponKnife)
 END_SEND_TABLE()
 
-acttable_t CWeaponKnife::m_acttable[] =
-{
-	{ ACT_MELEE_ATTACK1,	ACT_MELEE_ATTACK_SWING, true },
-	{ ACT_IDLE,				ACT_IDLE_ANGRY_MELEE,	false },
-	{ ACT_IDLE_ANGRY,		ACT_IDLE_ANGRY_MELEE,	false },
-};
-
-IMPLEMENT_ACTTABLE(CWeaponKnife);
-
 LINK_ENTITY_TO_CLASS(weapon_knife, CWeaponKnife);
 PRECACHE_WEAPON_REGISTER(weapon_knife);
 

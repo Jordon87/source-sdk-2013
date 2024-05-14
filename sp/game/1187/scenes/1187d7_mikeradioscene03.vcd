@@ -1,0 +1,24 @@
+// Choreo version 1
+actor "mike"
+{
+  channel "voice"
+  {
+    event speak "npc_mike.1187d7_mikeradioscene03"
+    {
+      time -0.220000 52.705147
+      param "npc_mike.1187d7_mikeradioscene03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

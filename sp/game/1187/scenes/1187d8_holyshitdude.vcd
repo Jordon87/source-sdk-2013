@@ -1,0 +1,126 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187d8_holyshitdude"
+    {
+      time 0.266667 2.096462
+      param "npc_john.1187d8_holyshitdude"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "ani"
+  {
+    event flexanimation "Facial Animation"
+    {
+      time 0.053333 2.286666
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "lid_raiser" combo 
+        {
+          0.2917 0.7000
+          1.9583 0.6800
+        }
+        {
+        }
+        "inner_raiser" combo 
+        {
+          0.0780 0.4700
+          1.7647 0.6600
+        }
+        {
+        }
+        "outer_raiser" combo 
+        {
+          0.1958 0.8700
+          1.7792 0.8500
+        }
+        {
+        }
+        "wrinkler" 
+        {
+        }
+        "upper_raiser" combo 
+        {
+        }
+        {
+        }
+        "corner_puller" combo 
+        {
+        }
+        {
+        }
+        "puckerer" combo 
+        {
+        }
+        {
+        }
+      }
+    }
+    event gesture "g_plead_01_left"
+    {
+      time 0.153333 2.540000
+      param "g_plead_01_left"
+      absolutetags playback_time
+      {
+        "apex" 0.227316
+        "accent" 0.369389
+        "loop" 0.568291
+        "end" 0.710364
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.275862
+        "accent" 0.448276
+        "loop" 0.689655
+        "end" 0.862069
+      }
+      sequenceduration 1.966667
+    }
+    event gesture "bg_up_r"
+    {
+      time 0.820000 2.420000
+      param "bg_up_r"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+    }
+  }
+  channel "lookat"
+  {
+    event lookat "Look at fighter_f18_01"
+    {
+      time 0.060238 2.459048
+      param "fighter_f18_01"
+    }
+  }
+  faceposermodel "models\Humans\Group01\Male_04.mdl"
+}
+
+mapname "C:\Program Files\Steam\steamapps\sourcemods\1187\maps\1187d8.bsp"
+scalesettings
+{
+  "CChoreoView" "112"
+  "RampTool" "100"
+  "ExpressionTool" "40"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

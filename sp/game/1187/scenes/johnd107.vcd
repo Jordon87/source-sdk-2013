@@ -1,0 +1,88 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187_johnd112"
+    {
+      time 1.106667 3.088232
+      param "npc_john.1187_johnd112"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "anis"
+  {
+    event gesture "g_plead_01_left"
+    {
+      time 0.893333 3.186667
+      param "g_plead_01_left"
+      absolutetags playback_time
+      {
+        "apex" 0.236568
+        "accent" 0.384423
+        "loop" 0.591419
+        "end" 0.739274
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.275862
+        "accent" 0.448276
+        "loop" 0.689655
+        "end" 0.862069
+      }
+      sequenceduration 1.966667
+    }
+    event flexanimation "Facial Animation"
+    {
+      time 0.980000 1.973333
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "inner_raiser" combo 
+        {
+          0.6253 0.8600
+        }
+        {
+        }
+        "outer_raiser" combo 
+        {
+          0.5822 0.7500
+        }
+        {
+        }
+        "head_updown" range 15.0 -15.0 
+        {
+          0.4783 0.9000
+          0.7077 0.3700
+        }
+      }
+    }
+  }
+  channel "lookat"
+  {
+    event lookat "Look at !player"
+    {
+      time 0.300000 3.413333
+      param "!player"
+    }
+    event lookat "Look at !player"
+    {
+      time 0.033333 3.393333
+      param "!player"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "SceneRampTool" "100"
+  "RampTool" "100"
+  "ExpressionTool" "102"
+  "GestureTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

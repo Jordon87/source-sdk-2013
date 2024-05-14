@@ -1,0 +1,334 @@
+
+//
+// sounds/1187/johnmarissa
+//
+
+"npc_marissa.1187d8_marissa_john_09"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_09.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_10"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_10.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_13"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_13.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_14"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_14.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_15"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_15.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_16"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_16.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_17"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_17.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_18"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_18.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_19"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_19.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_20"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_20.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_21"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_21.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_22"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_22.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_23"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_23.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_24"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_24.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_25"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_25.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_26"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_26.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_27"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_27.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_30"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_30.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_35"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_35.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_41"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_41.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_42"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_42.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_43"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_43.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_45"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_45.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_46"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_46.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_57"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_57.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_58"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_58.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_59"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_59.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_60"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_60.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_63"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_63.wav"
+}
+
+"npc_marissa.1187d8_marissa_john_66"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmarissa/1187d8_marissa_john_66.wav"
+}

@@ -1,0 +1,236 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187_johnd201"
+    {
+      time 0.006667 1.699093
+      param "npc_john.1187_johnd201"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187d2_john_shotgun01"
+    {
+      time 2.430556 4.946928
+      param "npc_john.1187d2_john_shotgun01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187d2_john_shotgun02"
+    {
+      time 5.851851 7.092803
+      param "npc_john.1187d2_john_shotgun02"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187d2_john_shotgun04"
+    {
+      time 8.208334 9.403322
+      param "npc_john.1187d2_john_shotgun04"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187d2_john_shotgun05"
+    {
+      time 9.731482 10.650711
+      param "npc_john.1187d2_john_shotgun05"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187d2_john_shotgun06"
+    {
+      time 11.564816 11.966993
+      param "npc_john.1187d2_john_shotgun06"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187d2_john_shotgun07"
+    {
+      time 12.055555 14.250181
+      param "npc_john.1187d2_john_shotgun07"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "lookat"
+  {
+    event lookat "Look at !player"
+    {
+      time 8.067976 15.322877
+      param "!player"
+    }
+    event gesture "bg_up_r"
+    {
+      time 2.438035 4.038034
+      param "bg_up_r"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event gesture "bg_up_l"
+    {
+      time 3.891026 5.510257
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.084096
+        "extreme" 0.273311
+        "loop" 0.420478
+        "end" 0.630717
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event gesture "bg_up_l"
+    {
+      time 8.185185 9.785186
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event gesture "g_OverHere_Right"
+    {
+      time 11.444444 13.244444
+      param "g_OverHere_Right"
+      absolutetags playback_time
+      {
+        "apex" 0.188679
+        "accent" 0.792453
+        "loop" 0.811321
+        "end" 0.830189
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.188679
+        "accent" 0.792453
+        "loop" 0.811321
+        "end" 0.830189
+      }
+      sequenceduration 1.800000
+    }
+    event gesture "bg_up_l"
+    {
+      time 13.425925 15.025927
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event gesture "bg_up_r"
+    {
+      time 9.493590 11.093590
+      param "bg_up_r"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event lookat "Look at !self"
+    {
+      time 0.055555 8.203703
+      param "!self"
+    }
+    event face "Face !player"
+    {
+      time 8.092592 15.203704
+      param "!player"
+    }
+    event flexanimation "Facial Animation"
+    {
+      time 8.055555 10.000000
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "inner_raiser" combo 
+        {
+          0.3020 0.4800
+          1.7740 0.3500
+        }
+        {
+        }
+        "outer_raiser" combo 
+        {
+          0.2100 0.6500
+          1.5060 0.6800
+        }
+        {
+        }
+      }
+    }
+  }
+  faceposermodel "models\Humans\Group01\Male_04.mdl"
+}
+
+scalesettings
+{
+  "SceneRampTool" "100"
+  "RampTool" "100"
+  "GestureTool" "100"
+  "ExpressionTool" "100"
+  "CChoreoView" "36"
+}
+fps 60
+snap off
+ignorePhonemes off

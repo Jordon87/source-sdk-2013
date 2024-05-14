@@ -1,0 +1,38 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voic"
+  {
+    event speak "npc_john.1187_johnd227"
+    {
+      time 0.246667 4.723266
+      param "npc_john.1187_johnd227"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "anis"
+  {
+  }
+  channel "look"
+  {
+    event lookat "Look at !player"
+    {
+      time 0.746667 4.253334
+      param "!player"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "SceneRampTool" "100"
+  "RampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

@@ -2543,12 +2543,19 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 	if (tr.m_pEnt)
 	{
 #if !defined( CLIENT_DLL )
+		if (ClassMatches("weapon_357"))
+			SendWeaponAnim(ACT_VM_SWINGHIT);
+
 		CTakeDamageInfo info(GetOwner(), GetOwner(), GetWpnData().m_flMeleeDamage, DMG_CLUB);
 		CalculateExplosiveDamageForce(&info, forward, tr.endpos);
 		tr.m_pEnt->DispatchTraceAttack(info, forward, &tr);
 		ApplyMultiDamage();
 		TraceAttackToTriggers(info, tr.startpos, tr.endpos, forward);
+
+		if (ClassMatches("weapon_pistol") && tr.m_pEnt->IsNPC() && tr.m_pEnt->IsAlive())
+			SendWeaponAnim(ACT_VM_SWINGHIT);
 #endif
+
 		UTIL_ScreenShake(pPlayer->GetAbsOrigin(), 15.0f, 15.0f, 0.5f, 256.0f, SHAKE_START, 0);
 
 		if (tr.m_pEnt && tr.m_pEnt->IsWorld())
@@ -2562,7 +2569,14 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 	}
 	else
 	{
-		WeaponSound(SINGLE);
+		WeaponSound(MELEE_MISS);
+
+#if !defined( CLIENT_DLL )
+		if (ClassMatches("weapon_357"))
+		{
+			SendWeaponAnim(ACT_VM_SWINGMISS);
+		}
+#endif
 	}
 
 	UTIL_ImpactTrace(&tr, DMG_CLUB);
@@ -2570,11 +2584,7 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
 	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
 
-	QAngle weaponangle;
-	weaponangle.x = random->RandomFloat(10.0f, 18.0f);
-	weaponangle.y = random->RandomFloat(-6.0f, 6.0f);
-	weaponangle.z = 0.0f;
-	pPlayer->ViewPunch(weaponangle);
+	pPlayer->ViewPunch(QAngle(random->RandomFloat(10.0f, 18.0f), random->RandomFloat(-6.0f, 6.0f), 0.0f));
 }
 
 void CBaseCombatWeapon::FragAttack(void) 

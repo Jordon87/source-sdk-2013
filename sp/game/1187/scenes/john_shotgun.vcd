@@ -1,0 +1,182 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187d2_John_01_findsshotgun"
+    {
+      time 0.310000 3.258934
+      param "npc_john.1187d2_John_01_findsshotgun"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "expressions"
+  {
+    event flexanimation "ani1"
+    {
+      time 0.213846 2.085641
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "lid_raiser" combo 
+        {
+          0.3940 0.7000
+          0.6880 0.5100
+        }
+        {
+        }
+        "lid_droop" disabled combo 
+        {
+          0.3286 0.0000
+        }
+        {
+        }
+        "inner_raiser" combo 
+        {
+          0.5100 0.8000
+          0.7480 0.5800
+        }
+        {
+        }
+        "outer_raiser" disabled combo 
+        {
+          0.4200 0.4800
+        }
+        {
+        }
+        "cheek_raiser" disabled combo 
+        {
+          0.4149 0.7500
+        }
+        {
+        }
+        "upper_raiser" disabled combo 
+        {
+          0.5653 0.1300
+        }
+        {
+        }
+        "corner_puller" disabled combo 
+        {
+          0.5234 0.7400
+        }
+        {
+        }
+        "head_rightleft" range 30.0 -30.0 
+        {
+          0.1327 0.2800
+          0.4113 0.4300
+        }
+        "head_updown" range 15.0 -15.0 
+        {
+          0.1281 0.7500
+          0.7696 0.6800
+        }
+        "head_tilt" range 15.0 -15.0 
+        {
+          0.0713 0.7000
+          0.1991 0.6100
+        }
+        "eyes_updown" range 30.0 -30.0 
+        {
+          0.1057 0.5500
+          0.2426 0.5200
+        }
+        "eyes_rightleft" range 30.0 -30.0 
+        {
+          0.6245 0.5800
+        }
+        "body_rightleft" disabled range 30.0 -30.0 
+        {
+          0.2898 0.5400
+          0.3224 0.7100
+        }
+      }
+    }
+    event flexanimation "ani2"
+    {
+      time 1.989487 3.162564
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "inner_raiser" combo 
+        {
+          0.5021 0.6500
+        }
+        {
+        }
+        "outer_raiser" combo 
+        {
+          0.4489 0.6800
+        }
+        {
+        }
+        "lowerer" combo 
+        {
+          0.6500 0.4600
+          0.9848 0.7600
+        }
+        {
+        }
+        "upper_raiser" disabled combo 
+        {
+          0.4021 0.5700
+        }
+        {
+        }
+        "corner_puller" disabled combo 
+        {
+          0.6298 0.8000
+        }
+        {
+        }
+        "head_updown" range 15.0 -15.0 
+        {
+          0.5787 0.7800
+          0.8609 0.3100
+        }
+        "head_forwardback" range 0.2 -0.2 
+        {
+          0.5217 0.4400
+        }
+      }
+    }
+    event lookat "Look at !player"
+    {
+      time 0.000000 3.269230
+      param "!player"
+    }
+    event gesture "p_ar2_step_l"
+    {
+      time -0.006410 4.435898
+      param "p_ar2_step_l"
+      absolutetags playback_time
+      {
+        "apex" 0.075929
+        "loop" 0.484284
+        "end" 0.815099
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.119048
+        "loop" 0.488095
+        "end" 0.726190
+      }
+      sequenceduration 2.833333
+    }
+  }
+}
+
+scalesettings
+{
+  "RampTool" "100"
+  "GestureTool" "100"
+  "ExpressionTool" "92"
+  "SceneRampTool" "100"
+  "CChoreoView" "104"
+}
+fps 60
+snap off
+ignorePhonemes off

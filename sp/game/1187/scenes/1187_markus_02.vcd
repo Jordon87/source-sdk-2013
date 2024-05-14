@@ -1,0 +1,435 @@
+// Choreo version 1
+actor "markus"
+{
+  channel "voice"
+  {
+    event speak "1187_rt_markus_s2_01"
+    {
+      time 0.016917 0.691407
+      param "1187_rt_markus_s2_01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_02"
+    {
+      time 0.691758 2.474343
+      param "1187_rt_markus_s2_02"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_03"
+    {
+      time 2.474359 5.952817
+      param "1187_rt_markus_s2_03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_04"
+    {
+      time 5.952992 8.578707
+      param "1187_rt_markus_s2_04"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_05"
+    {
+      time 8.579774 10.771883
+      param "1187_rt_markus_s2_05"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_06"
+    {
+      time 13.904560 15.419322
+      param "1187_rt_markus_s2_06"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_07"
+    {
+      time 15.420229 18.605331
+      param "1187_rt_markus_s2_07"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_08"
+    {
+      time 18.605413 22.667839
+      param "1187_rt_markus_s2_08"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_09"
+    {
+      time 22.669516 23.852032
+      param "1187_rt_markus_s2_09"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_10"
+    {
+      time 23.853277 25.913118
+      param "1187_rt_markus_s2_10"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_11"
+    {
+      time 25.914532 27.421267
+      param "1187_rt_markus_s2_11"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_12"
+    {
+      time 27.421654 29.386122
+      param "1187_rt_markus_s2_12"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_13"
+    {
+      time 29.387466 32.420006
+      param "1187_rt_markus_s2_13"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_14"
+    {
+      time 32.420227 34.480068
+      param "1187_rt_markus_s2_14"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_15"
+    {
+      time 34.481480 37.475880
+      param "1187_rt_markus_s2_15"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_16"
+    {
+      time 37.478630 39.919922
+      param "1187_rt_markus_s2_16"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_17"
+    {
+      time 39.920227 41.808414
+      param "1187_rt_markus_s2_17"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_18"
+    {
+      time 41.810543 43.336349
+      param "1187_rt_markus_s2_18"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_19"
+    {
+      time 43.337605 45.950531
+      param "1187_rt_markus_s2_19"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "1187_rt_markus_s2_20"
+    {
+      time 45.951569 48.138554
+      param "1187_rt_markus_s2_20"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "animation"
+  {
+    event flexanimation "laugh"
+    {
+      time 0.222222 8.555555
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "lid_raiser" combo 
+        {
+          0.3500 0.4100
+          8.0500 0.4100
+        }
+        {
+        }
+        "inner_raiser" combo 
+        {
+          0.4333 0.3700
+          8.0833 0.1900
+        }
+        {
+        }
+        "upper_raiser" combo 
+        {
+        }
+        {
+        }
+        "part" combo 
+        {
+          0.3167 0.4000
+          7.8667 0.4300
+        }
+        {
+        }
+        "smile" 
+        {
+          0.3833 0.1300
+          4.2667 0.4200
+          8.0000 0.1300
+        }
+        "head_rightleft" range 30.0 -30.0 
+        {
+        }
+        "head_updown" range 15.0 -15.0 
+        {
+          0.1000 0.6000
+          0.3000 0.8200
+          0.5167 0.5600
+          1.3500 0.5200
+          3.3833 0.8300
+          4.7000 0.7600
+          6.3166 0.8400
+          8.0667 0.6700
+        }
+      }
+    }
+    event flexanimation "laughing"
+    {
+      time 8.638890 12.032829
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "blink" 
+        {
+          0.2360 0.4700
+          3.1200 0.3500
+        }
+        "smile" 
+        {
+          0.3000 0.2800
+          0.4429 0.4200
+          1.9786 0.6800
+          3.1714 0.3700
+          3.3143 0.1600
+        }
+        "head_updown" range 15.0 -15.0 
+        {
+          1.3929 0.8200
+          3.0000 0.7800
+        }
+      }
+    }
+    event flexanimation "laughing"
+    {
+      time 45.694443 49.088383
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "blink" 
+        {
+          0.2360 0.4700
+          3.1200 0.3500
+        }
+        "smile" 
+        {
+          0.3000 0.2800
+          0.4429 0.4200
+          1.9786 0.6800
+          3.1714 0.3700
+          3.3143 0.1600
+        }
+        "head_updown" range 15.0 -15.0 
+        {
+          1.3929 0.8200
+          3.0000 0.7800
+        }
+      }
+    }
+    event flexanimation "up"
+    {
+      time 17.600927 21.300928
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_updown" range 15.0 -15.0 
+        {
+          0.3769 0.7100
+          0.8282 0.6700
+          1.9750 0.6000
+        }
+      }
+    }
+    event flexanimation "e"
+    {
+      time 21.400000 23.166668
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_updown" range 15.0 -15.0 
+        {
+          0.4200 0.2600
+        }
+      }
+    }
+    event flexanimation "e"
+    {
+      time 29.099998 33.133335
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_updown" range 15.0 -15.0 
+        {
+          0.4200 0.2600
+          1.3667 0.8000
+          2.8533 0.5500
+        }
+      }
+    }
+    event flexanimation "up"
+    {
+      time 33.200928 36.900928
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_updown" range 15.0 -15.0 
+        {
+          0.3769 0.7100
+          0.8282 0.6700
+          1.9750 0.6000
+        }
+      }
+    }
+    event flexanimation "e"
+    {
+      time 37.733334 39.500000
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_updown" range 15.0 -15.0 
+        {
+          0.4200 0.2600
+        }
+      }
+    }
+    event flexanimation "r"
+    {
+      time 43.266670 45.700005
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "lid_raiser" combo 
+        {
+          0.1667 0.3200
+          1.1944 0.8100
+          2.2611 0.2700
+        }
+        {
+        }
+        "inner_raiser" combo 
+        {
+          0.1500 0.3700
+          1.2889 0.8900
+          2.3278 0.3300
+        }
+        {
+        }
+        "outer_raiser" combo 
+        {
+          0.0944 0.2700
+          1.2722 0.9000
+          2.2667 0.4100
+        }
+        {
+        }
+        "smile" 
+        {
+          0.0778 0.1000
+          1.2278 0.2800
+          2.3889 0.0500
+        }
+      }
+    }
+    event flexanimation "e"
+    {
+      time 41.766666 43.533333
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_updown" range 15.0 -15.0 
+        {
+          0.4200 0.2600
+        }
+        "lid_raiser" combo 
+        {
+          0.1056 0.2500
+          1.6333 0.2500
+        }
+        {
+        }
+        "inner_raiser" combo 
+        {
+          0.1333 0.2800
+          1.6278 0.3100
+        }
+        {
+        }
+        "outer_raiser" combo 
+        {
+          0.0667 0.2400
+          0.8611 0.8500
+          1.6611 0.3400
+        }
+        {
+        }
+      }
+    }
+  }
+  channel "look at"
+  {
+    event lookat "Look at cam_01"
+    {
+      time 0.000000 49.500000
+      param "cam_01"
+    }
+  }
+}
+
+mapname "C:\Program Files\Steam\steamapps\sourcemods\1187\maps\1187_roguetrain_bonus.bsp"
+scalesettings
+{
+  "SceneRampTool" "100"
+  "RampTool" "100"
+  "GestureTool" "100"
+  "ExpressionTool" "36"
+  "CChoreoView" "4"
+}
+fps 60
+snap off
+ignorePhonemes off

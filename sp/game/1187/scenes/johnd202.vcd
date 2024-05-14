@@ -1,0 +1,72 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187_johnd204"
+    {
+      time 0.173334 5.479752
+      param "npc_john.1187_johnd204"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event gesture "hg_nod_no"
+    {
+      time 0.913334 4.393334
+      param "hg_nod_no"
+      absolutetags playback_time
+      {
+        "apex" 0.048587
+        "extreme" 0.229885
+        "loop" 0.513410
+        "end" 0.929119
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.072464
+        "extreme" 0.159420
+        "loop" 0.420290
+        "end" 0.913043
+      }
+      sequenceduration 2.333333
+    }
+    event lookat "Look at !player"
+    {
+      time 2.493333 5.446667
+      param "!player"
+    }
+    event gesture "bg_up_l"
+    {
+      time 3.920000 5.520000
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "RampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

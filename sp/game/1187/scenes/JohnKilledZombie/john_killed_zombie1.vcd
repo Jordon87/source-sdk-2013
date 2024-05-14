@@ -1,0 +1,88 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.JOHN_KILLED_ZOMBIE1"
+    {
+      time 0.026667 3.705828
+      param "npc_john.JOHN_KILLED_ZOMBIE1"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "facial"
+  {
+    event flexanimation "Facial Animation"
+    {
+      time 0.333333 1.800000
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "inner_raiser" combo 
+        {
+          0.1687 0.7000
+          0.4406 0.2600
+        }
+        {
+        }
+        "outer_raiser" combo 
+        {
+          0.2813 0.7800
+          0.5594 0.4700
+        }
+        {
+        }
+        "head_rightleft" range 30.0 -30.0 
+        {
+        }
+        "head_tilt" range 15.0 -15.0 
+        {
+          0.2125 0.8700
+          0.5406 0.6000
+        }
+      }
+    }
+    event gesture "bg_up_l"
+    {
+      time 2.080000 3.680000
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+  }
+  channel "lookat"
+  {
+    event lookat "Look at !self"
+    {
+      time 0.026666 3.700000
+      param "!self"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "ExpressionTool" "64"
+  "GestureTool" "100"
+  "RampTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

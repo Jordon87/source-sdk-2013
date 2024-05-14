@@ -1,0 +1,165 @@
+// Choreo version 1
+actor "reporter"
+{
+  channel "voice"
+  {
+    event speak "hbn.hbn_news2_01"
+    {
+      time 0.777778 3.501587
+      param "hbn.hbn_news2_01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news2_02"
+    {
+      time 3.888889 8.424354
+      param "hbn.hbn_news2_02"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "hbn.hbn_news2_03"
+    {
+      time 8.944443 13.327867
+      param "hbn.hbn_news2_03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "ani"
+  {
+    event gesture "b_head_forward"
+    {
+      time 2.500000 4.300001
+      param "b_head_forward"
+      absolutetags playback_time
+      {
+        "apex" 0.188679
+        "extreme" 0.792453
+        "loop" 0.811321
+        "end" 0.830189
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.188679
+        "extreme" 0.792453
+        "loop" 0.811321
+        "end" 0.830189
+      }
+      sequenceduration 1.800000
+    }
+    event gesture "b_head_back"
+    {
+      time 0.666666 2.466665
+      param "b_head_back"
+      absolutetags playback_time
+      {
+        "apex" 0.188679
+        "extreme" 0.792453
+        "loop" 0.811321
+        "end" 0.830189
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.188679
+        "extreme" 0.792453
+        "loop" 0.811321
+        "end" 0.830189
+      }
+      sequenceduration 1.800000
+    }
+    event gesture "g_left_openhand"
+    {
+      time 5.944444 8.244443
+      param "g_left_openhand"
+      absolutetags playback_time
+      {
+        "apex" 0.207126
+        "accent" 0.295894
+        "loop" 0.369867
+        "end" 0.443841
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.291667
+        "accent" 0.416667
+        "loop" 0.520833
+        "end" 0.625000
+      }
+      sequenceduration 1.633333
+    }
+    event gesture "hg_puncuate_down"
+    {
+      time 12.333334 13.966667
+      param "hg_puncuate_down"
+      absolutetags playback_time
+      {
+        "apex" 0.333333
+        "extreme" 0.541667
+        "loop" 0.552500
+        "end" 0.562500
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.333333
+        "extreme" 0.541667
+        "loop" 0.562500
+        "end" 0.562500
+      }
+      sequenceduration 1.633333
+    }
+    event gesture "b_accent_fwd2"
+    {
+      time 8.838890 11.572224
+      param "b_accent_fwd2"
+      absolutetags playback_time
+      {
+        "apex" 0.098765
+        "extreme" 0.296296
+        "loop" 0.518519
+        "end" 0.654321
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.098765
+        "extreme" 0.296296
+        "loop" 0.518519
+        "end" 0.654321
+      }
+      sequenceduration 2.733333
+    }
+  }
+  channel "lookat"
+  {
+    event lookat "Look at !self"
+    {
+      time 0.166666 49.444439
+      param "!self"
+    }
+  }
+  channel "other"
+  {
+    event speak "hbn.hbn_news2_bg"
+    {
+      time 0.111112 49.484283
+      param "hbn.hbn_news2_bg"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "SceneRampTool" "100"
+  "GestureTool" "100"
+  "ExpressionTool" "100"
+  "RampTool" "100"
+  "CChoreoView" "24"
+}
+fps 60
+snap off
+ignorePhonemes off

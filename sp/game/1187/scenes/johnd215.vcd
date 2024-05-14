@@ -1,0 +1,103 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voic"
+  {
+    event speak "npc_john.1187d3_wth"
+    {
+      time 0.261905 1.900454
+      param "npc_john.1187d3_wth"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "anis"
+  {
+    event gesture "bg_up_l"
+    {
+      time 1.158731 2.401590
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.109562
+        "extreme" 0.356078
+        "loop" 0.547811
+        "end" 0.821717
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event gesture "b_head_back"
+    {
+      time 0.596663 2.396662
+      param "b_head_back"
+      absolutetags playback_time
+      {
+        "apex" 0.188679
+        "extreme" 0.792453
+        "loop" 0.811321
+        "end" 0.830189
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.188679
+        "extreme" 0.792453
+        "loop" 0.811321
+        "end" 0.830189
+      }
+      sequenceduration 1.800000
+    }
+    event flexanimation "wink01"
+    {
+      time 1.333333 2.404762
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "inner_raiser" combo 
+        {
+          0.1340 0.8600
+        }
+        {
+        }
+        "outer_raiser" combo 
+        {
+          0.0780 0.7200
+        }
+        {
+        }
+      }
+    }
+  }
+  channel "look"
+  {
+    event lookat "Look at !player"
+    {
+      time -0.515238 2.381905
+      param "!player"
+    }
+    event face "Face !player"
+    {
+      time 0.595237 2.342856
+      param "!player"
+    }
+  }
+}
+
+scalesettings
+{
+  "GestureTool" "100"
+  "ExpressionTool" "100"
+  "RampTool" "100"
+  "SceneRampTool" "100"
+  "CChoreoView" "28"
+}
+fps 60
+snap off
+ignorePhonemes off

@@ -1,0 +1,119 @@
+// Choreo version 1
+actor "john"
+{
+  channel "voice"
+  {
+    event speak "npc_john.1187d9_john_wth01"
+    {
+      time 1.213334 2.942268
+      param "npc_john.1187d9_john_wth01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_john.1187d9_john_wth02"
+    {
+      time 4.683333 6.481405
+      param "npc_john.1187d9_john_wth02"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "ani"
+  {
+    event flexanimation "Facial Animation"
+    {
+      time 0.116666 4.358333
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "head_rightleft" range 30.0 -30.0 
+        {
+          1.2105 0.7300
+          3.7913 0.2500
+        }
+      }
+    }
+    event gesture "g_palm_up_high_l"
+    {
+      time 1.175000 3.441667
+      param "g_palm_up_high_l"
+      absolutetags playback_time
+      {
+        "apex" 0.149594
+        "accent" 0.314148
+        "loop" 0.373986
+        "end" 0.673175
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.172414
+        "accent" 0.362069
+        "loop" 0.431034
+        "end" 0.775862
+      }
+      sequenceduration 1.966667
+    }
+    event gesture "bg_up_r"
+    {
+      time 4.408333 6.008333
+      param "bg_up_r"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+    event gesture "bg_up_l"
+    {
+      time 5.566667 7.166666
+      param "bg_up_l"
+      absolutetags playback_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.085106
+        "extreme" 0.276596
+        "loop" 0.425532
+        "end" 0.638298
+      }
+      sequenceduration 1.600000
+    }
+  }
+  channel "lookat"
+  {
+    event lookat "Look at !player"
+    {
+      time 4.283334 7.191667
+      param "!player"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "60"
+  "SceneRampTool" "100"
+  "RampTool" "100"
+  "ExpressionTool" "22"
+  "GestureTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

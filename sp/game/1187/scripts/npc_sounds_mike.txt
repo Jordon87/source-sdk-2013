@@ -1,0 +1,978 @@
+//
+// sounds/1187/johnchris
+//
+
+
+
+"npc_mike.1187_wp_observ_mikrad01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnchris/1187_wp_observ_mikrad01.wav"
+}
+
+
+//
+// sounds/1187/johnmike
+//
+
+"npc_mike.1187d7_basem01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem01.wav"
+}
+
+"npc_mike.1187d7_basem02"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem02.wav"
+}
+
+"npc_mike.1187d7_basem03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem03.wav"
+}
+
+"npc_mike.1187d7_basem04"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem04.wav"
+}
+"npc_mike.1187d7_basem05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem05.wav"
+}
+
+"npc_mike.1187d7_basem06"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem06.wav"
+}
+
+"npc_mike.1187d7_basem07"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem07.wav"
+}
+
+"npc_mike.1187d7_basem08"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem08.wav"
+}
+
+"npc_mike.1187d7_basem09"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem09.wav"
+}
+
+"npc_mike.1187d7_basem10"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem10.wav"
+}
+
+"npc_mike.1187d7_basem11"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem11.wav"
+}
+
+"npc_mike.1187d7_basem12"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem12.wav"
+}
+
+"npc_mike.1187d7_basem13"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem13.wav"
+}
+
+"npc_mike.1187d7_basem14"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem14.wav"
+}
+
+"npc_mike.1187d7_basem15"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem15.wav"
+}
+
+"npc_mike.1187d7_basem16"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem16.wav"
+}
+
+"npc_mike.1187d7_basem17"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem17.wav"
+}
+
+"npc_mike.1187d7_basem18"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem18.wav"
+}
+
+"npc_mike.1187d7_basem19"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem19.wav"
+}
+
+"npc_mike.1187d7_basem20"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem20.wav"
+}
+
+"npc_mike.1187d7_basem21"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem21.wav"
+}
+
+"npc_mike.1187d7_basem22"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem22.wav"
+}
+
+"npc_mike.1187d7_basem23"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem23.wav"
+}
+
+"npc_mike.1187d7_basem24"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem24.wav"
+}
+
+"npc_mike.1187d7_basem25"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem25.wav"
+}
+
+"npc_mike.1187d7_basem26"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem26.wav"
+}
+
+"npc_mike.1187d7_basem27"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_basem27.wav"
+}
+
+"npc_mike.1187d7_meetingup03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_meetingup03.wav"
+}
+
+"npc_mike.1187d7_meetingup04"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_meetingup04.wav"
+}
+
+"npc_mike.1187d7_meetingup05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_meetingup05.wav"
+}
+
+"npc_mike.1187d7_mikesfine"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_mikesfine.wav"
+}
+
+"npc_mike.1187d7_mikeshurt03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_mikeshurt03.wav"
+}
+
+"npc_mike.1187d7_mikeshurt04"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_mikeshurt04.wav"
+}
+
+"npc_mike.1187d7_mikeshurt05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_mikeshurt05.wav"
+}
+
+"npc_mike.1187d7_obser01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_obser01.wav"
+}
+
+"npc_mike.1187d7_obser02"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_obser02.wav"
+}
+
+"npc_mike.1187d7_obser03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_obser03.wav"
+}
+
+"npc_mike.1187d7_obser04"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_obser04.wav"
+}
+
+"npc_mike.1187d7_obser05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/johnmike/1187d7_obser05.wav"
+}
+
+//
+// sounds/1187/mikejohn01
+//
+
+"npc_mike.1187d6_mj_new00"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new00.wav"
+}
+
+"npc_mike.1187d6_mj_new01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new01.wav"
+}
+
+"npc_mike.1187d6_mj_new03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new03.wav"
+}
+
+"npc_mike.1187d6_mj_new04"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new04.wav"
+}
+
+"npc_mike.1187d6_mj_new05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new05.wav"
+}
+
+"npc_mike.1187d6_mj_new09"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new09.wav"
+}
+
+"npc_mike.1187d6_mj_new10"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new10.wav"
+}
+
+"npc_mike.1187d6_mj_new11"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new11.wav"
+}
+
+"npc_mike.1187d6_mj_new12"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new12.wav"
+}
+
+"npc_mike.1187d6_mj_new13"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new13.wav"
+}
+
+"npc_mike.1187d6_mj_new14"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new14.wav"
+}
+
+"npc_mike.1187d6_mj_new15"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new15.wav"
+}
+
+"npc_mike.1187d6_mj_new21"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new21.wav"
+}
+
+"npc_mike.1187d6_mj_new22"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new22.wav"
+}
+
+"npc_mike.1187d6_mj_new23"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new23.wav"
+}
+
+"npc_mike.1187d6_mj_new24"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new24.wav"
+}
+
+"npc_mike.1187d6_mj_new25"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new25.wav"
+}
+
+"npc_mike.1187d6_mj_new26"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new26.wav"
+}
+
+"npc_mike.1187d6_mj_new27"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new27.wav"
+}
+
+"npc_mike.1187d6_mj_new28"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new28.wav"
+}
+
+"npc_mike.1187d6_mj_new29"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new29.wav"
+}
+
+"npc_mike.1187d6_mj_new30"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new30.wav"
+}
+
+"npc_mike.1187d6_mj_new31"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new31.wav"
+}
+
+"npc_mike.1187d6_mj_new32"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new32.wav"
+}
+
+"npc_mike.1187d6_mj_new35"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new35.wav"
+}
+
+"npc_mike.1187d6_mj_new36"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new36.wav"
+}
+
+"npc_mike.1187d6_mj_new37"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new37.wav"
+}
+
+"npc_mike.1187d6_mj_new38"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new38.wav"
+}
+
+"npc_mike.1187d6_mj_new40"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new40.wav"
+}
+
+"npc_mike.1187d6_mj_new41"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new41.wav"
+}
+
+"npc_mike.1187d6_mj_new43"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new43.wav"
+}
+
+"npc_mike.1187d6_mj_new44"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new44.wav"
+}
+
+"npc_mike.1187d6_mj_new45"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new45.wav"
+}
+
+"npc_mike.1187d6_mj_new46"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new46.wav"
+}
+
+"npc_mike.1187d6_mj_new47"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new47.wav"
+}
+
+"npc_mike.1187d6_mj_new48"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new48.wav"
+}
+
+"npc_mike.1187d6_mj_new49"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new49.wav"
+}
+
+"npc_mike.1187d6_mj_new50"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new50.wav"
+}
+
+"npc_mike.1187d6_mj_new54"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new54.wav"
+}
+
+"npc_mike.1187d6_mj_new58"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new58.wav"
+}
+
+"npc_mike.1187d6_mj_new59"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/1187d6_mj_new59.wav"
+}
+
+"npc_mike.mike_scene1_20"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/mikejohn01/mike_scene1_20.wav"
+}
+
+//
+// sounds/1187/radio
+//
+
+"npc_mike.1187d7_mikeradioscene01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/radio/1187d7_mikeradioscene01.wav"
+}
+
+"npc_mike.1187d7_mikeradioscene02"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/radio/1187d7_mikeradioscene02.wav"
+}
+
+"npc_mike.1187d7_mikeradioscene03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/radio/1187d7_mikeradioscene03.wav"
+}
+
+//
+// sounds/1187/clues
+//
+
+"npc_mike.1187d7_clues01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/clues/1187d7_clues01.wav"
+}
+
+"npc_mike.1187d7_clues02"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/clues/1187d7_clues02.wav"
+}
