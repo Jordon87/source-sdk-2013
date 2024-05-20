@@ -392,11 +392,11 @@ int CNPC_John::TranslateSchedule(int scheduleType)
 
 	if (CanReload() && pWeapon->UsesClipsForAmmo1() && pWeapon->Clip1() < (pWeapon->GetMaxClip1() * .5) && OccupyStrategySlot(SQUAD_SLOT_EXCLUSIVE_RELOAD))
 	{
-		return BaseClass::TranslateSchedule(scheduleType);
+		PlayAction(JOHN_RELOAD, false);
+		return SCHED_RELOAD;
 	}
 
-	PlayAction(JOHN_RELOAD, false);
-	return SCHED_RELOAD;
+	return BaseClass::TranslateSchedule(scheduleType);
 }
 
 void CNPC_John::Think(void)

@@ -2539,7 +2539,6 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 	trace_t tr;
 	UTIL_TraceLine(vecSrc, vecEnd, MASK_SHOT_HULL, pPlayer, COLLISION_GROUP_NONE, &tr);
 
-
 	if (tr.m_pEnt)
 	{
 #if !defined( CLIENT_DLL )
@@ -2552,7 +2551,7 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 		ApplyMultiDamage();
 		TraceAttackToTriggers(info, tr.startpos, tr.endpos, forward);
 
-		if (ClassMatches("weapon_pistol") && tr.m_pEnt->IsNPC() && tr.m_pEnt->IsAlive())
+		if (ClassMatches("weapon_pistol") && tr.m_pEnt->IsNPC() && !tr.m_pEnt->IsAlive())
 			SendWeaponAnim(ACT_VM_SWINGHIT);
 #endif
 

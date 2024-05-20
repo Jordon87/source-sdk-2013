@@ -583,7 +583,7 @@ bool CNPC_Combine::OverrideMoveFacing( const AILocalMoveGoal_t &move, float flIn
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Combine::Classify ( void )
 {
-	return CLASS_COMBINE;
+	return CLASS_MILITARY;
 }
 
 
