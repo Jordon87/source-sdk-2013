@@ -129,6 +129,11 @@ void COptionsPanel::OnTick()
 			cl_viewrealism.SetValue(m_pViewRealism->IsSelected());
 		}
 
+		if (cl_viewbob_enabled.IsValid())
+		{
+			cl_viewbob_enabled.SetValue(m_pViewBobbing->IsSelected());
+		}
+
 		if (cl_ironsightblur.IsValid())
 		{
 			cl_ironsightblur.SetValue(m_pIronSight->IsSelected());
