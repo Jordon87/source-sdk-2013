@@ -252,7 +252,7 @@ void CNPC_John::Spawn()
 
 Class_T CNPC_John::Classify(void)
 {
-	return CLASS_PLAYER_ALLY_VITAL;
+	return (b_IsDown) != CLASS_NONE ? CLASS_NONE : CLASS_PLAYER_ALLY_VITAL;
 }
 
 void CNPC_John::TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator)
@@ -493,12 +493,12 @@ void CNPC_John::Event_KilledOther(CBaseEntity* pVictim, const CTakeDamageInfo& i
 
 int CNPC_John::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 {
-	CTakeDamageInfo dmgInfo(info);
+	CTakeDamageInfo subInfo = info;
 
 	if (b_ProtectionOn)
 	{
 		m_iHealth = g_johnhealth.GetInt();
-		return BaseClass::OnTakeDamage_Alive(dmgInfo);
+		return BaseClass::OnTakeDamage_Alive(subInfo);
 	}
 	else if (m_iHealth > g_johnfallhealth.GetInt()
 		|| b_IsDown
@@ -511,7 +511,7 @@ int CNPC_John::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 			PlayAction(JOHN_DAMAGE_SHOT, true);
 		else
 			PlayAction(JOHN_DAMAGE_HIT, true);
-		return BaseClass::OnTakeDamage_Alive(dmgInfo);
+		return BaseClass::OnTakeDamage_Alive(subInfo);
 	}
 	else
 	{
@@ -587,7 +587,6 @@ void CNPC_John::Touch(CBaseEntity* pOther)
 						pPlayer->GetActiveWeapon()->WeaponSound(SINGLE);
 						pPlayer->GetActiveWeapon()->m_iClip1 -= 1;
 					}
-					int v9 = random->RandomInt(1, 2);
 
 					color32 colors = { 255,255,255,64};
 					UTIL_ScreenFade(pPlayer, colors, 0.05f, 0.0f, FFADE_IN);
@@ -600,12 +599,12 @@ void CNPC_John::Touch(CBaseEntity* pOther)
 					SetCondition(COND_NPC_UNFREEZE);
 					SetMoveType(MOVETYPE_STEP);
 
-					m_spawnflags &= ~SF_NPC_NO_PLAYER_PUSHAWAY;
+					CLEARBITS(m_spawnflags, SF_NPC_NO_PLAYER_PUSHAWAY);
 
 					m_FollowBehavior.SetFollowTarget(UTIL_GetLocalPlayer());
 					m_FollowBehavior.SetParameters(AIF_SIDEKICK);
 
-					if (v9 == 1)
+					if (random->RandomInt(1, 2) == 1)
 						SetExpression("scenes/johndown_thanks1.vcd");
 					else
 						SetExpression("scenes/johndown_thanks2.vcd");
@@ -616,9 +615,8 @@ void CNPC_John::Touch(CBaseEntity* pOther)
 					m_flTimerToDie = 0.0f;
 					m_iHealth = g_johnhealth.GetInt();
 					b_CanIdle = true;
-					float v13 = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
 					b_ProtectionOn = true;
-					m_flDelayIdle = v13;
+					m_flDelayIdle = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
 					m_flProtectionTimer = gpGlobals->curtime + 10.0f;
 				}
 			}
