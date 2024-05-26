@@ -2159,12 +2159,10 @@ CLaserDot *CLaserDot::Create( const Vector &origin, CBaseEntity *pOwner, bool bV
 	UTIL_SetSize( pLaserDot, vec3_origin, vec3_origin );
 
 	//Create the graphic
-	pLaserDot->SpriteInit( "sprites/redglow1.vmt", origin );
-
 	pLaserDot->SetName( AllocPooledString("TEST") );
 
-	pLaserDot->SetTransparency( kRenderGlow, 255, 255, 255, 255, kRenderFxNoDissipation );
-	pLaserDot->SetScale( 0.5f );
+	pLaserDot->SetTransparency( kRenderGlow, 255, 255, 255, 0, kRenderFxNoDissipation );
+	pLaserDot->SetScale( 0.0f );
 
 	pLaserDot->SetOwnerEntity( pOwner );
 
