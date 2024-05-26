@@ -55,58 +55,60 @@ END_DATADESC()
 
 void CWeaponColt::PrimaryAttack(void)
 {
-	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
 
-	if (pOwner && pOwner->IsPlayer())
+	if (!pOwner)
 	{
-		if (m_iClip1 > 0)
+		return;
+	}
+
+	if (m_iClip1 <= 0)
+	{
+		if (!m_bFireOnEmpty)
 		{
-			++m_iPrimaryAttacks;
-			gamestats->Event_WeaponFired(pOwner, true, GetClassname());
-		
-			WeaponSound(SINGLE);
-			WeaponAutoAimScale();
-			SendWeaponAnim(ACT_VM_PRIMARYATTACK);
-
-			m_flNextPrimaryAttack = SequenceDuration() + gpGlobals->curtime;
-			m_flNextSecondaryAttack = SequenceDuration() + gpGlobals->curtime;
-
-			m_iClip1 -= 1;
-
-			FireBulletsInfo_t info;
-			info.m_iShots = 1;
-			info.m_vecSrc = pOwner->Weapon_ShootPosition();
-			info.m_vecDirShooting = pOwner->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
-			info.m_vecSpread = pOwner->GetAttackSpread(this);
-			info.m_flDistance = MAX_TRACE_LENGTH;
-			info.m_iAmmoType = m_iPrimaryAmmoType;
-			info.m_iTracerFreq = 0;
-			FireBullets(info);
-
-			pOwner->SetMuzzleFlashTime(gpGlobals->curtime + 0.5f);
-
-			QAngle angPunch = QAngle(-10.0f, random->RandomFloat(-2.0,2.0), 0.0f);
-			pOwner->ViewPunch(angPunch);
-
-			CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOwner);
-
-			if (!m_iClip1 && pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
-			{
-				// HEV suit - indicate out of ammo condition
-				pOwner->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
-			}
-			else
-			{
-				if (m_bFireOnEmpty)
-				{
-					WeaponSound(EMPTY);
-					m_flNextPrimaryAttack += 0.15f;
-				}
-				else
-				{
-					Reload();
-				}
-			}
+			Reload();
 		}
+		else
+		{
+			WeaponSound(EMPTY);
+			m_flNextPrimaryAttack = gpGlobals->curtime + 0.15f;
+		}
+
+		return;
+	}
+
+	++m_iPrimaryAttacks;
+	gamestats->Event_WeaponFired(pOwner, true, GetClassname());
+		
+	WeaponSound(SINGLE);
+	WeaponAutoAimScale();
+	SendWeaponAnim(ACT_VM_PRIMARYATTACK);
+
+	m_flNextPrimaryAttack = SequenceDuration() + gpGlobals->curtime;
+	m_flNextSecondaryAttack = SequenceDuration() + gpGlobals->curtime;
+
+	m_iClip1 -= 1;
+
+	FireBulletsInfo_t info;
+	info.m_iShots = 1;
+	info.m_vecSrc = pOwner->Weapon_ShootPosition();
+	info.m_vecDirShooting = pOwner->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
+	info.m_vecSpread = pOwner->GetAttackSpread(this);
+	info.m_flDistance = MAX_TRACE_LENGTH;
+	info.m_iAmmoType = m_iPrimaryAmmoType;
+	info.m_iTracerFreq = 0;
+	pOwner->FireBullets(info);
+
+	pOwner->SetMuzzleFlashTime(gpGlobals->curtime + 0.5f);
+
+	QAngle angPunch = QAngle(-10.0f, random->RandomFloat(-2.0,2.0), 0.0f);
+	pOwner->ViewPunch(angPunch);
+
+	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOwner);
+
+	if (!m_iClip1 && pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	{
+		// HEV suit - indicate out of ammo condition
+		pOwner->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
 	}
 }
