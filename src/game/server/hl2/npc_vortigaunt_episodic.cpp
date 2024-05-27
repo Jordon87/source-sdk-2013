@@ -677,7 +677,7 @@ int CNPC_Vortigaunt::MeleeAttack1Conditions( float flDot, float flDist )
 		return COND_TOO_FAR_TO_ATTACK;
 
 	if (GetEnemy())
-		return ( (HasSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT) != false ) + COND_CAN_MELEE_ATTACK1);
+		return HasSpawnFlags(SF_IS_ENHANCED_VORTIGAUNT) != false ? COND_VORTIGAUNT_DISPEL_ANTLIONS : COND_CAN_MELEE_ATTACK1;
 
 	return COND_NONE;
 }
