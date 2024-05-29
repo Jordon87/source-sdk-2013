@@ -31,6 +31,7 @@ ConVar sk_houndeye_dmg_blast("sk_houndeye_dmg_blast", "0", FCVAR_NONE);
 class CNPC_HoundeyeNew : public CNPC_BaseZombie
 {
 	DECLARE_CLASS(CNPC_HoundeyeNew, CNPC_BaseZombie);
+	DEFINE_CUSTOM_AI;
 
 public:
 	void Precache();
@@ -67,9 +68,6 @@ public:
 	virtual const char* GetHeadcrabClassname(void);
 	virtual const char* GetHeadcrabModel(void);
 
-public:
-	DEFINE_CUSTOM_AI;
-
 protected:
 	static const char* pMoanSounds[];
 
@@ -79,12 +77,10 @@ private:
 };
 
 LINK_ENTITY_TO_CLASS(npc_houndeye, CNPC_HoundeyeNew);
-IMPLEMENT_CUSTOM_AI(npc_houndeye, CNPC_HoundeyeNew);
 
-void CNPC_HoundeyeNew::InitCustomSchedules()
-{
-	INIT_CUSTOM_AI(CNPC_HoundeyeNew);
-}
+AI_BEGIN_CUSTOM_NPC(npc_houndeye, CNPC_HoundeyeNew)
+
+AI_END_CUSTOM_NPC()
 
 const char* CNPC_HoundeyeNew::pMoanSounds[] =
 {

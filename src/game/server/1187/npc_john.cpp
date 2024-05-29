@@ -53,6 +53,8 @@ class CNPC_John : public CNPC_PlayerCompanion
 {
 	DECLARE_CLASS(CNPC_John, CNPC_PlayerCompanion);
 	DECLARE_DATADESC();
+	DEFINE_CUSTOM_AI;
+
 public:
 
 	void SelectModel(void);
@@ -120,6 +122,10 @@ BEGIN_DATADESC(CNPC_John)
 	DEFINE_FIELD(m_flSpeakAgain, FIELD_TIME),
 
 END_DATADESC()
+
+AI_BEGIN_CUSTOM_NPC(npc_john, CNPC_John)
+
+AI_END_CUSTOM_NPC()
 
 void CNPC_John::SelectModel()
 {
