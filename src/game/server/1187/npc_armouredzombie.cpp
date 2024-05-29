@@ -22,6 +22,8 @@ int ACT_ZOMBINE_ATTACK_FAST;
 class CNPC_ArmouredZombie : public CNPC_BaseZombie
 {
 	DECLARE_CLASS(CNPC_ArmouredZombie, CNPC_BaseZombie);
+	DEFINE_CUSTOM_AI;
+
 public:
 
 	void Spawn(void);
@@ -54,15 +56,15 @@ public:
 	virtual const char* GetHeadcrabClassname(void);
 	virtual const char* GetHeadcrabModel(void);
 
-public:
-	DEFINE_CUSTOM_AI;
-
 protected:
 	static const char* pMoanSounds[];
 };
 
 LINK_ENTITY_TO_CLASS(npc_armouredzombie, CNPC_ArmouredZombie);
-IMPLEMENT_CUSTOM_AI(npc_armouredzombie, CNPC_ArmouredZombie);
+
+AI_BEGIN_CUSTOM_NPC(npc_armouredzombie, CNPC_ArmouredZombie)
+	DECLARE_ACTIVITY(ACT_ZOMBINE_ATTACK_FAST)
+AI_END_CUSTOM_NPC()
 
 const char* CNPC_ArmouredZombie::pMoanSounds[] =
 {

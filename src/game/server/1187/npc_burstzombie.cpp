@@ -19,6 +19,8 @@ ConVar sk_burst_zombie_numcrabs("sk_burst_zombie_numcrabs", "20", FCVAR_NONE, "N
 class CNPC_BurstZombie : public CNPC_BaseZombie
 {
 	DECLARE_CLASS(CNPC_BurstZombie, CNPC_BaseZombie );
+	DEFINE_CUSTOM_AI;
+
 public:
 
 	void Spawn(void);
@@ -54,6 +56,10 @@ private:
 };
 
 LINK_ENTITY_TO_CLASS(npc_burstzombie, CNPC_BurstZombie);
+
+AI_BEGIN_CUSTOM_NPC(npc_burstzombie, CNPC_BurstZombie)
+
+AI_END_CUSTOM_NPC()
 
 const char* CNPC_BurstZombie::pMoanSounds[] =
 {

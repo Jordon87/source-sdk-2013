@@ -15,6 +15,7 @@
 class CNPC_Mike : public CNPC_PlayerCompanion
 {
 	DECLARE_CLASS(CNPC_Mike, CNPC_PlayerCompanion);
+	DEFINE_CUSTOM_AI;
 public:
 	virtual void SelectModel(void);
 
@@ -23,6 +24,10 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS(npc_mike, CNPC_Mike);
+
+AI_BEGIN_CUSTOM_NPC(npc_mike, CNPC_Mike)
+
+AI_END_CUSTOM_NPC()
 
 void CNPC_Mike::SelectModel()
 {

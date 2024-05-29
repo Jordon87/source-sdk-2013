@@ -19,6 +19,7 @@ ConVar g_chrishealth("g_chrishealth", "9000", FCVAR_NONE);
 class CNPC_Chris : public CNPC_PlayerCompanion
 {
 	DECLARE_CLASS(CNPC_Chris, CNPC_PlayerCompanion);
+	DEFINE_CUSTOM_AI;
 public:
 
 	virtual void Precache(void);
@@ -33,6 +34,10 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS(npc_chris, CNPC_Chris);
+
+AI_BEGIN_CUSTOM_NPC(npc_chris, CNPC_Chris)
+
+AI_END_CUSTOM_NPC()
 
 void CNPC_Chris::SelectModel()
 {
