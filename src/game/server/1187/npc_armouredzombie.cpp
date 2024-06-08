@@ -280,10 +280,3 @@ const char* CNPC_ArmouredZombie::GetHeadcrabModel(void)
 {
 	return "models/headcrabclassic.mdl";
 }
-
-void CNPC_ArmouredZombie::InitCustomSchedules(void)
-{
-	INIT_CUSTOM_AI(CNPC_ArmouredZombie);
-
-	ADD_CUSTOM_ACTIVITY(CNPC_ArmouredZombie, ACT_ZOMBINE_ATTACK_FAST);
-}
