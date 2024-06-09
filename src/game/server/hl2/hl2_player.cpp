@@ -1094,7 +1094,7 @@ void CHL2_Player::SetAnimation( PLAYER_ANIM playerAnim )
 	}
 
 	if (idealActivity == ACT_INVALID)
-		return; // If not valid activity has been found, don't play anything.
+		return; // If no valid activity has been found, don't play anything.
 
 	SetActivity(idealActivity);
 
