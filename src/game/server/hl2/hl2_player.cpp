@@ -965,8 +965,6 @@ Class_T  CHL2_Player::Classify ( void )
 
 void CHL2_Player::SetAnimation( PLAYER_ANIM playerAnim )
 {
-// Needs fixing a bit. Animation of legs will always run even if staying idle.
-
 	int animDesired;
 	float speed = GetAbsVelocity().Length2D();
 
@@ -976,7 +974,7 @@ void CHL2_Player::SetAnimation( PLAYER_ANIM playerAnim )
 		playerAnim = PLAYER_IDLE;
 	}
 
-	Activity idealActivity = ACT_RUN;
+	Activity idealActivity = ACT_INVALID; // This should never occur.
 
 	if (playerAnim == PLAYER_JUMP)
 	{
@@ -987,126 +985,120 @@ void CHL2_Player::SetAnimation( PLAYER_ANIM playerAnim )
 		if ( m_lifeState == LIFE_ALIVE )
 			return;
 	}
-	else if (playerAnim <= PLAYER_WALK)
+	else if (playerAnim == PLAYER_IDLE || playerAnim == PLAYER_WALK)
 	{
-		if (!(GetFlags() & FL_ONGROUND) && (idealActivity == ACT_JUMP, GetActivity() != ACT_JUMP))
+		if (!(GetFlags() & FL_ONGROUND) && GetActivity() == ACT_JUMP)	// Still jumping
 		{
-			if ( ( m_nButtons & IN_DUCK ) != 0 || (GetFlags() & FL_DUCKING) != 0 )
+			idealActivity = GetActivity();
+		}
+		else
+		{
+			if ((m_nButtons & IN_DUCK) != 0 || (GetFlags() & FL_DUCKING) != 0)
 			{
-				if ( speed <= 10.0f )
+				if (speed > 10)
 				{
-					idealActivity = ACT_COVER_LOW;
-				}
-				else if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
-				{
-					idealActivity = ACT_MP_AIRWALK;
-				}
-				else if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
-				{
-					idealActivity = ACT_MP_WALK_PDA;
-				}
-				else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
-				{
-					idealActivity = ACT_MP_AIRWALK_SECONDARY;
-				}
-				else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
-				{
-					idealActivity = ACT_MP_AIRWALK_PRIMARY;
-				}
-				else if ( ( m_nButtons & IN_FORWARD ) != 0 )
-				{
-					idealActivity = ACT_WALK_CROUCH;
-				}
-				else if ( ( m_nButtons & IN_BACK ) != 0 )
-				{
-					idealActivity = ACT_MP_CROUCH_SECONDARY;
-				}
-				else if ( ( m_nButtons & IN_MOVELEFT ) != 0 )
-				{
-					idealActivity = ACT_MP_WALK_PRIMARY;
+					idealActivity = GetActivity(); // Default to the current activity if none of the conditions below are met.
+
+					if ((m_nButtons & IN_FORWARD) != 0)
+					{
+						if ((m_nButtons & IN_MOVELEFT) != 0)
+							idealActivity = ACT_MP_AIRWALK; // Ducking, North-West
+						else if ((m_nButtons & IN_MOVERIGHT) != 0)
+							idealActivity = ACT_MP_WALK_PDA; // Ducking, North-East
+						else
+							idealActivity = ACT_WALK_CROUCH; // Ducking, North
+					}
+					else if ((m_nButtons & IN_BACK) != 0)
+					{
+						if ((m_nButtons & IN_MOVELEFT) != 0)
+							idealActivity = ACT_MP_AIRWALK_SECONDARY; // Ducking, South-West
+						else if ((m_nButtons & IN_MOVERIGHT) != 0)
+							idealActivity = ACT_MP_AIRWALK_PRIMARY; // Ducking, South-East
+						else
+							idealActivity = ACT_MP_CROUCH_SECONDARY; // Ducking, South
+					}
+					else if ((m_nButtons & IN_MOVELEFT) != 0)
+						idealActivity = ACT_MP_WALK_MELEE; // Ducking, West
+					else if ((m_nButtons & IN_MOVERIGHT) != 0)
+						idealActivity = ACT_MP_WALK_PRIMARY; // Ducking, East
 				}
 				else
-				{
-					idealActivity = (m_nButtons & IN_MOVERIGHT) != 0 ? ACT_MP_WALK_MELEE : ACT_WALK_CROUCH;
-				}
-			}
-			else if ( speed <= 10.0f )
-			{
-				idealActivity = ACT_IDLE;
-			}
-			else if ( ( m_nButtons & IN_SPEED ) != 0 )
-			{
-				if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
-				{
-					idealActivity = ACT_MP_SPRINT;
-				}
-				else if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
-				{
-					idealActivity = ACT_MP_RUN_PDA;
-				}
-				else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
-				{
-					idealActivity = ACT_MP_SWIM_SECONDARY;
-				}
-				else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
-				{
-					idealActivity = ACT_MP_SWIM_PRIMARY;
-				}
-				else if ( ( m_nButtons & IN_FORWARD ) != 0 )
-				{
-					idealActivity = ACT_RUN;
-				}
-				else if ( ( m_nButtons & IN_BACK ) != 0 )
-				{
-					idealActivity = ACT_MP_RUN_SECONDARY;
-				}
-				else if ( ( m_nButtons & IN_MOVELEFT ) != 0 )
-				{
-					idealActivity = ACT_MP_RUN_PRIMARY;
-				}
-				else
-				{
-					idealActivity = ( m_nButtons & IN_MOVERIGHT ) != 0 ? ACT_MP_RUN_MELEE : ACT_RUN;
-				}
-			}
-			else if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
-			{
-				idealActivity = ACT_MP_AIRWALK;
-			}
-			else if ( ( m_nButtons & IN_FORWARD ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
-			{
-				idealActivity = ACT_MP_WALK_PDA;
-			}
-			else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVELEFT ) != 0 )
-			{
-				idealActivity = ACT_MP_AIRWALK_SECONDARY;
-			}
-			else if ( ( m_nButtons & IN_BACK ) != 0 && ( m_nButtons & IN_MOVERIGHT ) != 0 )
-			{
-				idealActivity = ACT_MP_AIRWALK_PRIMARY;
-			}
-			else if ( ( m_nButtons & IN_FORWARD ) != 0 )
-			{
-				idealActivity = ACT_WALK;
-			}
-			else if ( ( m_nButtons & IN_BACK ) != 0 )
-			{
-				idealActivity = ACT_MP_WALK_SECONDARY;
-			}
-			else if ( ( m_nButtons & IN_MOVELEFT ) != 0 )
-			{
-				idealActivity = ACT_MP_WALK_PRIMARY;
+					idealActivity = ACT_COVER_LOW; // Ducking, Idle
 			}
 			else
 			{
-				idealActivity = (m_nButtons & IN_MOVERIGHT) != 0 ? ACT_MP_WALK_MELEE : ACT_WALK;
+				if (speed > 10)
+				{
+					idealActivity = GetActivity(); // Default to the current activity if none of the conditions below are met.
+
+					if (!m_fIsSprinting) // Walking/Normal speed
+					{
+						if ((m_nButtons & IN_FORWARD) != 0)
+						{
+							if ((m_nButtons & IN_MOVELEFT) != 0)
+								idealActivity = ACT_MP_AIRWALK; // Walking, North-West
+							else if ((m_nButtons & IN_MOVERIGHT) != 0)
+								idealActivity = ACT_MP_WALK_PDA; // Walking, North-East
+							else
+								idealActivity = ACT_WALK; // Walking, North
+						}
+						else if ((m_nButtons & IN_BACK) != 0)
+						{
+							if ((m_nButtons & IN_MOVELEFT) != 0)
+								idealActivity = ACT_MP_AIRWALK_SECONDARY; // Walking, South-West
+							else if ((m_nButtons & IN_MOVERIGHT) != 0)
+								idealActivity = ACT_MP_AIRWALK_PRIMARY; // Walking, South-East
+							else
+								idealActivity = ACT_MP_WALK_SECONDARY; // Walking, South
+						}
+						else if ((m_nButtons & IN_MOVELEFT) != 0)
+							idealActivity = ACT_MP_WALK_MELEE; // Walking, West
+						else if ((m_nButtons & IN_MOVERIGHT) != 0)
+							idealActivity = ACT_MP_WALK_PRIMARY; // Walking, East
+					}
+					else // Sprinting
+					{
+						if ((m_nButtons & IN_FORWARD) != 0)
+						{
+							if ((m_nButtons & IN_MOVELEFT) != 0)
+								idealActivity = ACT_MP_SPRINT; // Sprinting, North-West
+							else if ((m_nButtons & IN_MOVERIGHT) != 0)
+								idealActivity = ACT_MP_RUN_PDA; // Sprinting, North-East
+							else
+								idealActivity = ACT_RUN; // Sprinting, North
+						}
+						else if ((m_nButtons & IN_BACK) != 0)
+						{
+							if ((m_nButtons & IN_MOVELEFT) != 0)
+								idealActivity = ACT_MP_SWIM_SECONDARY; // Sprinting, South-West
+							else if ((m_nButtons & IN_MOVERIGHT) != 0)
+								idealActivity = ACT_MP_SWIM_PRIMARY; // Sprinting, South-East
+							else
+								idealActivity = ACT_MP_RUN_SECONDARY; // Sprinting, South
+						}
+						else if ((m_nButtons & IN_MOVELEFT) != 0)
+							idealActivity = ACT_MP_RUN_MELEE; // Sprinting, West
+						else if ((m_nButtons & IN_MOVERIGHT) != 0)
+							idealActivity = ACT_MP_RUN_PRIMARY; // Sprinting, East
+					}
+				}
+				else
+					idealActivity = ACT_IDLE; // Standing, Idle
 			}
 		}
 	}
+	else {
+		// Any unhandled PLAYER_ANIM falls here.
+		// Let the current activity play normally.
+		idealActivity = GetActivity();
+	}
 
-	Activity weaponAct = Weapon_TranslateActivity( idealActivity );
-	
-	animDesired = SelectWeightedSequence( weaponAct );
+	if (idealActivity == ACT_INVALID)
+		return; // If not valid activity has been found, don't play anything.
+
+	SetActivity(idealActivity);
+
+	animDesired = SelectWeightedSequence(Weapon_TranslateActivity(idealActivity));
 
 	if ( animDesired == -1 )
 	{
@@ -1114,13 +1106,14 @@ void CHL2_Player::SetAnimation( PLAYER_ANIM playerAnim )
 		if ( animDesired == -1 )
 			animDesired = 0;
 	}
+	
+	// Already using the desired animation?
+	if (GetSequence() == animDesired)
+		return;
 
-	if ( GetSequence() != animDesired )
-	{
-		m_flPlaybackRate = 1.0f;
-		ResetSequence( animDesired );
-		SetCycle( 0 );
-	}
+	m_flPlaybackRate = 1.0;
+	ResetSequence(animDesired);
+	SetCycle(0);
 }
 
 //-----------------------------------------------------------------------------
