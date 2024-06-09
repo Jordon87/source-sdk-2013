@@ -471,7 +471,7 @@ void DispelCallback( const CEffectData &data )
 			0.3f,
 			random->RandomFloat( 0, 360 ),
 			0.0f,
-			Vector( 0.5f, 1.0f, 0.5f ), 
+			Vector( 0.0f, 1.0f, 1.0f ), 
 			0.75f, 
 			"effects/ar2_altfire1b", 
 			(FXQUAD_BIAS_SCALE|FXQUAD_BIAS_ALPHA|FXQUAD_COLOR_FADE) );
@@ -487,7 +487,7 @@ void DispelCallback( const CEffectData &data )
 			0.9f,
 			random->RandomFloat( 0, 360 ),
 			0.0f,
-			Vector( 0.5f, 1.0f, 0.5f ), 
+			Vector( 0.0f, 1.0f, 1.0f ), 
 			1.25f, 
 			"effects/rollerglow", 
 			(FXQUAD_BIAS_SCALE|FXQUAD_BIAS_ALPHA) );
