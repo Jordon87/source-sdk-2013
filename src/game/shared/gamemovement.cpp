@@ -4320,12 +4320,15 @@ bool CGameMovement::CanUnDuckJump( trace_t &trace )
 {
 	// Trace down to the stand position and see if we can stand.
 	Vector vecEnd( mv->GetAbsOrigin() );
-	vecEnd.z -= 36.0f;						// This will have to change if bounding hull change!
+	Vector hullSizeNormal = VEC_HULL_MAX_SCALED(player) - VEC_HULL_MIN_SCALED(player);
+	Vector hullSizeCrouch = VEC_DUCK_HULL_MAX_SCALED(player) - VEC_DUCK_HULL_MIN_SCALED(player);
+	Vector viewDelta = hullSizeNormal - hullSizeCrouch;
+	vecEnd.z -= viewDelta.z;
 	TracePlayerBBox( mv->GetAbsOrigin(), vecEnd, PlayerSolidMask(), COLLISION_GROUP_PLAYER_MOVEMENT, trace );
 	if ( trace.fraction < 1.0f )
 	{
 		// Find the endpoint.
-		vecEnd.z = mv->GetAbsOrigin().z + ( -36.0f * trace.fraction );
+		vecEnd.z = mv->GetAbsOrigin().z + ( -viewDelta.z * trace.fraction );
 
 		// Test a normal hull.
 		trace_t traceUp;
