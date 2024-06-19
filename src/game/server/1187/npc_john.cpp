@@ -530,8 +530,6 @@ int CNPC_John::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 		ClearCondition(COND_PLAYER_PUSHING);
 		SETBITS(m_spawnflags, SF_NPC_NO_PLAYER_PUSHAWAY);
 
-		float fDyingTimer;
-
 		if (skill.GetInt() == 1)
 		{
 			if (random->RandomInt(1, 2))
@@ -540,7 +538,7 @@ int CNPC_John::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 				CallingForHelpScene("scenes/johndown_help_easy2.vcd");
 
 			m_iHealth = 9000;
-			fDyingTimer = gpGlobals->curtime + 40.0f;
+			m_flTimerToDie = gpGlobals->curtime + 40.0f;
 		}
 		else if (skill.GetInt() == 2)
 		{
@@ -550,7 +548,7 @@ int CNPC_John::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 				CallingForHelpScene("scenes/johndown_help_medium2.vcd");
 
 			m_iHealth = 100;
-			fDyingTimer = gpGlobals->curtime + 30.0f;
+			m_flTimerToDie = gpGlobals->curtime + 30.0f;
 		}
 		else
 		{
@@ -560,10 +558,9 @@ int CNPC_John::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 				CallingForHelpScene("scenes/johndown_help_hard2.vcd");
 
 			m_iHealth = 100;
-			fDyingTimer = gpGlobals->curtime + 20.0f;
+			m_flTimerToDie = gpGlobals->curtime + 20.0f;
 		}
 
-		m_flTimerToDie = fDyingTimer;
 		SetExpression(CallingForHelp());
 		b_WaitingToDie = true;
 		b_IsDown = true;

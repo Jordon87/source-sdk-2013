@@ -1663,7 +1663,7 @@ void CBasePlayer::Event_Killed( const CTakeDamageInfo &info )
 	playerdied.b = 0;
 	playerdied.a = 255;
 
-	UTIL_ScreenFade(this, playerdied, 15.0f, 90.0f, FFADE_OUT);
+	UTIL_ScreenFade(this, playerdied, 15.0f, 90.0f, FFADE_IN);
 	SetBodygroup(0,1);
 
 	CSound *pSound;

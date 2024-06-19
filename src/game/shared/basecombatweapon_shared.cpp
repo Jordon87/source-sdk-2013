@@ -1833,6 +1833,17 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 
 	bool bFired = false;
 
+	if ((pOwner->m_afButtonPressed & IN_JUMP) != 0 && (pOwner->m_nButtons & IN_SPEED) == 0 && !IsIronsighted() && !viewmodel_adjust_enabled.GetBool())
+	{
+		if (gpGlobals->curtime - 0.1f >= m_flNextPrimaryAttack && gpGlobals->curtime - 0.1f >= m_flNextSecondaryAttack)
+		{
+			SendWeaponAnim(ACT_JUMP);
+			m_flNextPrimaryAttack = gpGlobals->curtime + 0.64f;
+			m_flNextPrimaryAttack = gpGlobals->curtime + 0.64f;
+			return;
+		}
+	}
+
 	if ((pOwner->m_afButtonPressed & IN_DUCK) != 0 && (pOwner->m_nButtons & IN_SPEED) == 0 && !IsIronsighted() && !viewmodel_adjust_enabled.GetBool())
 	{
 		if (gpGlobals->curtime - 0.1f >= m_flNextPrimaryAttack && gpGlobals->curtime - 0.1f >= m_flNextSecondaryAttack)
