@@ -2591,7 +2591,7 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 
 	UTIL_ImpactTrace(&tr, DMG_CLUB);
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
+	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
 	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
 
 	pPlayer->ViewPunch(QAngle(random->RandomFloat(10.0f, 18.0f), random->RandomFloat(-6.0f, 6.0f), 0.0f));

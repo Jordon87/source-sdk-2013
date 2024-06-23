@@ -53,7 +53,6 @@ CWeaponKnife::CWeaponKnife()
 
 void CWeaponKnife::PrimaryAttack(void)
 {
-
 	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
 
 	if (pOwner && pOwner->IsPlayer())

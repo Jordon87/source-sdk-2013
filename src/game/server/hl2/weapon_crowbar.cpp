@@ -52,7 +52,6 @@ CWeaponCrowbar::CWeaponCrowbar( void )
 
 void CWeaponCrowbar::PrimaryAttack(void)
 {
-
 	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
 
 	if (pOwner && pOwner->IsPlayer())
