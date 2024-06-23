@@ -532,7 +532,7 @@ int CNPC_John::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 
 		if (skill.GetInt() == 1)
 		{
-			if (random->RandomInt(1, 2))
+			if (random->RandomInt(1, 2) == 1)
 				CallingForHelpScene("scenes/johndown_help_easy1.vcd");
 			else
 				CallingForHelpScene("scenes/johndown_help_easy2.vcd");
@@ -542,7 +542,7 @@ int CNPC_John::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 		}
 		else if (skill.GetInt() == 2)
 		{
-			if (random->RandomInt(1, 2))
+			if (random->RandomInt(1, 2) == 1)
 				CallingForHelpScene("scenes/johndown_help_medium1.vcd");
 			else
 				CallingForHelpScene("scenes/johndown_help_medium2.vcd");
@@ -552,7 +552,7 @@ int CNPC_John::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 		}
 		else
 		{
-			if (random->RandomInt(1, 2))
+			if (random->RandomInt(1, 2) == 1)
 				CallingForHelpScene("scenes/johndown_help_hard1.vcd");
 			else
 				CallingForHelpScene("scenes/johndown_help_hard2.vcd");

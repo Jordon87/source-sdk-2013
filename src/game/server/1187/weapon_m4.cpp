@@ -47,12 +47,12 @@ public:
 			return Cone;
 		}
 
-		if (m_nShotsFired == 2)
+		if (m_iFireMode == 2)
 		{
 			return Cone2;
 		}
 
-		if (m_nShotsFired == 1)
+		if (m_iFireMode == 1)
 		{
 			return Cone3;
 		}
@@ -188,7 +188,7 @@ bool CWeaponM4::Reload(void)
 
 float CWeaponM4::GetFireRate(void)
 {
-	if (m_nShotsFired == 2)
+	if (m_iFireMode == 2)
 		return 0.25f;
 	else
 		return 0.1f;
@@ -196,13 +196,13 @@ float CWeaponM4::GetFireRate(void)
 
 Activity CWeaponM4::GetPrimaryAttackActivity(void)
 {
-	if (m_nShotsFired != 2)
+	if (m_iFireMode != 2)
 		return IsIronsighted() ? ACT_VM_RECOIL2 : ACT_VM_PRIMARYATTACK;
 
 	if (!IsIronsighted())
 		return ACT_VM_RECOIL1;
 
-	if (m_nShotsFired == 2 && IsIronsighted())
+	if (m_iFireMode == 2 && IsIronsighted())
 		return ACT_VM_RECOIL3;
 	else
 		return IsIronsighted() ? ACT_VM_RECOIL2 : ACT_VM_PRIMARYATTACK;

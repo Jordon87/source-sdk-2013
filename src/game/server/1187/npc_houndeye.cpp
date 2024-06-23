@@ -179,7 +179,7 @@ void CNPC_HoundeyeNew::HandleAnimEvent(animevent_t* pEvent)
 		AngleVectors(GetLocalAngles(), &forward);
 		Vector vecNewVelocity = forward * -200;
 		//jump up 36 inches
-		vecNewVelocity.z += sqrt(2 * flGravity * 36);
+		vecNewVelocity.z += sqrt(72 * flGravity);
 		SetAbsVelocity(vecNewVelocity);
 		break;
 	}
@@ -283,14 +283,14 @@ Activity CNPC_HoundeyeNew::NPC_TranslateActivity(Activity baseAct)
 
 void CNPC_HoundeyeNew::RunTask(const Task_t* pTask)
 {
-	if (pTask->iTask)
+	if ( ( pTask->iTask - TASK_WAIT_FOR_MOVEMENT ) > TASK_RESET_ACTIVITY )
 	{
 		BaseClass::RunTask(pTask);
 	}
 	else
 	{
 		BaseClass::RunTask(pTask);
-		GetNavigator()->SetMovementActivity(ACT_RANGE_ATTACK1);
+		GetNavigator()->SetMovementActivity(ACT_RUN);
 	}
 }
 
@@ -347,18 +347,11 @@ void CNPC_HoundeyeNew::AlertSound(void)
 
 void CNPC_HoundeyeNew::IdleSound(void)
 {
-	if (GetState() == NPC_STATE_IDLE && random->RandomFloat(0, 1) == 0)
+	if ( (GetState() != NPC_STATE_IDLE || random->RandomFloat(0, 1) != 0.0f) && !IsSlumped() )
 	{
-		return;
+		EmitSound("NPC_Houndeye.Idle");
+		MakeAISpookySound(360.0f);
 	}
-
-	if (IsSlumped())
-	{
-		return;
-	}
-
-	EmitSound("NPC_Houndeye.Idle");
-	MakeAISpookySound(360.0f);
 }
 
 const char* CNPC_HoundeyeNew::GetMoanSound(int nSound)
