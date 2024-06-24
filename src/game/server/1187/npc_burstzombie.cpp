@@ -199,7 +199,7 @@ void CNPC_BurstZombie::Spawn(void)
 
 void CNPC_BurstZombie::RunTask(const Task_t* pTask)
 {
-	if (pTask->iTask)
+	if ( ( pTask->iTask - TASK_WAIT_FOR_MOVEMENT ) > TASK_RESET_ACTIVITY )
 	{
 		BaseClass::RunTask(pTask);
 	}
@@ -207,10 +207,10 @@ void CNPC_BurstZombie::RunTask(const Task_t* pTask)
 	{
 		BaseClass::RunTask(pTask);
 		if (!IsOnFire())
-			GetNavigator()->SetMovementActivity(ACT_RANGE_ATTACK1);
+			GetNavigator()->SetMovementActivity(ACT_WALK);
 
 		GetEnemy();
-		GetNavigator()->SetMovementActivity(ACT_RANGE_ATTACK1);
+		GetNavigator()->SetMovementActivity(ACT_WALK);
 	}
 }
 
