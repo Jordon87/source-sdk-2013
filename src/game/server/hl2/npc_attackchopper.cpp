@@ -75,16 +75,16 @@ static const char *s_pChunkModelName[CHOPPER_MAX_CHUNKS] =
 #define CHOPPER_MAX_FIRING_SPEED	250.0f
 #define CHOPPER_MAX_GUN_DIST		2000.0f
 
-#define CHOPPER_ACCEL_RATE			500
+#define CHOPPER_ACCEL_RATE			800
 #define CHOPPER_ACCEL_RATE_BOOST	1500
 
-#define DEFAULT_FREE_KNOWLEDGE_DURATION 5.0f
+#define DEFAULT_FREE_KNOWLEDGE_DURATION 9000.0f
 
 // -------------------------------------
 // Pathing data
 #define	CHOPPER_LEAD_DISTANCE			800.0f
 #define	CHOPPER_MIN_CHASE_DIST_DIFF		128.0f	// Distance threshold used to determine when a target has moved enough to update our navigation to it
-#define CHOPPER_MIN_AGGRESSIVE_CHASE_DIST_DIFF 64.0f
+#define CHOPPER_MIN_AGGRESSIVE_CHASE_DIST_DIFF 512.0f
 #define	CHOPPER_AVOID_DIST				512.0f
 #define	CHOPPER_ARRIVE_DIST				128.0f
 
@@ -92,7 +92,7 @@ static const char *s_pChunkModelName[CHOPPER_MAX_CHUNKS] =
 #define CHOPPER_MIN_CIRCLE_OF_DEATH_RADIUS	150.0f
 #define CHOPPER_MAX_CIRCLE_OF_DEATH_RADIUS	350.0f
 
-#define CHOPPER_BOMB_DROP_COUNT 6
+#define CHOPPER_BOMB_DROP_COUNT 0
 
 // Bullrush
 #define CHOPPER_BULLRUSH_MODE_DISTANCE g_helicopter_bullrush_distance.GetFloat()
@@ -544,7 +544,7 @@ private:
 	float GetMaxFiringDistance();
 
 	// Make sure we don't hit too many times
-	void FireBullets(const FireBulletsInfo_t& info) { return CBaseEntity::FireBullets(info); }
+	void FireBullets( const FireBulletsInfo_t& info );
 
 	// Is it "fair" to drop this bomb?
 	bool IsBombDropFair( const Vector &vecBombStartPos, const Vector &vecVelocity );
@@ -739,7 +739,7 @@ private:
 	bool		m_bBombingSuppressed;
 
 	// Blinking lights
-	CHandle<CSprite> m_hLights[MAX_HELICOPTER_LIGHTS];
+	CHandle<CSprite> m_hLights;
 	bool		m_bShortBlink;
 
 	// Path behavior
@@ -1130,30 +1130,26 @@ void CNPC_AttackHelicopter::Startup()
 
 	if ( HasSpawnFlags( SF_HELICOPTER_LIGHTS ) )
 	{
-		for ( int i = 0; i < MAX_HELICOPTER_LIGHTS; ++i )
+		// See if there's an attachment for this smoke trail
+		char buf[32];
+		Q_snprintf( buf, 32, "Light_Red%d" );
+		int nAttachment = LookupAttachment( buf );
+		if ( nAttachment == 0 )
 		{
-			// See if there's an attachment for this smoke trail
-			char buf[32];
-			Q_snprintf( buf, 32, "Light_Red%d", i );
-			int nAttachment = LookupAttachment( buf );
-			if ( nAttachment == 0 )
-			{
-				m_hLights[i] = NULL;
-				continue;
-			}
-
-			m_hLights[i] = CSprite::SpriteCreate( CHOPPER_RED_LIGHT_SPRITE, vec3_origin, false );
-			if ( !m_hLights[i] )
-				continue;
-
-			m_hLights[i]->SetParent( this, nAttachment );
-			m_hLights[i]->SetLocalOrigin( vec3_origin );
-			m_hLights[i]->SetLocalVelocity( vec3_origin );
-			m_hLights[i]->SetMoveType( MOVETYPE_NONE );
-			m_hLights[i]->SetTransparency( kRenderTransAdd, 255, 255, 255, 200, kRenderFxNone );
-			m_hLights[i]->SetScale( 1.0f );
-			m_hLights[i]->TurnOn();
+			m_hLights = NULL;
 		}
+
+		m_hLights = CSprite::SpriteCreate( CHOPPER_RED_LIGHT_SPRITE, vec3_origin, false );
+		if ( !m_hLights )
+			return;
+
+		m_hLights->SetParent( this, nAttachment );
+		m_hLights->SetLocalOrigin( vec3_origin );
+		m_hLights->SetLocalVelocity( vec3_origin );
+		m_hLights->SetMoveType( MOVETYPE_NONE );
+		m_hLights->SetTransparency( kRenderTransAdd, 255, 255, 255, 200, kRenderFxNone );
+		m_hLights->SetScale( 1.0f );
+		m_hLights->TurnOn();
 
 		SetContextThink( &CNPC_AttackHelicopter::BlinkLightsThink, gpGlobals->curtime + CHOPPER_LIGHT_BLINK_TIME_SHORT, s_pBlinkLightThinkContext );
 	}
@@ -1166,20 +1162,18 @@ void CNPC_AttackHelicopter::Startup()
 void CNPC_AttackHelicopter::BlinkLightsThink()
 {
 	bool bIsOn = false;
-	for ( int i = 0; i < MAX_HELICOPTER_LIGHTS; ++i )
-	{
-		if ( !m_hLights[i] )
-			continue;
 
-		if ( m_hLights[i]->GetScale() > 0.1f )
-		{
-			m_hLights[i]->SetScale( 0.1f, CHOPPER_LIGHT_BLINK_TIME_SHORT );
-		}
-		else
-		{
-			m_hLights[i]->SetScale( 0.5f, 0.0f );
-			bIsOn = true;
-		}
+	if ( !m_hLights )
+		return;
+
+	if ( m_hLights->GetScale() > 0.1f )
+	{
+		m_hLights->SetScale( 0.1f, CHOPPER_LIGHT_BLINK_TIME_SHORT );
+	}
+	else
+	{
+		m_hLights->SetScale( 0.5f, 0.0f );
+		bIsOn = true;
 	}
 
 	float flTime;
@@ -1298,13 +1292,11 @@ void CNPC_AttackHelicopter::UpdateOnRemove()
 	StopLoopingSounds();
 	UTIL_Remove(m_hSensor);
 	DestroySmokeTrails();
-	for ( int i = 0; i < MAX_HELICOPTER_LIGHTS; ++i )
+
+	if ( m_hLights )
 	{
-		if ( m_hLights[i] )
-		{
-			UTIL_Remove( m_hLights[i] );
-			m_hLights[i] = NULL;
-		}
+		UTIL_Remove( m_hLights );
+		m_hLights = NULL;
 	}
 
 #ifdef HL2_EPISODIC
@@ -1947,43 +1939,42 @@ void CNPC_AttackHelicopter::AimCloseToTargetButMiss( CBaseEntity *pTarget, float
 }
 
 
-////-----------------------------------------------------------------------------
-//// Make sure we don't hit too many times
-////-----------------------------------------------------------------------------
-//void CNPC_AttackHelicopter::FireBullets( const FireBulletsInfo_t &info )
-//{
-//	// Use this to count the number of hits in a burst
-//	bool bIsPlayer = GetEnemy() && GetEnemy()->IsPlayer();
-//	if ( !bIsPlayer )
-//	{
-//		BaseClass::FireBullets( info );
-//		return;
-//	}
-//
-//	if ( !GetEnemyVehicle() && !IsDeadlyShooting() )
-//	{
-//		if ( m_nBurstHits >= m_nMaxBurstHits )
-//		{
-//			FireBulletsInfo_t actualInfo = info;
-//			actualInfo.m_pAdditionalIgnoreEnt = GetEnemy();
-//			BaseClass::FireBullets( actualInfo );
-//			return;
-//		}
-//	}
-//
-//	CBasePlayer *pPlayer = assert_cast<CBasePlayer*>(GetEnemy());
-//
-//	int nPrevHealth = pPlayer->GetHealth();
-//	int nPrevArmor = pPlayer->ArmorValue();
-//
-//	BaseClass::FireBullets( info );
-//
-//	if (( pPlayer->GetHealth() < nPrevHealth ) || ( pPlayer->ArmorValue() < nPrevArmor ))
-//	{
-//		++m_nBurstHits;
-//	}
-//}
-//
+//-----------------------------------------------------------------------------
+// Make sure we don't hit too many times
+//-----------------------------------------------------------------------------
+void CNPC_AttackHelicopter::FireBullets( const FireBulletsInfo_t &info )
+{
+	// Use this to count the number of hits in a burst
+	bool bIsPlayer = GetEnemy() && GetEnemy()->IsPlayer();
+	if ( !bIsPlayer )
+	{
+		BaseClass::FireBullets( info );
+		return;
+	}
+
+	if ( !GetEnemyVehicle() && !IsDeadlyShooting() )
+	{
+		if ( m_nBurstHits >= m_nMaxBurstHits )
+		{
+			FireBulletsInfo_t actualInfo = info;
+			actualInfo.m_pAdditionalIgnoreEnt = GetEnemy();
+			BaseClass::FireBullets( actualInfo );
+			return;
+		}
+	}
+
+	CBasePlayer *pPlayer = assert_cast<CBasePlayer*>(GetEnemy());
+
+	int nPrevHealth = pPlayer->GetHealth();
+	int nPrevArmor = pPlayer->ArmorValue();
+
+	BaseClass::FireBullets( info );
+
+	if (( pPlayer->GetHealth() < nPrevHealth ) || ( pPlayer->ArmorValue() < nPrevArmor ))
+	{
+		++m_nBurstHits;
+	}
+}
 
 //------------------------------------------------------------------------------
 // Purpose :
