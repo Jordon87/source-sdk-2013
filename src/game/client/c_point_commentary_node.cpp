@@ -86,7 +86,7 @@ private:
 
 	CPanelAnimationVar( bool, m_bUseScriptBGColor, "use_script_bgcolor", "0" );
 	CPanelAnimationVar( Color, m_BackgroundColor, "BackgroundColor", "0 0 0 0" );
-	CPanelAnimationVar( Color, m_BGOverrideColor, "BackgroundOverrideColor", "Panel.BgColor" );
+	CPanelAnimationVar( Color, m_BGOverrideColor, "BackgroundOverrideColor", "255 255 255 200" );
 };
 
 //-----------------------------------------------------------------------------

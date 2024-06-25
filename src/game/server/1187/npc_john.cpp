@@ -415,7 +415,7 @@ void CNPC_John::Think(void)
 		b_WaitingToDie = false;
 	}
 
-	if ((b_IsDown) && gpGlobals->curtime > (m_flBleed))
+	if (b_IsDown && gpGlobals->curtime > m_flBleed)
 	{
 		const char* CallforHelp = CallingForHelp();
 		if (strcmp(GetExpression(), CallforHelp))
