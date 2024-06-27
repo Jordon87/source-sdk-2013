@@ -670,12 +670,9 @@ void CNPC_John::PlayAction(JohnScenes_t actionName, bool a3)
 		if (ahhthanksman.GetInt())
 		{
 			SetExpression("scenes/johndown_thanks1.vcd");
-			const char * ExpressionScene = GetExpression();
-			m_flDelayIdle = GetSceneDuration(ExpressionScene) + gpGlobals->curtime;
-			const char* v5 = GetExpression();
-			float v6 = GetSceneDuration(v5) + gpGlobals->curtime;
+			m_flDelayIdle = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
 			b_CanIdle = true;
-			m_flSpeakAgain = v6;
+			m_flSpeakAgain = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
 		}
 		else
 		{
@@ -915,10 +912,8 @@ void CNPC_John::PlayAction(JohnScenes_t actionName, bool a3)
 				break;
 			}
 
-			const char* v25 = GetExpression();
-			m_flDelayIdle = GetSceneDuration(v25) + gpGlobals->curtime;
-			const char* v26 = GetExpression();
-			m_flSpeakAgain = GetSceneDuration(v26) + gpGlobals->curtime;
+			m_flDelayIdle = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
+			m_flSpeakAgain = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
 
 			if (a3)
 			{
@@ -927,10 +922,8 @@ void CNPC_John::PlayAction(JohnScenes_t actionName, bool a3)
 			}
 			else
 			{
-				const char *v27 = GetExpression();
-				float v28 = GetSceneDuration(v27) + gpGlobals->curtime;
 				b_CanIdle = true;
-				unk_0x1430 = v28 + g_johnspeaklimit.GetFloat();
+				unk_0x1430 = GetSceneDuration(GetExpression()) + gpGlobals->curtime + g_johnspeaklimit.GetFloat();
 			}
 		}
 	}
