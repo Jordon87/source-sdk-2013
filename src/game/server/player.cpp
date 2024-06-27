@@ -514,7 +514,7 @@ void CBasePlayer::CreateViewModel( int index /*=0*/ )
 		DispatchSpawn( vm );
 		vm->FollowEntity( this );
 		m_hViewModel.Set( index, vm );
-		m_nSkin = g_handskin.GetInt();
+		vm->m_nSkin = g_handskin.GetInt();
 	}
 }
 
