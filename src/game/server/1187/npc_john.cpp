@@ -276,15 +276,21 @@ bool CNPC_John::IgnorePlayerPushing(void)
 
 void CNPC_John::StartTask(const Task_t* pTask)
 {
-	if (pTask->iTask == TASK_MOVE_AWAY_PATH)
+	switch ( pTask->iTask )
 	{
-		if (HasCondition(COND_PLAYER_PUSHING) && gpGlobals->maxClients == 1 && !IgnorePlayerPushing())
+	case TASK_MOVE_AWAY_PATH:
 		{
-			GetMotor()->SetIdealYawToTarget(UTIL_GetLocalPlayer()->WorldSpaceCenter());
+			if ( HasCondition( COND_PLAYER_PUSHING ) && AI_IsSinglePlayer() && !IgnorePlayerPushing() )
+			{
+				GetMotor()->SetIdealYawToTarget( UTIL_GetLocalPlayer()->WorldSpaceCenter() );
+			}
+			BaseClass::StartTask( pTask );
+			break;
 		}
-	}
 
-	BaseClass::StartTask(pTask);
+	default:
+		BaseClass::StartTask( pTask );
+	}
 }
 
 bool CNPC_John::IsValidEnemy(CBaseEntity* pEnemy)
@@ -313,7 +319,7 @@ bool CNPC_John::IsValidEnemy(CBaseEntity* pEnemy)
 
 void CNPC_John::PredictPlayerPush()
 {
-	if (gpGlobals->maxClients == 1 && !b_IsDown)
+	if ( AI_IsSinglePlayer() && !b_IsDown )
 		BaseClass::PredictPlayerPush();
 }
 
@@ -382,27 +388,24 @@ int CNPC_John::SelectCombatSchedule()
 
 int CNPC_John::TranslateSchedule(int scheduleType)
 {
-	if (scheduleType != SCHED_IDLE_STAND && scheduleType != SCHED_ALERT_STAND)
-		return BaseClass::TranslateSchedule(scheduleType);
-
-	if (!GetActiveWeapon())
-		return BaseClass::TranslateSchedule(scheduleType);
-
-	CBaseCombatWeapon* pWeapon = GetActiveWeapon();
-
-	if (!CanReload())
-		return BaseClass::TranslateSchedule(scheduleType);
-
-	if (!pWeapon->UsesClipsForAmmo1())
-		return BaseClass::TranslateSchedule(scheduleType);
-
-	if (CanReload() && pWeapon->UsesClipsForAmmo1() && pWeapon->Clip1() < (pWeapon->GetMaxClip1() * .5) && OccupyStrategySlot(SQUAD_SLOT_EXCLUSIVE_RELOAD))
+	switch( scheduleType )
 	{
-		PlayAction(JOHN_RELOAD, false);
-		return SCHED_RELOAD;
-	}
+	case SCHED_IDLE_STAND:
+	case SCHED_ALERT_STAND:
+		if( GetActiveWeapon() )
+		{
+			CBaseCombatWeapon *pWeapon = GetActiveWeapon();
 
-	return BaseClass::TranslateSchedule(scheduleType);
+			if( CanReload() && pWeapon->UsesClipsForAmmo1() && pWeapon->Clip1() < ( pWeapon->GetMaxClip1() * .5 ) && OccupyStrategySlot( SQUAD_SLOT_EXCLUSIVE_RELOAD ) )
+			{
+				PlayAction(JOHN_RELOAD, false);
+				return SCHED_RELOAD;
+			}
+		}
+		break;
+	}
+	
+	return BaseClass::TranslateSchedule( scheduleType );
 }
 
 void CNPC_John::Think(void)
@@ -417,11 +420,9 @@ void CNPC_John::Think(void)
 
 	if (b_IsDown && gpGlobals->curtime > m_flBleed)
 	{
-		const char* CallforHelp = CallingForHelp();
-		if (strcmp(GetExpression(), CallforHelp))
+		if (strcmp(GetExpression(), CallingForHelp()))
 		{
-			const char* CallforHelp2 = CallingForHelp();
-			SetExpression(CallforHelp2);
+			SetExpression(CallingForHelp());
 		}
 	
 		m_flBleed = gpGlobals->curtime + 1.0f;
@@ -577,7 +578,7 @@ void CNPC_John::Touch(CBaseEntity* pOther)
 	{
 		PlayAction(JOHN_TOUCH, false);
 
-		CBasePlayer *pPlayer = gpGlobals->maxClients <= 1 ? UTIL_GetLocalPlayer() : 0;
+		CBasePlayer *pPlayer = AI_GetSinglePlayer();
 
 		if (pPlayer->GetActiveWeapon())
 		{
@@ -651,10 +652,9 @@ const char* CNPC_John::CallingForHelp(void)
 
 void CNPC_John::PlayAction(JohnScenes_t actionName, bool a3)
 {
-	if (gpGlobals->maxClients <= 1
-		&& UTIL_GetLocalPlayer()
+	if (AI_GetSinglePlayer()
 		&& !b_IsDown
-		&& gpGlobals->maxClients == 1
+		&& AI_IsSinglePlayer()
 		&& !IsInAScript()
 		&& !IsInChoreo()
 		&& !IsInLockedScene()

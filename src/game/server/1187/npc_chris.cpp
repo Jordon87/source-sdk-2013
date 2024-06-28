@@ -91,7 +91,7 @@ void CNPC_Chris::TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, 
 
 void CNPC_Chris::PredictPlayerPush()
 {
-	if (gpGlobals->maxClients == 1)
+	if (AI_IsSinglePlayer())
 		BaseClass::PredictPlayerPush();
 }
 
