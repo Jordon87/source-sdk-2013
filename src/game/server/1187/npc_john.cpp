@@ -659,7 +659,7 @@ void CNPC_John::PlayAction(JohnScenes_t actionName, bool a3)
 		&& !IsInChoreo()
 		&& !IsInLockedScene()
 		&& IsAlive()
-		&& GetState() == NPC_STATE_SCRIPT
+		&& GetState() != NPC_STATE_SCRIPT
 		&& IsEFlagSet(EFL_IS_BEING_LIFTED_BY_BARNACLE)
 		&& (actionName || random->RandomInt(0, 5) == 2)
 		&& IsOkToSpeak()
