@@ -410,7 +410,7 @@ int CNPC_John::TranslateSchedule(int scheduleType)
 
 void CNPC_John::Think(void)
 {
-	if (b_CanIdle && gpGlobals->curtime > m_flTimerToDie)
+	if (b_WaitingToDie && gpGlobals->curtime > m_flTimerToDie)
 	{
 		CTakeDamageInfo info(this, this, GetMaxHealth(), DMG_CRUSH);
 		TakeDamage(info);
@@ -428,12 +428,7 @@ void CNPC_John::Think(void)
 		m_flBleed = gpGlobals->curtime + 1.0f;
 	
 		trace_t tr;
-		Vector vecAbsStart, vecAbsEnd;
-	
-		vecAbsStart = GetAbsOrigin() + Vector(0, 0, 8);
-		vecAbsEnd = GetAbsOrigin() - Vector(0, 0, 24);
-	
-		UTIL_TraceLine(vecAbsStart, vecAbsEnd, MASK_SOLID_BRUSHONLY, this, NULL, &tr);
+		UTIL_TraceLine(GetAbsOrigin() + Vector(0, 0, 8), GetAbsOrigin() - Vector(0, 0, 24), MASK_SOLID_BRUSHONLY, this, NULL, &tr);
 		UTIL_BloodDecalTrace(&tr, BLOOD_COLOR_RED);
 	}
 
@@ -660,7 +655,7 @@ void CNPC_John::PlayAction(JohnScenes_t actionName, bool a3)
 		&& !IsInLockedScene()
 		&& IsAlive()
 		&& GetState() != NPC_STATE_SCRIPT
-		&& IsEFlagSet(EFL_IS_BEING_LIFTED_BY_BARNACLE)
+		&& !IsEFlagSet(EFL_IS_BEING_LIFTED_BY_BARNACLE)
 		&& (actionName || random->RandomInt(0, 5) == 2)
 		&& IsOkToSpeak()
 		&& (a3
@@ -920,11 +915,9 @@ void CNPC_John::PlayAction(JohnScenes_t actionName, bool a3)
 				b_CanIdle = true;
 				unk_0x1430 = gpGlobals->curtime;
 			}
-			else
-			{
-				b_CanIdle = true;
-				unk_0x1430 = GetSceneDuration(GetExpression()) + gpGlobals->curtime + g_johnspeaklimit.GetFloat();
-			}
+			
+			b_CanIdle = true;
+			unk_0x1430 = GetSceneDuration(GetExpression()) + gpGlobals->curtime + g_johnspeaklimit.GetFloat();
 		}
 	}
 }
