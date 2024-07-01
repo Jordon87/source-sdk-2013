@@ -8161,3 +8161,553 @@
 
 	"wave"			"*1187/clues/1187d10_clues04.wav"
 }
+
+"npc_john.JOHN_DAMAGE_HIT1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_DAMAGE_HIT1.wav"
+}
+
+"npc_john.JOHN_DAMAGE_HIT2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_DAMAGE_HIT2.wav"
+}
+
+"npc_john.JOHN_DAMAGE_HIT3"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_DAMAGE_HIT3.wav"
+}
+
+"npc_john.JOHN_DAMAGE_HIT4"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_DAMAGE_HIT4.wav"
+}
+
+"npc_john.JOHN_KILLED_BURSTZOMBIE1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_BURSTZOMBIE1.wav"
+}
+
+"npc_john.JOHN_KILLED_BURSTZOMBIE2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_BURSTZOMBIE2.wav"
+}
+
+"npc_john.JOHN_KILLED_HEADCRAB1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_HEADCRAB1.wav"
+}
+
+"npc_john.JOHN_KILLED_HEADCRAB2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_HEADCRAB2.wav"
+}
+
+"npc_john.JOHN_KILLED_MARINE1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_MARINE1.wav"
+}
+
+"npc_john.JOHN_KILLED_MARINE2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_MARINE2.wav"
+}
+
+"npc_john.JOHN_KILLED_MINIHEADCRAB1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_MINIHEADCRAB1.wav"
+}
+
+"npc_john.JOHN_KILLED_MINIHEADCRAB2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_MINIHEADCRAB2.wav"
+}
+
+"npc_john.JOHN_KILLED_PLAYER1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_PLAYER1.wav"
+}
+
+"npc_john.JOHN_KILLED_POISONZOMBIE1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_POISONZOMBIE1.wav"
+}
+
+"npc_john.JOHN_KILLED_VORT1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_VORT1.wav"
+}
+
+"npc_john.JOHN_KILLED_VORT2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_VORT2.wav"
+}
+
+"npc_john.JOHN_KILLED_ZOMBIE1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_ZOMBIE1.wav"
+}
+
+"npc_john.JOHN_KILLED_ZOMBIE2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_ZOMBIE2.wav"
+}
+
+"npc_john.JOHN_KILLED_ZOMBIE3"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_ZOMBIE3.wav"
+}
+
+"npc_john.JOHN_KILLED_ARMOUREDZOMBIE1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_ARMOUREDZOMBIE1.wav"
+}
+
+"npc_john.JOHN_KILLED_ARMOUREDZOMBIE2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_KILLED_ARMOUREDZOMBIE2.wav"
+}
+
+"npc_john.JOHN_MELEE1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_MELEE1.wav"
+}
+
+"npc_john.JOHN_MELEE2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_MELEE2.wav"
+}
+
+"npc_john.JOHN_MELEE3"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_MELEE3.wav"
+}
+
+"npc_john.JOHN_RELOAD1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_RELOAD1.wav"
+}
+
+"npc_john.JOHN_RELOAD2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_RELOAD2.wav"
+}
+
+"npc_john.JOHN_SEEPLAYER_HEADSHOT1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SEEPLAYER_HEADSHOT1.wav"
+}
+
+"npc_john.JOHN_SEEPLAYER_HEADSHOT2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SEEPLAYER_HEADSHOT2.wav"
+}
+
+"npc_john.JOHN_SEEPLAYER_KILL1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SEEPLAYER_KILL1.wav"
+}
+
+"npc_john.JOHN_SEEPLAYER_KILL2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SEEPLAYER_KILL2.wav"
+}
+
+"npc_john.JOHN_SEEPLAYER_KILL3"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SEEPLAYER_KILL3.wav"
+}
+
+"npc_john.JOHN_SEEPLAYER_ONESHOT1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SEEPLAYER_ONESHOT1.wav"
+}
+
+"npc_john.JOHN_DAMAGE_SHOT1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_DAMAGE_SHOT1.wav"
+}
+
+"npc_john.JOHN_DAMAGE_SHOT2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_DAMAGE_SHOT2.wav"
+}
+
+"npc_john.JOHN_DAMAGE_SHOT3"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_DAMAGE_SHOT3.wav"
+}
+
+"npc_john.JOHN_DAMAGE_SHOT4"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_DAMAGE_SHOT4.wav"
+}
+
+"npc_john.JOHN_SPOT_CREATURES1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SPOT_CREATURES1.wav"
+}
+
+"npc_john.JOHN_SPOT_CREATURES2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SPOT_CREATURES2.wav"
+}
+
+"npc_john.JOHN_SPOT_MARINE1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SPOT_MARINE1.wav"
+}
+
+"npc_john.JOHN_SPOT_MARINE2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SPOT_MARINE2.wav"
+}
+
+"npc_john.JOHN_SPOT_MARINE3"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SPOT_MARINE3.wav"
+}
+
+"npc_john.JOHN_SPOT_VORT1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SPOT_VORT1.wav"
+}
+
+"npc_john.JOHN_SPOT_VORT2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SPOT_VORT2.wav"
+}
+
+"npc_john.JOHN_SPOT_ZOMBIES1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SPOT_ZOMBIES1.wav"
+}
+
+"npc_john.JOHN_SPOT_ZOMBIES2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_SPOT_ZOMBIES2.wav"
+}
+
+"npc_john.JOHN_TOUCH1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_TOUCH1.wav"
+}
+
+"npc_john.JOHN_TOUCH2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_TOUCH2.wav"
+}
+
+"npc_john.JOHN_TOUCH3"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_TOUCH3.wav"
+}
+
+"npc_john.JOHN_TOUCH4"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_TOUCH4.wav"
+}
+
+"npc_john.JOHN_TOUCH5"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_TALKING"
+
+	"wave"			"*1187/john_responses/JOHN_TOUCH5.wav"
+}
