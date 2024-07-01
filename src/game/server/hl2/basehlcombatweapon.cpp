@@ -297,13 +297,8 @@ float CHLSelectFireMachineGun::GetFireRate( void )
 	switch( m_iFireMode )
 	{
 	case FIREMODE_FULLAUTO:
-		// the time between rounds fired on full auto
-		return 0.1f;	// 600 rounds per minute = 0.1 seconds per bullet
-		break;
-
-	case FIREMODE_3RNDBURST:
-		// the time between rounds fired within a single burst
-		return 0.1f;	// 600 rounds per minute = 0.1 seconds per bullet
+	case FIREMODE_SEMI:
+		return 0.4f;
 		break;
 
 	default:
@@ -338,6 +333,9 @@ void CHLSelectFireMachineGun::PrimaryAttack( void )
 		// Msg("%.3f\n", m_flNextPrimaryAttack.Get() );
 		SetWeaponIdleTime( gpGlobals->curtime + 3.0f );
 		break;
+
+	case FIREMODE_SEMI:
+		BaseClass::PrimaryAttack();
 
 	case FIREMODE_3RNDBURST:
 		m_iBurstSize = GetBurstSize();
@@ -374,11 +372,11 @@ void CHLSelectFireMachineGun::SecondaryAttack( void )
 	{
 	case FIREMODE_FULLAUTO:
 		//Msg( "Burst\n" );
-		m_iFireMode = FIREMODE_3RNDBURST;
+		m_iFireMode = FIREMODE_SEMI;
 		WeaponSound(SPECIAL2);
 		break;
 
-	case FIREMODE_3RNDBURST:
+	case FIREMODE_SEMI:
 		//Msg( "Auto\n" );
 		m_iFireMode = FIREMODE_FULLAUTO;
 		WeaponSound(SPECIAL1);
@@ -433,6 +431,7 @@ void CHLSelectFireMachineGun::WeaponSound( WeaponSound_t shoot_type, float sound
 		switch( m_iFireMode )
 		{
 		case FIREMODE_FULLAUTO:
+		case FIREMODE_SEMI:
 			BaseClass::WeaponSound( SINGLE, soundtime );
 			break;
 

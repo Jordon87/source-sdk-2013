@@ -188,10 +188,11 @@ bool CWeaponM4::Reload(void)
 
 float CWeaponM4::GetFireRate(void)
 {
-	if (m_iFireMode == 2)
+	if ((m_iFireMode != 1) && (m_iFireMode == 2))
+	{
 		return 0.25f;
-	else
-		return 0.1f;
+	}
+	return 0.1f;
 }
 
 Activity CWeaponM4::GetPrimaryAttackActivity(void)
