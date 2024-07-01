@@ -524,7 +524,7 @@ int CNPC_John::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 		SetCondition(COND_NPC_FREEZE);
 		SetMoveType(MOVETYPE_NONE);
 		ClearCondition(COND_PLAYER_PUSHING);
-		SETBITS(m_spawnflags, SF_NPC_NO_PLAYER_PUSHAWAY);
+		AddSpawnFlags(SF_NPC_NO_PLAYER_PUSHAWAY);
 
 		if (skill.GetInt() == 1)
 		{
@@ -599,7 +599,7 @@ void CNPC_John::Touch(CBaseEntity* pOther)
 					SetCondition(COND_NPC_UNFREEZE);
 					SetMoveType(MOVETYPE_STEP);
 
-					CLEARBITS(m_spawnflags, SF_NPC_NO_PLAYER_PUSHAWAY);
+					RemoveSpawnFlags(SF_NPC_NO_PLAYER_PUSHAWAY);
 
 					m_FollowBehavior.SetFollowTarget(UTIL_GetLocalPlayer());
 					m_FollowBehavior.SetParameters(AIF_SIDEKICK);
