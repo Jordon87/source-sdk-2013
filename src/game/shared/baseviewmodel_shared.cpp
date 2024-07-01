@@ -429,10 +429,10 @@ void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePos
 
 	CBaseCombatWeapon *pWeapon = m_hWeapon.Get();
 	//Allow weapon lagging
-	//only if not in ironsight-mode
-	if( pWeapon == NULL || !pWeapon->IsIronsighted() )
+	if( pWeapon != NULL )
 	{
-		if ( pWeapon != NULL )
+		//only if not in ironsight-mode
+		if ( !pWeapon->IsIronsighted() )
 		{
 	#if defined( CLIENT_DLL )
 			if ( !prediction->InPrediction() )
@@ -508,7 +508,8 @@ void CBaseViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& o
 		VectorMA( m_vecLastFacing, flSpeed * gpGlobals->frametime, vDifference, m_vecLastFacing );
 		// Make sure it doesn't grow out of control!!!
 		VectorNormalize( m_vecLastFacing );
-		VectorMA( origin, 5.0f, vDifference * -1.0f, origin );
+		float flDiffFactor = (pWeapon && pWeapon->IsIronsighted()) ? 0.2f : 0.4f;
+		VectorMA( origin, 5.0f, vDifference * -flDiffFactor, origin );
 
 		Assert( m_vecLastFacing.IsValid() );
 	}
@@ -529,9 +530,9 @@ void CBaseViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& o
 	}
 
 	//FIXME: These are the old settings that caused too many exposed polys on some models
-	VectorMA( origin, -pitch * 0.035f,	forward,	origin );
-	VectorMA( origin, -pitch * 0.03f,		right,	origin );
-	VectorMA( origin, -pitch * 0.02f,		up,		origin);
+	//VectorMA( origin, -pitch * 0.035f,	forward,	origin );
+	//VectorMA( origin, -pitch * 0.03f,		right,	origin );
+	//VectorMA( origin, -pitch * 0.02f,		up,		origin);
 }
 
 //-----------------------------------------------------------------------------
