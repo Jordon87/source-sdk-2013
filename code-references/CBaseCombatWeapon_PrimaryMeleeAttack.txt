@@ -1,0 +1,241 @@
+void __thiscall CBaseCombatWeapon::PrimaryMeleeAttack(CBaseCombatWeapon *this)
+{
+  unsigned int m_Index; // eax
+  CEntInfo *v3; // ecx
+  CBaseEntity *m_pEntity; // ecx
+  CBasePlayer *pPlayer; // ebx
+  Vector *(__thiscall *EyePosition)(CBaseEntity *, Vector *); // edx
+  Vector *v7; // eax
+  Vector *(__thiscall *v8)(CBaseEntity *, Vector *); // edx
+  Vector *v9; // eax
+  float v10; // esi
+  CBasePlayer_vtbl *v11; // edx
+  Vector *(__thiscall *v12)(CBaseEntity *, Vector *); // edx
+  float *p_angleOffset; // ebp
+  CBaseEntity *v14; // esi
+  CBasePlayer_vtbl *v15; // eax
+  Vector *(__thiscall *v16)(CBaseEntity *, Vector *); // edx
+  Vector *v17; // eax
+  int v18; // esi
+  Vector *(__thiscall *v19)(CBaseEntity *, Vector *); // edx
+  Vector *v20; // eax
+  void (__thiscall *WeaponSound)(CBaseCombatWeapon *, WeaponSound_t, float); // edx
+  FileWeaponInfo_t *FileWeaponInfoFromHandle; // ebp
+  unsigned int v23; // eax
+  IHandleEntity *v24; // ecx
+  CBaseEntity *v25; // esi
+  unsigned int v26; // eax
+  IHandleEntity *v27; // ecx
+  CBaseEntity *v28; // eax
+  int m_Value; // esi
+  CStudioHdr *m_pStudioHdr; // eax
+  int v31; // esi
+  CStudioHdr *v32; // eax
+  float flScale; // [esp+34h] [ebp-140h]
+  CBaseEntity *m_pEnt; // [esp+48h] [ebp-12Ch] BYREF
+  Vector vecDir; // [esp+4Ch] [ebp-128h] BYREF
+  float v36; // [esp+58h] [ebp-11Ch]
+  Vector pForward; // [esp+5Ch] [ebp-118h] BYREF
+  Vector v38; // [esp+68h] [ebp-10Ch] BYREF
+  Vector vecAbsEnd; // [esp+74h] [ebp-100h] BYREF
+  QAngle angleOffset; // [esp+80h] [ebp-F4h] BYREF
+  Vector v41; // [esp+98h] [ebp-DCh] BYREF
+  CGameTrace tr; // [esp+A4h] [ebp-D0h] BYREF
+  CFlaggedEntitiesEnum pEnum; // [esp+F8h] [ebp-7Ch] BYREF
+  CTakeDamageInfo info; // [esp+10Ch] [ebp-68h] BYREF
+  int v45; // [esp+15Ch] [ebp-18h] BYREF
+  Vector pUp; // [esp+168h] [ebp-Ch] BYREF
+
+  m_Index = this->m_hOwner.m_Value.m_Index;
+  if ( m_Index != -1 )
+  {
+    v3 = &g_pEntityList->m_EntPtrArray[this->m_hOwner.m_Value.m_Index & 0xFFF];
+    if ( v3->m_SerialNumber == m_Index >> 12 )
+    {
+      m_pEntity = v3->m_pEntity;
+      if ( m_pEntity )
+      {
+        pPlayer = m_pEntity->MyCombatCharacterPointer(m_pEntity);
+        if ( pPlayer )
+        {
+          if ( pPlayer->IsPlayer(pPlayer) )
+          {
+            CBasePlayer::EyeVectors(pPlayer, &pForward, 0, &pUp);
+            EyePosition = pPlayer->EyePosition;
+            vecDir.y = pForward.x * 76.0;
+            vecDir.z = pForward.y * 76.0;
+            v36 = 76.0 * pForward.z;
+            v7 = EyePosition(pPlayer, &v38);
+            v8 = pPlayer->EyePosition;
+            vecDir.y = v7->x + pForward.y;
+            vecDir.z = v7->y + pForward.z;
+            v36 = v7->z + v38.x;
+            v9 = (v8)(pPlayer);
+            UTIL_TraceLine(v9, &angleOffset.y, &vecDir.y, 0x46004003, pPlayer, 0);
+            if ( tr.fraction < 1.0 )
+              goto LABEL_72;
+            if ( !*&tr.allsolid )
+            {
+              if ( (pPlayer->m_iEFlags & 0x800) != 0 )
+                CBaseEntity::CalcAbsolutePosition(pPlayer);
+              CFlaggedEntitiesEnum::CFlaggedEntitiesEnum(&pEnum, &info, 20, 0x2000);
+              v10 = 0.0;
+              *&m_pEnt = COERCE_FLOAT(UTIL_EntitiesInSphere(&pPlayer->m_vecAbsOrigin, 176.0, &pEnum));
+              v36 = 0.0;
+              if ( m_pEnt > 0 )
+              {
+                do
+                {
+                  if ( (*(**(&info.m_vecDamageForce.x + LODWORD(v10)) + 204))(*(&info.m_vecDamageForce.x + LODWORD(v10))) == 13
+                    && (*(**(&info.m_vecDamageForce.x + LODWORD(v10)) + 204))(*(&info.m_vecDamageForce.x + LODWORD(v10))) == 21 )
+                  {
+                    if ( (*(**(&info.m_vecDamageForce.x + LODWORD(v10)) + 204))(*(&info.m_vecDamageForce.x + LODWORD(v10))) == 21 )
+                    {
+                      v11 = pPlayer->__vftable;
+                      v41.x = 0.0;
+                      v12 = v11->EyePosition;
+                      v41.y = 0.0;
+                      v41.z = v12(pPlayer, &v45)->z;
+                      p_angleOffset = &v41;
+                    }
+                    else
+                    {
+                      angleOffset.x = 0.0;
+                      p_angleOffset = &angleOffset;
+                      angleOffset.y = 0.0;
+                      angleOffset.z = 4.0;
+                    }
+                    v14 = *(&info.m_vecDamageForce.x + LODWORD(v10));
+                    if ( (v14->m_iEFlags & 0x800) != 0 )
+                      CBaseEntity::CalcAbsolutePosition(v14);
+                    v15 = pPlayer->__vftable;
+                    vecAbsEnd.x = *p_angleOffset + v14->m_vecAbsOrigin.x;
+                    v16 = v15->EyePosition;
+                    vecAbsEnd.y = v14->m_vecAbsOrigin.y + p_angleOffset[1];
+                    vecAbsEnd.z = v14->m_vecAbsOrigin.z + p_angleOffset[2];
+                    v17 = v16(pPlayer, &pUp);
+                    UTIL_TraceLine(v17, &vecAbsEnd, 0x46004003u, pPlayer, 0, &tr);
+                    if ( CGameTrace::DidHitNonWorldEntity(&tr) )
+                    {
+                      v18 = *(&info.m_vecDamageForce.x + LODWORD(v36));
+                      if ( (*(v18 + 252) & 0x800) != 0 )
+                        CBaseEntity::CalcAbsolutePosition(*(&info.m_vecDamageForce.x + LODWORD(v36)));
+                      v19 = pPlayer->EyePosition;
+                      vecDir.x = *(v18 + 580);
+                      vecDir.y = *(v18 + 584);
+                      vecDir.z = *(v18 + 588) + 4.0;
+                      v20 = v19(pPlayer, &pEnum);
+                      pForward.x = vecDir.x - v20->x;
+                      pForward.y = vecDir.y - v20->y;
+                      pForward.z = vecDir.z - v20->z;
+                      pfVectorNormalize(&pForward);
+                      if ( pForward.z * v38.z + pForward.y * v38.y + pForward.x * v38.x >= 0.90720999 )
+                      {
+                        if ( CGameTrace::DidHitNonWorldEntity(&tr) )
+                          break;
+                      }
+                      else
+                      {
+                        tr.fraction = 1.0;
+                      }
+                    }
+                    v10 = v36;
+                  }
+                  ++LODWORD(v10);
+                  v36 = v10;
+                }
+                while ( SLODWORD(v10) < m_pEnt );
+              }
+            }
+            if ( tr.fraction < 1.0 || *&tr.allsolid )
+            {
+LABEL_72:
+              if ( this->m_iClassname.pszValue == "weapon_357" || CBaseEntity::ClassMatchesComplex(this, "weapon_357") )
+                this->SendWeaponAnim(this, 199);
+              m_pEnt = tr.m_pEnt;
+              flScale = 0.0;
+              WeaponSound = this->WeaponSound;
+              if ( tr.m_pEnt )
+              {
+                (WeaponSound)(this, 9, LODWORD(flScale));
+              }
+              else
+              {
+                (WeaponSound)(this, 10, LODWORD(flScale));
+                UTIL_ImpactTrace(&tr, 128, 0);
+              }
+              CBasePlayer::EyeVectors(pPlayer, &vecDir, 0, 0);
+              pfVectorNormalize(&vecDir);
+              FileWeaponInfoFromHandle = GetFileWeaponInfoFromHandle(this->m_hWeaponFileInfo);
+              v23 = this->m_hOwner.m_Value.m_Index;
+              if ( v23 != -1
+                && g_pEntityList->m_EntPtrArray[this->m_hOwner.m_Value.m_Index & 0xFFF].m_SerialNumber == v23 >> 12
+                && (v24 = g_pEntityList->m_EntPtrArray[this->m_hOwner.m_Value.m_Index & 0xFFF].m_pEntity) != 0 )
+              {
+                v25 = v24->__vftable[22].GetRefEHandle(v24);
+              }
+              else
+              {
+                v25 = 0;
+              }
+              v26 = this->m_hOwner.m_Value.m_Index;
+              if ( v26 != -1
+                && g_pEntityList->m_EntPtrArray[this->m_hOwner.m_Value.m_Index & 0xFFF].m_SerialNumber == v26 >> 12
+                && (v27 = g_pEntityList->m_EntPtrArray[this->m_hOwner.m_Value.m_Index & 0xFFF].m_pEntity) != 0 )
+              {
+                v28 = v27->__vftable[22].GetRefEHandle(v27);
+              }
+              else
+              {
+                v28 = 0;
+              }
+              CTakeDamageInfo::CTakeDamageInfo(&info, v28, v25, FileWeaponInfoFromHandle->m_flMeleeWeapon, 128, 0);
+              CalculateMeleeDamageForce(&info, &vecDir, &tr.endpos, 1.0);
+              if ( *&m_pEnt != 0.0 )
+                CBaseEntity::DispatchTraceAttack(m_pEnt, &info, &vecDir, &tr);
+              ApplyMultiDamage();
+              CBaseEntity::TraceAttackToTriggers(this, &info, &tr.startpos, &tr.endpos, &vecDir);
+              if ( (pPlayer->m_iEFlags & 0x800) != 0 )
+                CBaseEntity::CalcAbsolutePosition(pPlayer);
+              UTIL_ScreenShake(&pPlayer->m_vecAbsOrigin, 15.0, 15.0, 0.5, 256.0, SHAKE_START, 0);
+              if ( (this->m_iClassname.pszValue == "weapon_pistol"
+                 || CBaseEntity::ClassMatchesComplex(this, "weapon_pistol"))
+                && *&m_pEnt != 0.0
+                && m_pEnt->IsNPC(m_pEnt)
+                && !m_pEnt->IsAlive(m_pEnt) )
+              {
+                this->SendWeaponAnim(this, 199);
+              }
+            }
+            else
+            {
+              (this->WeaponSound)(this, 8, 0.0);
+              if ( this->m_iClassname.pszValue == "weapon_357" || CBaseEntity::ClassMatchesComplex(this, "weapon_357") )
+                this->SendWeaponAnim(this, 198);
+            }
+            m_Value = this->m_nSequence.m_Value;
+            if ( !this->m_pStudioHdr && CBaseEntity::GetModel(this) )
+              CBaseAnimating::LockStudioHdr(this);
+            m_pStudioHdr = this->m_pStudioHdr;
+            if ( !m_pStudioHdr || !*m_pStudioHdr )
+              m_pStudioHdr = 0;
+            *&m_pEnt = CBaseAnimating::SequenceDuration(this, m_pStudioHdr, m_Value) + gpGlobals->curtime;
+            sub_10132360(&this->m_flNextPrimaryAttack, &m_pEnt);
+            v31 = this->m_nSequence.m_Value;
+            if ( !this->m_pStudioHdr && CBaseEntity::GetModel(this) )
+              CBaseAnimating::LockStudioHdr(this);
+            v32 = this->m_pStudioHdr;
+            if ( !v32 || !*v32 )
+              v32 = 0;
+            *&m_pEnt = CBaseAnimating::SequenceDuration(this, v32, v31) + gpGlobals->curtime;
+            sub_100C5F30(&this->m_flNextSecondaryAttack, &m_pEnt);
+            angleOffset.z = (random->RandomFloat)(random, 10.0);
+            angleOffset.y = (random->RandomFloat)(random, -6.0, 6.0);
+            angleOffset.z = 0.0;
+            CBasePlayer::ViewPunch(pPlayer, &angleOffset);
+          }
+        }
+      }
+    }
+  }
+}
