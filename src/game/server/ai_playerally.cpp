@@ -360,7 +360,7 @@ void CAI_PlayerAlly::InputMakeRegularAlly( inputdata_t &inputdata )
 
 void CAI_PlayerAlly::DisplayDeathMessage( void )
 {
-	if ( m_bGameEndAlly == false )
+	if ( IsGameEndAlly() )
 		return;
 
 	CBaseEntity *pPlayer = AI_GetSinglePlayer();

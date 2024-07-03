@@ -418,7 +418,7 @@ protected:
 	// such as the Lone Vort in Ep2.) The usual means by which any other function should determine if a character
 	// is vital is to determine Classify() == CLASS_PLAYER_ALLY_VITAL. Do not use this function outside that
 	// context. 
-	inline bool IsGameEndAlly( void ) { return m_bGameEndAlly; }
+	virtual bool IsGameEndAlly( void ) { return m_bGameEndAlly; }
 
 	//-----------------------------------------------------
 	// Conditions, Schedules, Tasks
