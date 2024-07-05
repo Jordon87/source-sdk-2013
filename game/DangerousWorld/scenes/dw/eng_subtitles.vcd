@@ -1,0 +1,76 @@
+// Choreo version 1
+actor "Caption"
+{
+  channel "Caption_sound"
+  {
+    event speak "Subtitles.again"
+    {
+      time 0.000000 5.002267
+      param "Subtitles.again"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Subtitles.save_world"
+    {
+      time 5.200000 10.202268
+      param "Subtitles.save_world"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Subtitles.no_freeman"
+    {
+      time 10.400000 15.402267
+      param "Subtitles.no_freeman"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Subtitles.studio_tiim"
+    {
+      time 15.600000 20.602268
+      param "Subtitles.studio_tiim"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Subtitles.mod"
+    {
+      time 26.000000 31.002268
+      param "Subtitles.mod"
+      param2 "VOL_NORM"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Subtitles.master_role"
+    {
+      time 20.799999 25.802267
+      param "Subtitles.master_role"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Subtitles.hl2"
+    {
+      time 31.200001 36.202267
+      param "Subtitles.hl2"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "20"
+  "RampTool" "100"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

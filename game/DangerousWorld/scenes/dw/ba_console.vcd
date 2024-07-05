@@ -1,0 +1,188 @@
+// Choreo version 1
+actor "!Target1"
+{
+  channel "audio"
+  {
+    event speak "nexus.ba_ourgate"
+    {
+      time 0.062254 2.386132
+      param "nexus.ba_ourgate"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_barney.ba_damnit"
+    {
+      time 4.894529 5.503735
+      param "npc_barney.ba_damnit"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_barney.ba_laugh01"
+    {
+      time 9.497330 10.812658
+      param "npc_barney.ba_laugh01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_barney.ba_letsgo"
+    {
+      time 11.260294 12.065146
+      param "npc_barney.ba_letsgo"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "k_lab.ba_whatthehell"
+    {
+      time 3.586219 4.463203
+      param "k_lab.ba_whatthehell"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "look at"
+  {
+    event lookat "mark_display"
+    {
+      time 2.571404 4.597329
+      param "mark_display"
+    }
+    event lookat "mark_console"
+    {
+      time 0.571404 2.575107
+      param "mark_console"
+    }
+    event lookat "mark_door"
+    {
+      time 8.838074 11.071404
+      param "mark_door"
+      pitch "79"
+    }
+    event lookat "!player"
+    {
+      time 11.119553 12.775108
+      param "!player"
+    }
+  }
+  channel "move to "
+  {
+    event moveto "mark_exit"
+    {
+      time 13.602235 14.442574
+      param "mark_exit"
+      param2 "Run"
+    }
+    event moveto "mark_door_exit"
+    {
+      time 8.119553 8.797331
+      param "mark_door_exit"
+      param2 "Walk"
+    }
+  }
+  channel "face to"
+  {
+  }
+  channel "sequence"
+  {
+    event sequence "sec_barney_damnit"
+    {
+      time 4.563996 7.897329
+      param "photo_react_blind"
+      fixedlength
+    }
+  }
+  channel "postures"
+  {
+    event gesture "p_ConsoleType_Rifle"
+    {
+      time 0.241555 3.494498
+      param "p_ConsoleType_Rifle"
+      absolutetags playback_time
+      {
+        "apex" 0.103663
+        "loop" 0.487216
+        "end" 0.810692
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.116279
+        "loop" 0.546512
+        "end" 0.697674
+      }
+      sequenceduration 2.900000
+    }
+  }
+  channel "gestures"
+  {
+    event gesture "g_consoleType_rifle"
+    {
+      time 0.607569 3.293192
+      param "g_consoleType_rifle"
+      absolutetags playback_time
+      {
+        "in" 0.202012
+        "loop" 0.252515
+        "end" 0.833910
+        "out" 0.848540
+      }
+      absolutetags shifted_time
+      {
+        "in" 0.275862
+        "loop" 0.344828
+        "end" 0.758621
+        "out" 0.775862
+      }
+      sequenceduration 1.966667
+    }
+  }
+  channel "trigger"
+  {
+    event firetrigger "2_spark"
+    {
+      time 4.757589 -1.000000
+      param "2"
+    }
+    event firetrigger "5_go_toposition"
+    {
+      time 13.622457 -1.000000
+      param "6"
+    }
+    event firetrigger "3_timer"
+    {
+      time 6.119551 -1.000000
+      param "3"
+    }
+    event firetrigger "5_explode_monitor"
+    {
+      time 5.601034 -1.000000
+      param "5"
+    }
+    event firetrigger "1_monitor_on"
+    {
+      time 1.449181 -1.000000
+      param "1"
+    }
+    event firetrigger "4_doorOpen"
+    {
+      time 9.126961 -1.000000
+      param "4"
+    }
+  }
+}
+
+mapname "maps\klab_actormarks.bsp"
+scalesettings
+{
+  "CChoreoView" "74"
+  "ExpressionTool" "40"
+  "RampTool" "60"
+  "GestureTool" "50"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

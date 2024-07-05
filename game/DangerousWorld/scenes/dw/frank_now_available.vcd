@@ -1,0 +1,32 @@
+// Choreo version 1
+actor "Frank"
+{
+  channel "script"
+  {
+    event sequence "Frank_shotgun_idle"
+    {
+      time 0.000000 60.000000
+      param "Idle_Relaxed_Shotgun_9"
+    }
+  }
+  channel "look"
+  {
+    event lookat "look_door"
+    {
+      time -0.000000 60.000000
+      param "look_door"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "4"
+  "RampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

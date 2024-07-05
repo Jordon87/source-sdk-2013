@@ -1,0 +1,44 @@
+// Choreo version 1
+actor "Barney"
+{
+  channel "Look"
+  {
+    event expression "g"
+    {
+      time 1.327371 1.409563
+      param "phonemes"
+      param2 "g"
+    }
+    event expression "r"
+    {
+      time 1.425672 1.528286
+      param "phonemes"
+      param2 "r"
+    }
+    event expression "n"
+    {
+      time 1.692668 1.838787
+      param "phonemes_strong"
+      param2 "n"
+    }
+    event expression "r3"
+    {
+      time 1.530629 1.688163
+      param "phonemes_strong"
+      param2 "r3"
+    }
+    event expression "c"
+    {
+      time 2.073945 2.208648
+      param "phonemes_strong"
+      param2 "c"
+    }
+    event expression "ey"
+    {
+      time 1.836502 2.069379
+      param "phonemes_strong"
+      param2 "ey"
+    }
+  }
+}
+

@@ -1,0 +1,99 @@
+// Choreo version 1
+actor "Barney"
+{
+  channel "Audio"
+  {
+    event speak "ba_nag_grenade02"
+    {
+      time 0.000000 2.356984
+      param "dw.ba_grenade02"
+      param2 "75dB"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "Expression"
+  {
+  }
+  channel "Look"
+  {
+    event lookat "mark_grenade"
+    {
+      time 0.000000 2.360000
+      param "mark_grenade"
+    }
+    event expression "g"
+    {
+      time 1.308853 1.391045
+      param "phonemes"
+      param2 "g"
+    }
+    event expression "r"
+    {
+      time 1.407154 1.509767
+      param "phonemes"
+      param2 "r"
+    }
+    event expression "n"
+    {
+      time 1.674150 1.820269
+      param "phonemes_strong"
+      param2 "n"
+    }
+    event expression "r3"
+    {
+      time 1.512111 1.669645
+      param "phonemes_strong"
+      param2 "r3"
+    }
+    event expression "c"
+    {
+      time 2.060056 2.194759
+      param "phonemes_strong"
+      param2 "c"
+    }
+    event expression "ey"
+    {
+      time 1.822613 2.055490
+      param "phonemes_strong"
+      param2 "ey"
+    }
+    event expression "l"
+    {
+      time 0.909562 0.980338
+      param "phonemes_strong"
+      param2 "l"
+    }
+    event expression "hh"
+    {
+      time 0.060185 0.189815
+      param "phonemes"
+      param2 "hh"
+    }
+    event expression "jh"
+    {
+      time 0.199074 0.416667
+      param "phonemes"
+      param2 "jh"
+    }
+    event expression "uw"
+    {
+      time 0.986111 1.097222
+      param "phonemes"
+      param2 "uw"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "144"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

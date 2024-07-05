@@ -1,0 +1,108 @@
+// Choreo version 1
+actor "Gman"
+{
+  channel "Sound"
+  {
+    event speak "dw.gman_gf"
+    {
+      time 0.460000 4.089569
+      param "dw.gman_gf"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "Look at"
+  {
+    event lookat "Gman_citadel"
+    {
+      time 1.020000 4.340000
+      param "gman_citadel_gf_target"
+      event_ramp
+      {
+        1.1363 0.7975
+        2.5243 0.8481
+      }
+    }
+  }
+  channel "rec"
+  {
+    event expression "f"
+    {
+      time 1.653333 1.873333
+      param "phonemes"
+      param2 "f"
+      event_ramp
+      {
+        0.0672 0.7595
+        0.1492 0.7848
+      }
+    }
+    event expression "r"
+    {
+      time 1.900000 2.120000
+      param "phonemes"
+      param2 "r"
+      event_ramp
+      {
+        0.0672 0.8861
+        0.1410 0.8608
+      }
+    }
+    event expression "e"
+    {
+      time 2.140000 2.440000
+      param "phonemes"
+      param2 "iy"
+      event_ramp
+      {
+        0.1344 0.9367
+      }
+    }
+    event expression "m"
+    {
+      time 2.646666 2.840000
+      param "phonemes"
+      param2 "m"
+      event_ramp
+      {
+        0.0459 0.8354
+        0.1197 0.7975
+      }
+    }
+    event expression "a"
+    {
+      time 2.853333 3.353333
+      param "phonemes"
+      param2 "ah"
+      event_ramp
+      {
+        0.1089 0.6962
+        0.3289 0.8228
+      }
+    }
+    event expression "n"
+    {
+      time 3.373333 3.873334
+      param "phonemes"
+      param2 "n"
+      event_ramp
+      {
+        0.1714 0.8987
+        0.3679 0.8608
+      }
+    }
+  }
+}
+
+scalesettings
+{
+  "GestureTool" "100"
+  "ExpressionTool" "100"
+  "RampTool" "122"
+  "SceneRampTool" "100"
+  "CChoreoView" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

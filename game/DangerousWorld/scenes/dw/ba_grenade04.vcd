@@ -1,0 +1,122 @@
+// Choreo version 1
+actor "Barney"
+{
+  channel "Audio"
+  {
+    event speak "dw.ba_grenade04"
+    {
+      time 0.000000 2.180295
+      param "dw.ba_grenade04"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "Expression"
+  {
+  }
+  channel "Look"
+  {
+    event lookat "mark_grenade"
+    {
+      time 0.000000 2.206667
+      param "mark_grenade"
+    }
+    event expression "g"
+    {
+      time 0.260242 0.342434
+      param "phonemes"
+      param2 "g"
+    }
+    event expression "r"
+    {
+      time 0.358543 0.461156
+      param "phonemes"
+      param2 "r"
+    }
+    event expression "n"
+    {
+      time 0.625539 0.771658
+      param "phonemes_strong"
+      param2 "n"
+    }
+    event expression "r3"
+    {
+      time 0.463500 0.621034
+      param "phonemes_strong"
+      param2 "r3"
+    }
+    event expression "c"
+    {
+      time 1.011445 1.146148
+      param "phonemes_strong"
+      param2 "c"
+    }
+    event expression "ey"
+    {
+      time 0.774002 1.006879
+      param "phonemes_strong"
+      param2 "ey"
+    }
+    event expression "l"
+    {
+      time 0.020673 0.098393
+      param "phonemes_strong"
+      param2 "l"
+    }
+    event expression "uw"
+    {
+      time 0.104167 0.215277
+      param "phonemes"
+      param2 "uw"
+    }
+    event expression "c"
+    {
+      time 1.222222 1.354167
+      param "phonemes"
+      param2 "c"
+    }
+    event expression "ih"
+    {
+      time 1.555556 1.701389
+      param "phonemes"
+      param2 "ih"
+    }
+    event expression "l"
+    {
+      time 1.361111 1.534722
+      param "phonemes"
+      param2 "l"
+    }
+    event expression "m"
+    {
+      time 1.722222 1.909722
+      param "phonemes"
+      param2 "m"
+    }
+    event expression "ae"
+    {
+      time 1.930556 2.076389
+      param "phonemes"
+      param2 "ae"
+    }
+    event expression "t"
+    {
+      time 2.104167 2.187500
+      param "phonemes"
+      param2 "t"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "96"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

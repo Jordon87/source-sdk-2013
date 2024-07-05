@@ -1,0 +1,93 @@
+// Choreo version 1
+actor "Barney"
+{
+  channel "Audio"
+  {
+    event speak "ba_takeoutsnipers"
+    {
+      time 0.173334 2.262155
+      param "streetwar.ba_takeoutsnipers"
+      param2 "75dB"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "Expression"
+  {
+  }
+  channel "Look"
+  {
+    event lookat "look at player"
+    {
+      time 0.026666 2.559999
+      param "!player"
+    }
+    event expression "g"
+    {
+      time 0.525890 0.682156
+      param "phonemes"
+      param2 "g"
+    }
+    event expression "r"
+    {
+      time 0.689006 0.800878
+      param "phonemes"
+      param2 "r"
+    }
+    event expression "n"
+    {
+      time 0.965261 1.111380
+      param "phonemes_strong"
+      param2 "n"
+    }
+    event expression "r3"
+    {
+      time 0.803222 0.960756
+      param "phonemes_strong"
+      param2 "r3"
+    }
+    event expression "c"
+    {
+      time 1.351167 1.559944
+      param "phonemes_strong"
+      param2 "c"
+    }
+    event expression "ey"
+    {
+      time 1.113724 1.346601
+      param "phonemes_strong"
+      param2 "ey"
+    }
+    event expression "r"
+    {
+      time 1.562339 1.674211
+      param "phonemes"
+      param2 "r"
+    }
+    event expression "n"
+    {
+      time 1.845261 1.991380
+      param "phonemes_strong"
+      param2 "n"
+    }
+    event expression "r3"
+    {
+      time 1.676555 1.834089
+      param "phonemes_strong"
+      param2 "r3"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

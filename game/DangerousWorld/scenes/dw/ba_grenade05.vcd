@@ -1,0 +1,74 @@
+// Choreo version 1
+actor "Barney"
+{
+  channel "Audio"
+  {
+    event speak "dw.ba_grenade05"
+    {
+      time 0.000000 1.331383
+      param "dw.ba_grenade05"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "Expression"
+  {
+  }
+  channel "Look"
+  {
+    event lookat "mark_grenade"
+    {
+      time 0.026666 1.340000
+      param "mark_grenade"
+    }
+    event expression "g"
+    {
+      time 0.179223 0.335489
+      param "phonemes"
+      param2 "g"
+    }
+    event expression "r"
+    {
+      time 0.342339 0.454211
+      param "phonemes"
+      param2 "r"
+    }
+    event expression "n"
+    {
+      time 0.618594 0.764713
+      param "phonemes_strong"
+      param2 "n"
+    }
+    event expression "r3"
+    {
+      time 0.456555 0.614089
+      param "phonemes_strong"
+      param2 "r3"
+    }
+    event expression "c"
+    {
+      time 1.004500 1.213277
+      param "phonemes_strong"
+      param2 "c"
+    }
+    event expression "ey"
+    {
+      time 0.767057 0.999934
+      param "phonemes_strong"
+      param2 "ey"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "144"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

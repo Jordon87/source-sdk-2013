@@ -1,0 +1,73 @@
+// Choreo version 1
+actor "Barney"
+{
+  channel "Audio"
+  {
+    event speak "asdf"
+    {
+      time 0.000000 0.876984
+      param "k_lab.ba_whatthehell"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event lookat "!player"
+    {
+      time 0.000000 0.900000
+      param "!player"
+    }
+    event speak "ba_guardpoint"
+    {
+      time 4.200000 7.854784
+      param "ep_01.ba_guardpoint"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "ba_seeyououtthere"
+    {
+      time 9.000000 13.366508
+      param "ep_01.ba_seeyououtthere"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "look at"
+  {
+    event lookat "!player"
+    {
+      time 3.950000 8.766666
+      param "!player"
+      event_ramp
+      {
+        0.4115 0.9401
+        4.6927 0.9501
+      }
+    }
+    event lookat "lookit"
+    {
+      time 9.016666 13.500000
+      param "!player"
+      event_ramp
+      {
+        0.1211 0.3204
+        0.5838 0.5525
+        3.6421 0.6023
+        4.1085 0.5380
+      }
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "148"
+  "GestureTool" "100"
+  "RampTool" "100"
+  "ExpressionTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap on
+ignorePhonemes off

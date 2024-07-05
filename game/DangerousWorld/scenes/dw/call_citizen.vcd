@@ -1,0 +1,131 @@
+// Choreo version 1
+actor "npc_citizen_call"
+{
+  channel "Sound_citizen"
+  {
+    event speak "dw.cellarhelp01"
+    {
+      time 0.000000 1.230159
+      param "dw.cellarhelp01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "dw.cellarhelp03"
+    {
+      time 2.000000 3.347687
+      param "dw.cellarhelp03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "dw.cellarhelp02"
+    {
+      time 5.000000 5.758889
+      param "dw.cellarhelp02"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "dw.no02"
+    {
+      time 9.500000 10.885442
+      param "dw.no02"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "dw.cit_pain06"
+    {
+      time 10.700000 11.506077
+      param "dw.cit_pain06"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "dw.cit_pain08"
+    {
+      time 11.700000 12.471043
+      param "dw.cit_pain08"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "dw.cit_pain04"
+    {
+      time 12.700000 13.040726
+      param "dw.cit_pain04"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "Sound_fear"
+  {
+    event speak "dw.inside_battle_zombie1"
+    {
+      time 8.000000 11.327347
+      param "dw.inside_battle_zombie1"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "dw.claw_strike2"
+    {
+      time 10.500000 11.455148
+      param "dw.claw_strike2"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "dw.claw_strike1"
+    {
+      time 11.500000 12.321451
+      param "dw.claw_strike1"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "dw.claw_strike3"
+    {
+      time 12.500000 13.150521
+      param "dw.claw_strike3"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "dw.town_scared_sob2"
+    {
+      time 13.500000 14.965261
+      param "dw.town_scared_sob2"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "Trigger"
+  {
+    event firetrigger "shooter_head"
+    {
+      time 11.000000 -1.000000
+      param "1"
+    }
+    event firetrigger "head_blood"
+    {
+      time 14.000000 -1.000000
+      param "2"
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "48"
+  "RampTool" "100"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

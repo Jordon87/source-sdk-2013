@@ -1,0 +1,125 @@
+// Choreo version 1
+actor "Barney"
+{
+  channel "audio"
+  {
+    event speak "ba_vista03"
+    {
+      time 1.207730 3.765666
+      param "dw.ba_vista03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "look at"
+  {
+    event lookat "!Player"
+    {
+      time 2.568115 4.676812
+      param "!Player"
+      event_ramp
+      {
+        0.5167 0.8475
+        0.8767 0.9193
+        1.1796 0.9494
+        1.4872 0.9320
+        1.6515 0.8924
+      }
+    }
+    event lookat "building"
+    {
+      time 0.176811 2.473914
+      param "target_building"
+      event_ramp
+      {
+        0.5167 0.8475
+        0.8767 0.9193
+        1.1990 0.8924
+        1.4967 0.9193
+        1.6823 0.8206
+      }
+    }
+  }
+  channel "face to"
+  {
+    event face "!player"
+    {
+      time 2.550724 4.891304
+      param "!player"
+      event_ramp
+      {
+        0.7200 0.7175
+        1.1033 0.8117
+        1.2994 0.7758
+        1.4439 0.8117
+        1.5961 0.8846
+        1.7223 0.8072
+        2.0093 0.1525
+      }
+      lockbodyfacing
+    }
+  }
+  channel "postures"
+  {
+    event gesture "NULL"
+    {
+      time 0.000000 1.286473
+      param "null1"
+    }
+  }
+  channel "gestures"
+  {
+    event gesture "NULL"
+    {
+      time 0.000000 1.236232
+      param "NULL"
+    }
+  }
+  channel "body gestures"
+  {
+    event gesture "NULL"
+    {
+      time 0.000000 0.818841
+      param ""
+    }
+    event gesture "NULL"
+    {
+      time 4.768116 5.485507
+      param ""
+    }
+    event gesture "bg_accentUp_Rifle"
+    {
+      time 0.391305 2.778261
+      param "bg_accentUp_Rifle"
+      absolutetags playback_time
+      {
+        "apex" 0.099439
+        "extreme" 0.284111
+        "loop" 0.596633
+        "end" 0.710278
+      }
+      absolutetags shifted_time
+      {
+        "apex" 0.120690
+        "extreme" 0.344828
+        "loop" 0.724138
+        "end" 0.862069
+      }
+      sequenceduration 1.966667
+    }
+  }
+}
+
+mapname "maps\klab_actormarks.bsp"
+scalesettings
+{
+  "CChoreoView" "46"
+  "ExpressionTool" "40"
+  "RampTool" "42"
+  "GestureTool" "50"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off
