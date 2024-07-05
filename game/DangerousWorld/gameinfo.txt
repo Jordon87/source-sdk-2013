@@ -11,7 +11,7 @@
 	"developer_url"	"http://www.dwmod.half-life2.sk"
 	"developer"	"Studio TiiM"
 
-	supportsvr	1
+	supportsvr	0
 
 	type		singleplayer_only
 
