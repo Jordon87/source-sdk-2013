@@ -1,0 +1,108 @@
+// Choreo version 1
+actor "Ghost"
+{
+  channel "target"
+  {
+    event flexanimation "2"
+    {
+      time 0.388889 8.317461
+      param ""
+      flexanimations samples_use_time defaultcurvetype=curve_catmullrom_normalize_x_to_curve_catmullrom_normalize_x
+      {
+        "lowerer" combo 
+        {
+          0.7533 0.9200
+          2.0162 1.0000
+          7.0855 0.9400
+        }
+        {
+          2.0162 0.5000
+        }
+        "wrinkler" 
+        {
+          0.6800 0.9200
+          2.0162 1.0000
+          7.4394 0.9600
+        }
+        "dilator" 
+        {
+          2.0162 0.0000
+        }
+        "chin_raiser" 
+        {
+          0.7000 0.7400
+          2.0162 0.8000
+          6.3579 0.6300
+        }
+        "bite" 
+        {
+          0.5866 0.2300
+          2.9769 0.3200
+          6.3587 0.1500
+        }
+        "tightener" 
+        {
+          0.8467 0.9200
+          1.9294 1.0000
+          7.2394 0.9600
+        }
+        "jaw_clencher" 
+        {
+          0.9533 0.8100
+          2.0162 1.0000
+          7.2072 0.8100
+        }
+        "eyes_updown" 
+        {
+          2.0162 0.0000
+        }
+        "eyes_rightleft" 
+        {
+          2.0162 0.0000
+        }
+        "gesture_rightleft" 
+        {
+          1.1382 0.8400
+          4.0231 0.8400
+          6.8626 0.7800
+        }
+        "funneler" disabled combo 
+        {
+          0.7538 0.0000
+        }
+        {
+        }
+      }
+    }
+    event face "Camera_look"
+    {
+      time -0.595238 -0.095238
+      param "camera_black"
+    }
+  }
+  channel "look_face"
+  {
+    event face "look_player"
+    {
+      time 0.115942 8.297512
+      param "!player"
+      event_ramp
+      {
+        0.6660 0.9217
+        7.1542 0.9315
+      }
+    }
+  }
+}
+
+scalesettings
+{
+  "SceneRampTool" "100"
+  "GestureTool" "100"
+  "ExpressionTool" "26"
+  "RampTool" "42"
+  "CChoreoView" "52"
+}
+fps 60
+snap off
+ignorePhonemes off

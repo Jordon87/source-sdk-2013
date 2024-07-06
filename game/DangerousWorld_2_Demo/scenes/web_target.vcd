@@ -1,0 +1,48 @@
+// Choreo version 1
+actor "Michaela"
+{
+  channel "target"
+  {
+    event lookat "target_look"
+    {
+      time 0.000000 30.000000
+      param "look"
+    }
+  }
+}
+
+actor "Eric"
+{
+  channel "target"
+  {
+    event lookat "target_look"
+    {
+      time 0.000000 30.000000
+      param "look"
+    }
+  }
+}
+
+actor "Frank"
+{
+  channel "target"
+  {
+    event lookat "target_look"
+    {
+      time 0.000000 30.000000
+      param "look"
+    }
+  }
+}
+
+scalesettings
+{
+  "SceneRampTool" "100"
+  "GestureTool" "100"
+  "ExpressionTool" "100"
+  "RampTool" "100"
+  "CChoreoView" "84"
+}
+fps 60
+snap off
+ignorePhonemes off

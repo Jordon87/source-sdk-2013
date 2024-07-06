@@ -1,0 +1,72 @@
+// Choreo version 1
+actor "Dog"
+{
+  channel "Sound"
+  {
+    event speak "npc_dog.phrase06"
+    {
+      time 10.066667 10.827120
+      param "npc_dog.phrase06"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_dog.phrase05"
+    {
+      time 10.850000 11.490001
+      param "npc_dog.phrase05"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "NPC_dog.Pain_2"
+    {
+      time 5.216667 7.440976
+      param "NPC_dog.Pain_2"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "Look"
+  {
+    event lookat "Frank_look"
+    {
+      time 10.133333 13.483334
+      param "Frank"
+      event_ramp
+      {
+        0.7667 0.9009
+        2.5667 0.9670
+      }
+    }
+  }
+  channel "trigger"
+  {
+    event firetrigger "Dog_kill"
+    {
+      time 13.733334 -1.000000
+      param "2"
+    }
+    event firetrigger "Begin_stand_dog"
+    {
+      time 11.250000 -1.000000
+      param "1"
+    }
+  }
+}
+
+scene_ramp leftedge curve_default_to_curve_easein 0.000 rightedge curve_easeout_to_curve_default 0.000
+{
+}
+scalesettings
+{
+  "CChoreoView" "68"
+  "RampTool" "54"
+  "ExpressionTool" "96"
+  "GestureTool" "100"
+  "SceneRampTool" "14"
+}
+fps 60
+snap on
+ignorePhonemes off

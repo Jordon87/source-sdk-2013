@@ -1,0 +1,128 @@
+// Choreo version 1
+actor "Frank"
+{
+  channel "Sound"
+  {
+    event speak "ep1_citizen.cit_alert_zombie03"
+    {
+      time 0.100000 1.154671
+      param "ep1_citizen.cit_alert_zombie03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_frank.shit"
+    {
+      time 3.200000 4.308753
+      param "npc_frank.shit"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_frank.justintime"
+    {
+      time 11.716666 14.258389
+      param "npc_frank.justintime"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_citizen.ohno"
+    {
+      time 4.933333 5.660408
+      param "npc_citizen.watchout"
+      event_ramp
+      {
+        0.1667 0.6246
+        0.3667 0.5736
+      }
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "npc_citizen.ok01"
+    {
+      time 9.483334 9.969501
+      param "npc_citizen.ok01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "sec"
+  {
+    event sequence "Frank_cover"
+    {
+      time 3.583333 4.250000
+      param "Fear_Reaction"
+      fixedlength
+    }
+    event sequence "Frank_cower_idle"
+    {
+      time 4.166667 8.000000
+      param "Fear_Reaction_Idle"
+      event_ramp
+      {
+        0.0000 1.0000
+        3.3479 1.0000
+      }
+    }
+  }
+  channel "Look"
+  {
+    event lookat "Citadel"
+    {
+      time 0.066667 3.900000
+      param "citadel_dstrukcion"
+      event_ramp
+      {
+        0.2710 0.9189
+        3.2839 0.9670
+      }
+    }
+    event lookat "Citadel"
+    {
+      time 8.033334 9.100000
+      param "citadel_dstrukcion"
+      event_ramp
+      {
+        0.2710 0.9189
+        0.7395 0.9009
+      }
+    }
+    event lookat "dog_look"
+    {
+      time 9.166667 13.050000
+      param "dog"
+      event_ramp
+      {
+        0.4495 1.0000
+        3.4478 1.0000
+      }
+    }
+  }
+  channel "trigger"
+  {
+    event firetrigger "Frank_kill_go_jalopy"
+    {
+      time 13.433333 -1.000000
+      param "1"
+    }
+  }
+  faceposermodel "models\humans\Group03\male_07.mdl"
+}
+
+scene_ramp leftedge curve_default_to_curve_easein 0.000 rightedge curve_easeout_to_curve_default 0.000
+{
+}
+scalesettings
+{
+  "SceneRampTool" "14"
+  "GestureTool" "100"
+  "ExpressionTool" "96"
+  "RampTool" "54"
+  "CChoreoView" "68"
+}
+fps 60
+snap on
+ignorePhonemes off
