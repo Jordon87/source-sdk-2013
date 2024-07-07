@@ -118,7 +118,7 @@ void CWeaponCrowbar::ItemPostFrame(void)
 			}
 		}
 
-		if ((pOwner->m_afButtonPressed & IN_ATTACK) != 0 || (pOwner->m_afButtonPressed & IN_ATTACK2) != 0 && gpGlobals->curtime >= m_flNextPrimaryAttack)
+		if (((pOwner->m_nButtons & IN_ATTACK) || (pOwner->m_nButtons & IN_ATTACK2)) && m_flNextPrimaryAttack <= gpGlobals->curtime)
 			PrimaryAttack();
 		else
 			WeaponIdle();
