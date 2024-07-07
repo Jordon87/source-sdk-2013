@@ -1819,7 +1819,7 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("357",				DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_357",			"sk_npc_dmg_357",			"sk_max_357",			BULLET_IMPULSE(800, 5000), 0 );
 		def.AddAmmoType("XBowBolt",			DMG_BULLET,					TRACER_LINE,			"sk_plr_dmg_crossbow",		"sk_npc_dmg_crossbow",		"sk_max_crossbow",		BULLET_IMPULSE(800, 8000), 0 );
 
-		def.AddAmmoType("Health",			DMG_CLUB,					TRACER_NONE,			NULL,						NULL,						"sk_max_pistol",		3033.143f, 0 );
+		def.AddAmmoType("Health",			DMG_CLUB,					TRACER_NONE,			NULL,						NULL,						"sk_max_healthpacks",	0, 0 );
 		def.AddAmmoType("ColtPistol",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_colt",			NULL,						"sk_max_pistol",		3033.143f, 0 );
 		def.AddAmmoType("M4",				DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_m4",			"sk_npc_dmg_m4",			"sk_max_m4",			4246.4f, 0 );
 		def.AddAmmoType("M16",				DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_m16",			"sk_npc_dmg_m16",			"sk_max_m16",			31899.12f, 0 );
