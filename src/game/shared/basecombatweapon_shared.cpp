@@ -2550,46 +2550,46 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 	trace_t tr;
 	UTIL_TraceLine(vecSrc, vecEnd, MASK_SHOT_HULL, pPlayer, COLLISION_GROUP_NONE, &tr);
 
-	if (tr.m_pEnt)
+	if (tr.fraction < 1.0f || tr.allsolid || tr.startsolid)
 	{
-#if !defined( CLIENT_DLL )
-		if (ClassMatches("weapon_357"))
+		if (FClassnameIs(this, "weapon_357"))
+		{
 			SendWeaponAnim(ACT_VM_SWINGHIT);
+		}
 
+		if (tr.m_pEnt)
+		{
+			WeaponSound(MELEE_HIT);
+		}
+		else
+		{
+			WeaponSound(MELEE_HIT_WORLD);
+			UTIL_ImpactTrace(&tr, DMG_CLUB);
+		}
+
+#ifndef CLIENT_DLL
 		CTakeDamageInfo info(GetOwner(), GetOwner(), GetWpnData().m_flMeleeDamage, DMG_CLUB);
 		CalculateExplosiveDamageForce(&info, forward, tr.endpos);
 		tr.m_pEnt->DispatchTraceAttack(info, forward, &tr);
 		ApplyMultiDamage();
 		TraceAttackToTriggers(info, tr.startpos, tr.endpos, forward);
-
-		if (ClassMatches("weapon_pistol") && tr.m_pEnt->IsNPC() && !tr.m_pEnt->IsAlive())
-			SendWeaponAnim(ACT_VM_SWINGHIT);
+		UTIL_ScreenShake(pPlayer->GetAbsOrigin(), 15.0f, 15.0f, 0.5f, 256.0f, SHAKE_START, 0);
 #endif
 
-		UTIL_ScreenShake(pPlayer->GetAbsOrigin(), 15.0f, 15.0f, 0.5f, 256.0f, SHAKE_START, 0);
-
-		if (tr.m_pEnt && tr.m_pEnt->IsWorld())
+		if (FClassnameIs(this, "weapon_pistol") && tr.m_pEnt->IsNPC() && !tr.m_pEnt->IsAlive())
 		{
-			WeaponSound(MELEE_HIT_WORLD);
-		}
-		else
-		{
-			WeaponSound(MELEE_HIT);
+			SendWeaponAnim(ACT_VM_SWINGHIT);
 		}
 	}
 	else
 	{
 		WeaponSound(MELEE_MISS);
 
-#if !defined( CLIENT_DLL )
-		if (ClassMatches("weapon_357"))
+		if (FClassnameIs(this, "weapon_357"))
 		{
 			SendWeaponAnim(ACT_VM_SWINGMISS);
 		}
-#endif
 	}
-
-	UTIL_ImpactTrace(&tr, DMG_CLUB);
 
 	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
 	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();

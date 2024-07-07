@@ -87,6 +87,9 @@ void CWeapon357::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChara
 
 				break;
 			}
+		default:
+			BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
+			break;
 	}
 }
 
