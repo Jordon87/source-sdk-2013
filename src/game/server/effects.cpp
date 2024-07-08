@@ -1504,6 +1504,9 @@ CPrecipitation::CPrecipitation()
 
 void CPrecipitation::Spawn( void )
 {
+	PrecacheMaterial( "effects/fleck_leaves1" );
+	PrecacheMaterial( "effects/fleck_leaves2" );
+	PrecacheMaterial( "effects/fleck_leaves3" );
 	PrecacheMaterial( "effects/fleck_ash1" );
 	PrecacheMaterial( "effects/fleck_ash2" );
 	PrecacheMaterial( "effects/fleck_ash3" );

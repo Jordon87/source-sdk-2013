@@ -413,6 +413,11 @@ void SporeExplosion::Spawn( void )
 	m_bEmit = false;
 }
 
+void SporeExplosion::Precache(void)
+{
+	PrecacheMaterial( "particle/fire" );
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Output : SporeExplosion*

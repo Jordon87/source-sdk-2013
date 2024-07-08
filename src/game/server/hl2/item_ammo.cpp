@@ -105,6 +105,74 @@ LINK_ENTITY_TO_CLASS(item_large_box_srounds, CItem_LargeBoxSRounds);
 LINK_ENTITY_TO_CLASS(item_ammo_pistol_large, CItem_LargeBoxSRounds);
 
 // ========================================================================
+//	>> AlyxGun_Ammo
+// ========================================================================
+class CItem_AlyxGun_Ammo : public CItem
+{
+public:
+	DECLARE_CLASS(CItem_AlyxGun_Ammo, CItem );
+
+	void Spawn( void )
+	{ 
+		Precache( );
+		SetModel( "models/items/boxmrounds.mdl" );
+		BaseClass::Spawn( );
+	}
+	void Precache( void )
+	{
+		PrecacheModel ("models/items/boxmrounds.mdl");
+	}
+	bool MyTouch( CBasePlayer *pPlayer )
+	{
+		if (ITEM_GiveAmmo( pPlayer, 30.0f, "AlyxGun"))
+		{
+			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			{
+				UTIL_Remove(this);	
+			}
+			return true;
+		}
+		return false;
+	}
+};
+LINK_ENTITY_TO_CLASS(item_box_alyxgun, CItem_AlyxGun_Ammo);
+LINK_ENTITY_TO_CLASS(item_ammo_alyxgun, CItem_AlyxGun_Ammo);
+
+// ========================================================================
+//	>> LargeAlyxGun_Ammo
+// ========================================================================
+class CItem_LargeAlyxGun_Ammo : public CItem
+{
+public:
+	DECLARE_CLASS(CItem_LargeAlyxGun_Ammo, CItem );
+
+	void Spawn( void )
+	{ 
+		Precache( );
+		SetModel( "models/items/boxmrounds.mdl" );
+		BaseClass::Spawn( );
+	}
+	void Precache( void )
+	{
+		PrecacheModel ("models/items/boxmrounds.mdl");
+	}
+	bool MyTouch( CBasePlayer *pPlayer )
+	{
+		if (ITEM_GiveAmmo( pPlayer, 150.0f, "AlyxGun"))
+		{
+			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			{
+				UTIL_Remove(this);	
+			}
+			return true;
+		}
+		return false;
+	}
+};
+LINK_ENTITY_TO_CLASS(item_large_box_alyxgun, CItem_LargeAlyxGun_Ammo);
+LINK_ENTITY_TO_CLASS(item_ammo_alyxgun_large, CItem_LargeAlyxGun_Ammo);
+
+// ========================================================================
 //	>> BoxMRounds
 // ========================================================================
 class CItem_BoxMRounds : public CItem
@@ -551,6 +619,40 @@ public:
 	}
 };
 LINK_ENTITY_TO_CLASS(item_box_buckshot, CItem_BoxBuckshot);
+
+
+// ========================================================================
+//	>> BoxBuckshot_dw
+// ========================================================================
+class CItem_BoxBuckshot_dw : public CItem
+{
+public:
+	DECLARE_CLASS( CItem_BoxBuckshot_dw, CItem );
+
+	void Spawn( void )
+	{ 
+		Precache( );
+		SetModel( "models/items/boxflares.mdl");
+		BaseClass::Spawn( );
+	}
+	void Precache( void )
+	{
+		PrecacheModel ("models/items/boxflares.mdl");
+	}
+	bool MyTouch( CBasePlayer *pPlayer )
+	{
+		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_BUCKSHOT, "Buckshot_dw"))
+		{
+			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			{
+				UTIL_Remove(this);	
+			}
+			return true;
+		}
+		return false;
+	}
+};
+LINK_ENTITY_TO_CLASS(item_box_buckshot_dw, CItem_BoxBuckshot_dw);
 
 // ========================================================================
 //	>> CItem_AR2AltFireRound

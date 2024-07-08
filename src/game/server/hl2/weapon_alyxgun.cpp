@@ -116,6 +116,7 @@ CWeaponAlyxGun::~CWeaponAlyxGun( )
 void CWeaponAlyxGun::Precache( void )
 {
 	BaseClass::Precache();
+	PrecacheModel( "Models/weapons/v_alyxgun.mdl" );
 }
 
 //-----------------------------------------------------------------------------

@@ -2807,6 +2807,7 @@ private:
 	float m_deceleration;
 	int	  m_state;
 	Vector m_vecMoveDir;
+	Vector m_vecLastPos;
 
 
 	string_t m_iszTargetAttachment;
@@ -2852,6 +2853,7 @@ BEGIN_DATADESC( CTriggerCamera )
 	DEFINE_FIELD( m_deceleration, FIELD_FLOAT ),
 	DEFINE_FIELD( m_state, FIELD_INTEGER ),
 	DEFINE_FIELD( m_vecMoveDir, FIELD_VECTOR ),
+	DEFINE_FIELD( m_vecLastPos, FIELD_VECTOR ),
 	DEFINE_KEYFIELD( m_iszTargetAttachment, FIELD_STRING, "targetattachment" ),
 	DEFINE_FIELD( m_iAttachmentIndex, FIELD_INTEGER ),
 	DEFINE_FIELD( m_bSnapToGoal, FIELD_BOOLEAN ),

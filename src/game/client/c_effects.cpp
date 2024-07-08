@@ -161,6 +161,7 @@ private:
 	bool SimulateSnow( CPrecipitationParticle* pParticle, float dt );
 
 	void CreateAshParticle( void );
+	void CreateLeavesParticle( void );
 	void CreateRainOrSnowParticle( Vector vSpawnPosition, Vector vVelocity );
 
 	// Information helpful in creating and rendering particles
@@ -405,6 +406,12 @@ void CClient_Precipitation::Simulate( float dt )
 	if ( dt )
 	{
 		ComputeWindVector( );
+	}
+
+	if (m_nPrecipType == PRECIPITATION_TYPE_LEAVES)
+	{
+		CreateLeavesParticle();
+		return;
 	}
 
 	if ( m_nPrecipType == PRECIPITATION_TYPE_ASH )
@@ -920,6 +927,180 @@ void CClient_Precipitation::CreateAshParticle( void )
 		hMaterial[0] = ParticleMgr()->GetPMaterial( "effects/fleck_ash1" );
 		hMaterial[1] = ParticleMgr()->GetPMaterial( "effects/fleck_ash2" );
 		hMaterial[2] = ParticleMgr()->GetPMaterial( "effects/fleck_ash3" );
+		hMaterial[3] = ParticleMgr()->GetPMaterial( "effects/ember_swirling001" );
+
+		SimpleParticle	*pParticle;
+
+		Vector vSpawnOrigin = vec3_origin;
+
+		if ( flVelocity > 0 )
+		{
+			vSpawnOrigin = ( vForward * 256 ) + ( vecVelocity * ( flVelocity * 2 ) );
+		}
+
+		// Add as many particles as we need
+	while ( m_tAshParticleTimer.NextEvent( curTime ) )
+		{
+			int iRandomAltitude = RandomInt( 0, 128 );
+
+		offset = m_vAshSpawnOrigin + vSpawnOrigin + RandomVector( -256, 256 );
+		offset.z = m_vAshSpawnOrigin.z + iRandomAltitude;
+
+			if  (  offset[0] > absmaxs[0]
+			|| offset[1] > absmaxs[1]
+			|| offset[2] > absmaxs[2]
+			|| offset[0] < absmins[0]
+			|| offset[1] < absmins[1]
+			|| offset[2] < absmins[2] )
+				continue;
+
+		m_iAshCount++;
+
+			bool bEmberTime = false;
+			
+		if ( m_iAshCount >= 250 )
+			{
+				bEmberTime = true;
+			m_iAshCount = 0;
+			}
+
+			int iRandom = random->RandomInt(0,2);
+
+			if ( bEmberTime == true )
+			{
+			offset = m_vAshSpawnOrigin + (vForward * 256) + RandomVector( -128, 128 );
+				offset.z = pPlayer->EyePosition().z + RandomFloat( -16, 64 );
+
+				iRandom = 3;
+			}
+
+		pParticle = (SimpleParticle *) m_pAshEmitter->AddParticle( sizeof(SimpleParticle), hMaterial[iRandom], offset );
+
+			if (pParticle == NULL)
+				continue; 
+
+			pParticle->m_flLifetime	= 0.0f;
+			pParticle->m_flDieTime	= RemapVal( iRandomAltitude, 0, 128, 4, 8 );
+
+			if ( bEmberTime == true )
+			{
+				Vector vGoal = pPlayer->EyePosition() + RandomVector( -64, 64 );
+				Vector vDir = vGoal - offset;
+				VectorNormalize( vDir );
+
+				pParticle->m_vecVelocity = vDir * 75;
+				pParticle->m_flDieTime = 2.5f;
+			}
+			else
+			{
+				pParticle->m_vecVelocity = Vector( RandomFloat( -20.0f, 20.0f ), RandomFloat( -20.0f, 20.0f ), RandomFloat( -10, -15 ) );
+			}
+
+			float color = random->RandomInt( 125, 225 );
+			pParticle->m_uchColor[0] = color;
+			pParticle->m_uchColor[1] = color;
+			pParticle->m_uchColor[2] = color;
+
+			pParticle->m_uchStartSize	= 1;
+			pParticle->m_uchEndSize		= 1;
+
+			pParticle->m_uchStartAlpha	= 255;
+
+			pParticle->m_flRoll			= random->RandomInt( 0, 360 );
+			pParticle->m_flRollDelta	= random->RandomFloat( -0.15f, 0.15f );
+
+			pParticle->m_iFlags			= SIMPLE_PARTICLE_FLAG_WINDBLOWN;
+
+			if ( random->RandomInt( 0, 10 ) <= 1 )
+			{
+				pParticle->m_iFlags |= ASH_PARTICLE_NOISE;
+			}
+		}
+	}
+
+void CClient_Precipitation::CreateLeavesParticle( void )
+{
+		// Make sure the emitter is setup
+	if ( m_pAshEmitter == NULL )
+		{
+		if ( ( m_pAshEmitter = AshDebrisEffect::Create( "ashtray" ) ) == NULL )
+			return;
+
+		m_tAshParticleTimer.Init( 192 );
+		m_tAshParticleTraceTimer.Init( 15 );
+		m_bActiveAshEmitter = false;
+		m_iAshCount = 0;
+		}
+
+		C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
+
+		if ( pPlayer == NULL )
+		return;
+
+		Vector vForward;
+		pPlayer->GetVectors( &vForward, NULL, NULL );
+		vForward.z = 0.0f;
+
+		float curTime = gpGlobals->frametime;
+
+		Vector vPushOrigin;
+
+		Vector absmins = WorldAlignMins();
+		Vector absmaxs = WorldAlignMaxs();
+
+		//15 Traces a second.
+	while ( m_tAshParticleTraceTimer.NextEvent( curTime ) )
+		{
+			trace_t tr;
+
+			Vector vTraceStart = pPlayer->EyePosition();
+			Vector vTraceEnd = pPlayer->EyePosition() + vForward * MAX_TRACE_LENGTH;
+
+			UTIL_TraceLine( vTraceStart, vTraceEnd, MASK_SHOT_HULL & (~CONTENTS_GRATE), pPlayer, COLLISION_GROUP_NONE, &tr );
+
+			//debugoverlay->AddLineOverlay( vTraceStart, tr.endpos, 255, 0, 0, 0, 0.2 );
+
+			if ( tr.fraction != 1.0f )
+			{
+				trace_t tr2;
+
+				UTIL_TraceModel( vTraceStart, tr.endpos, Vector( -1, -1, -1 ), Vector( 1, 1, 1 ), this, COLLISION_GROUP_NONE, &tr2 );
+
+				if ( tr2.m_pEnt == this )
+				{
+				m_bActiveAshEmitter = true;
+
+					if ( tr2.startsolid == false )
+					{
+					m_vAshSpawnOrigin = tr2.endpos + vForward * 256;
+					}
+					else
+					{
+					m_vAshSpawnOrigin = vTraceStart;
+					}
+				}
+				else
+				{
+				m_bActiveAshEmitter = false;
+				}
+			}
+		}
+
+	if ( m_bActiveAshEmitter == false )
+		 return;
+
+		Vector vecVelocity = pPlayer->GetAbsVelocity();
+
+
+		float flVelocity = VectorNormalize( vecVelocity );
+	Vector offset = m_vAshSpawnOrigin;
+
+	m_pAshEmitter->SetSortOrigin( offset );
+
+		PMaterialHandle	hMaterial[4];
+		hMaterial[0] = ParticleMgr()->GetPMaterial( "effects/fleck_leaves1" );
+		hMaterial[1] = ParticleMgr()->GetPMaterial( "effects/fleck_leaves2" );
+		hMaterial[2] = ParticleMgr()->GetPMaterial( "effects/fleck_leaves3" );
 		hMaterial[3] = ParticleMgr()->GetPMaterial( "effects/ember_swirling001" );
 
 		SimpleParticle	*pParticle;

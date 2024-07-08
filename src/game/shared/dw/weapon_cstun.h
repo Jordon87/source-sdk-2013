@@ -12,16 +12,19 @@
 #endif
 
 #ifdef CLIENT_DLL
-class C_WeaponCStun;
-#define CWeaponCStun C_WeaponCStun
+class C_WeaponCstun;
+#define CWeaponCstun C_WeaponCstun
 #endif
 
-class CWeaponCStun : public CBaseHLBludgeonWeapon
+#define	STUNSTICK_RANGE				75.0f
+#define	STUNSTICK_REFIRE			0.8f
+
+class CWeaponCstun : public CBaseHLBludgeonWeapon
 {
-	DECLARE_CLASS(CWeaponCStun, CBaseHLBludgeonWeapon);
+	DECLARE_CLASS(CWeaponCstun, CBaseHLBludgeonWeapon);
 public:
 
-	CWeaponCStun();
+	CWeaponCstun();
 
 	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
@@ -43,10 +46,8 @@ public:
 
 	void		Spawn();
 
-	virtual void AddViewKick(void);
-
-	float		GetRange(void);
-	float		GetFireRate(void);
+	float		GetRange(void) { return STUNSTICK_RANGE; }
+	float		GetFireRate(void) { return STUNSTICK_REFIRE; }
 
 	bool		Deploy(void);
 	bool		Holster(CBaseCombatWeapon *pSwitchingTo = NULL);
@@ -64,10 +65,7 @@ public:
 
 	float		GetDamageForActivity(Activity hitActivity);
 
-	virtual void	MeleeHit(trace_t &trace);
-	virtual void	MeleeHitWorld(trace_t &trace);
-
-	CWeaponCStun(const CWeaponCStun &);
+	CWeaponCstun(const CWeaponCstun &);
 
 private:
 

@@ -183,15 +183,7 @@ void C_BaseExplosionEffect::Create( const Vector &position, float force, float s
 
 	PlaySound();
 
-	if ( scale != 0 )
-	{
-		// UNDONE: Make core size parametric to scale or remove scale?
-		CreateCore();
-	}
-
-	CreateDebris();
-	//FIXME: CreateDynamicLight();
-	CreateMisc();
+	DispatchParticleEffect( "grenade_explosion_01", m_vecOrigin, vec3_angle );
 }
 
 //-----------------------------------------------------------------------------

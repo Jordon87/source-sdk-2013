@@ -130,6 +130,7 @@ public:
 
 	SporeExplosion( void );
 	void Spawn( void );
+	void Precache( void );
 
 	static SporeExplosion*		CreateSporeExplosion();
 

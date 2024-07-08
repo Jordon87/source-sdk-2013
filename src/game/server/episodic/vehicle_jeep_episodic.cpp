@@ -1081,6 +1081,27 @@ void CPropJeepEpisodic::Think( void )
 	}
 
 	CreateAvoidanceZone();
+
+	// See if the ammo crate needs to close
+	if ( ( m_flAmmoCrateCloseTime < gpGlobals->curtime ) && ( GetSequence() == LookupSequence( "ammo_open" ) ) )
+	{
+		m_flAnimTime = gpGlobals->curtime;
+		m_flPlaybackRate = 0.0;
+		SetCycle( 0 );
+		ResetSequence( LookupSequence( "ammo_close" ) );
+	}
+	else if ( ( GetSequence() == LookupSequence( "ammo_close" ) ) && IsSequenceFinished() )
+	{
+		m_flAnimTime = gpGlobals->curtime;
+		m_flPlaybackRate = 0.0;
+		SetCycle( 0 );
+		
+		int nSequence = SelectWeightedSequence( ACT_IDLE );
+		ResetSequence( nSequence );
+
+		CPASAttenuationFilter sndFilter( this, "PropJeepEpisodic.AmmoClose" );
+		EmitSound( sndFilter, entindex(), "PropJeepEpisodic.AmmoClose" );
+	}
 }
 
 //-----------------------------------------------------------------------------
