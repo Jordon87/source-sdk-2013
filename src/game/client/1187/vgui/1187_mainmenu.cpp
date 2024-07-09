@@ -233,6 +233,8 @@ void CMainMenuPanel::OnTick()
 		unk_0x1e4 = false;
 	}
 
+	int height = 193;
+
 	if (BackgroundMap())
 	{
 		m_pResumeButton->SetVisible(true);
@@ -241,6 +243,7 @@ void CMainMenuPanel::OnTick()
 
 		m_pResumeButton->SetPos(150,193);
 		m_pReturntoMenuButton->SetPos(150, 232);
+		height = 232;
 	}
 	else
 	{
@@ -251,8 +254,8 @@ void CMainMenuPanel::OnTick()
 		m_pCrashCourseButton->SetPos(150, 193);
 	}
 
-	m_pNewGameButton->SetPos(150, 193 + 39);
-	m_pLoadGameButton->SetPos(150, 193 + 78);
+	m_pNewGameButton->SetPos(150, height + 39);
+	m_pLoadGameButton->SetPos(150, height + 78);
 
 	if (BackgroundMap())
 	{
@@ -265,12 +268,12 @@ void CMainMenuPanel::OnTick()
 		m_pCommentaryButton->SetVisible(true);
 	}
 
-	m_pSaveGameButton->SetPos(150, 193 + 117);
-	m_pManualButton->SetPos(150,193 + 153);
-	m_pOptionsButton->SetPos(150,193 + 195);
-	m_pSettingsButton->SetPos(150,193 + 234);
-	m_pBonusMapsButton->SetPos(150,193 + 273);
-	m_pQuitButton->SetPos(150,193 + 312);
+	m_pSaveGameButton->SetPos(150, height + 117);
+	m_pManualButton->SetPos(150, height + 153);
+	m_pOptionsButton->SetPos(150, height + 195);
+	m_pSettingsButton->SetPos(150, height + 234);
+	m_pBonusMapsButton->SetPos(150, height + 273);
+	m_pQuitButton->SetPos(150, height + 312);
 
 	int x1, y1, w1, h1;
 	GetBounds(x1, y1, w1, h1);
