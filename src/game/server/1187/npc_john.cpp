@@ -641,12 +641,12 @@ void CNPC_John::OnPlayerKilledOther(CBaseEntity* pVictim, const CTakeDamageInfo&
 		return;
 	}
 
-	if ((pNPC->LastHitGroup() == HITGROUP_HEAD) && (info.GetDamageType() == DMG_BULLET))
+	if ((pNPC->LastHitGroup() == HITGROUP_HEAD) && (info.GetDamageType() & DMG_BULLET))
 	{
 		scene = JOHN_SEEPLAYER_HEADSHOT;
 	}
 
-	if ((pNPC->GetDamageCount() == 1) && (info.GetDamageType() == DMG_BULLET))
+	if ((pNPC->GetDamageCount() == 1) && (info.GetDamageType() & DMG_BULLET))
 	{
 		scene = JOHN_SEEPLAYER_ONESHOT;
 	}
