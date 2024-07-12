@@ -74,6 +74,7 @@ public:
 	int  OnTakeDamage_Alive(const CTakeDamageInfo& info);
 	void Touch(CBaseEntity* pOther);
 	void DeathSound(const CTakeDamageInfo& info);
+	void OnPlayerKilledOther(CBaseEntity* pVictim, const CTakeDamageInfo& info);
 
 	virtual void CallingForHelpScene(char *sceneName);
 	virtual bool IsDownDisabled(void);
@@ -628,6 +629,30 @@ void CNPC_John::DeathSound(const CTakeDamageInfo& info)
 {
 	SentenceStop();
 	EmitSound("npc_john.die");
+}
+
+void CNPC_John::OnPlayerKilledOther(CBaseEntity* pVictim, const CTakeDamageInfo& info)
+{
+	CAI_BaseNPC* pNPC = dynamic_cast<CAI_BaseNPC*>(pVictim);
+	JohnScenes_t scene;
+
+	if (!pNPC)
+	{
+		if ((pNPC->LastHitGroup() == HITGROUP_HEAD) && (info.GetDamageType() == DMG_BULLET))
+		{
+			scene = JOHN_SEEPLAYER_HEADSHOT;
+		}
+		else if ((pNPC->GetDamageCount() == 1) && (info.GetDamageType() == DMG_BULLET))
+		{
+			scene = JOHN_SEEPLAYER_ONESHOT;
+		}
+		else
+		{
+			scene = JOHN_SEEPLAYER_KILL;
+		}
+		PlayAction(scene, true);
+	}
+	BaseClass::OnPlayerKilledOther(pVictim, info);
 }
 
 void CNPC_John::CallingForHelpScene(char* sceneName)
