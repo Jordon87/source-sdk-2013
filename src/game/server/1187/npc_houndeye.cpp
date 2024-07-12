@@ -388,9 +388,9 @@ void CNPC_HoundeyeNew::SonicAttack()
 	CBroadcastRecipientFilter filter;
 	filter.AddAllPlayers();
 
-	te->BeamRingPoint(filter, 0.0f, GetAbsOrigin(), 50.0f, 700.0f, m_iLightningEffect, 0, 0, 2, 0.1f, 128.0f, 0, 0.0f, 255, 255, 255, 32, 0, FBEAM_FADEOUT);
+	te->BeamRingPoint(filter, 0.0f, GetAbsOrigin(), 50.0f, 700.0f, m_iLightningEffect, 0, 0, 2, 0.1f, 128.0f, 0, 0.0f, 255, 255, 225, 32, 0, FBEAM_FADEOUT);
 	
-	te->BeamRingPoint(filter, 0.0f, GetAbsOrigin() + Vector(0,0,4), 50.0f, 700.0f, m_iLightningEffect, 0, 0, 2, 0.2f, 64.0f, 0, 0.0f, 255, 255, 255, 200, 0, FBEAM_FADEOUT);
+	te->BeamRingPoint(filter, 0.0f, GetAbsOrigin() + Vector(0,0,4), 50.0f, 700.0f, m_iLightningEffect, 0, 0, 2, 0.2f, 64.0f, 0, 0.0f, 255, 255, 225, 200, 0, FBEAM_FADEOUT);
 
 	CTakeDamageInfo info(this, this, sk_houndeye_dmg_blast.GetFloat(), DMG_SHOCK);
 	RadiusDamage(info, GetAbsOrigin(), 500.0f, CLASS_HOUNDEYE, this);
