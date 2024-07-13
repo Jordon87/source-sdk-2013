@@ -3,8 +3,8 @@
 	"BaseSettings"
 	{
 		"Logo.OffsetX"							"85"
-		"Logo.OffsetY.MainMenu"					"290"
-		"Logo.OffsetY.InGame"					"340"
+		"Logo.OffsetY.MainMenu"					"365"
+		"Logo.OffsetY.InGame"					"400"
 	
 		"Logo.Image"							"gamepadui/1187_logo"
 			
