@@ -49,6 +49,70 @@ enum JohnScenes_t
 	JOHN_MELEE = 0x14,
 };
 
+const char* g_JohnScenesList[] =
+{
+	"scenes/johndown_help_hard1.vcd",
+	"scenes/johndown_help_hard2.vcd",
+	"scenes/johndown_help_medium1.vcd",
+	"scenes/johndown_help_medium2.vcd",
+	"scenes/johndown_help_easy1.vcd",
+	"scenes/johndown_help_easy2.vcd",
+	"scenes/john_melee01.vcd",
+	"scenes/john_melee01.vcd",
+	"scenes/johndown_thanks1.vcd",
+	"scenes/johndown_thanks2.vcd",
+	"scenes/JohnTouch/1187_john_touch1.vcd",
+	"scenes/JohnTouch/1187_john_touch2.vcd",
+	"scenes/JohnTouch/1187_john_touch3.vcd",
+	"scenes/JohnTouch/1187_john_touch4.vcd",
+	"scenes/JohnTouch/1187_john_touch5.vcd",
+	"scenes/JohnHit/john_damage_hit1.vcd",
+	"scenes/JohnHit/john_damage_hit2.vcd",
+	"scenes/JohnHit/john_damage_hit3.vcd",
+	"scenes/JohnHit/john_damage_hit4.vcd",
+	"scenes/JohnShot/john_damage_shot1.vcd",
+	"scenes/JohnShot/john_damage_shot2.vcd",
+	"scenes/JohnShot/john_damage_shot3.vcd",
+	"scenes/JohnShot/john_damage_shot4.vcd",
+	"scenes/JohnKilledZombie/john_killed_zombie1.vcd",
+	"scenes/JohnKilledZombie/john_killed_zombie2.vcd",
+	"scenes/JohnKilledZombie/john_killed_zombie3.vcd",
+	"scenes/JohnKillerArmoured/john_killed_armouredzombie1.vcd",
+	"scenes/JohnKillerArmoured/john_killed_armouredzombie2.vcd",
+	"scenes/JohnKilledBurster/john_killed_bursterzombie1.vcd",
+	"scenes/JohnKilledBurster/john_killed_bursterzombie2.vcd",
+	"scenes/JohnKilledPoison/john_killed_poisonzombie1.vcd",
+	"scenes/JohnKilledHeadcrab/john_killed_headcrab1.vcd",
+	"scenes/JohnKilledHeadcrab/john_killed_headcrab2.vcd",
+	"scenes/JohnKilledMini/john_killed_miniheadcrab1.vcd",
+	"scenes/JohnKilledMini/john_killed_miniheadcrab2.vcd",
+	"scenes/JohnKilledMini/john_killed_miniheadcrab2.vcd",
+	"scenes/JohnKilledVort/john_killed_vort1.vcd",
+	"scenes/JohnKilledMarine/john_killed_marine1.vcd",
+	"scenes/JohnKilledMarine/john_killed_marine2.vcd",
+	"scenes/JohnKilledPlayer/john_killed_player1.vcd",
+	"scenes/JohnSpotCreatures/john_spot_creatures1.vcd",
+	"scenes/JohnSpotCreatures/john_spot_creatures2.vcd",
+	"scenes/JohnSpotZombies/john_spot_zombies1.vcd",
+	"scenes/JohnSpotZombies/john_spot_zombies2.vcd",
+	"scenes/JohnSpotVort/john_spot_vort1.vcd",
+	"scenes/JohnSpotVort/john_spot_vort2.vcd",
+	"scenes/JohnSpotMarine/john_spot_marine1.vcd",
+	"scenes/JohnSpotMarine/john_spot_marine2.vcd",
+	"scenes/JohnSpotMarine/john_spot_marine3.vcd",
+	"scenes/JohnSeeKill/john_seeplayer_kill1.vcd",
+	"scenes/JohnSeeKill/john_seeplayer_kill2.vcd",
+	"scenes/JohnSeeKill/john_seeplayer_kill3.vcd",
+	"scenes/JohnSeeHeadshot/john_seeplayer_headshot1.vcd",
+	"scenes/JohnSeeHeadshot/john_seeplayer_headshot2.vcd",
+	"scenes/JohnSeeOneshot/john_seeplayer_oneshot1.vcd",
+	"scenes/JohnReload/john_reload1.vcd",
+	"scenes/JohnReload/john_reload2.vcd",
+	"scenes/JohnMelee/john_melee1.vcd",
+	"scenes/JohnMelee/john_melee2.vcd",
+	"scenes/JohnMelee/john_melee3.vcd"
+};
+
 class CNPC_John : public CNPC_PlayerCompanion
 {
 	DECLARE_CLASS(CNPC_John, CNPC_PlayerCompanion);
@@ -146,67 +210,13 @@ void CNPC_John::Precache(void)
 
 	PrecacheModel(STRING(GetModelName()));
 
-	PrecacheInstancedScene("scenes/johndown_help_hard1.vcd");
-	PrecacheInstancedScene("scenes/johndown_help_hard2.vcd");
-	PrecacheInstancedScene("scenes/johndown_help_medium1.vcd");
-	PrecacheInstancedScene("scenes/johndown_help_medium2.vcd");
-	PrecacheInstancedScene("scenes/johndown_help_easy1.vcd");
-	PrecacheInstancedScene("scenes/johndown_help_easy2.vcd");
-	PrecacheInstancedScene("scenes/john_melee01.vcd");
-	PrecacheInstancedScene("scenes/john_melee01.vcd");
-	PrecacheInstancedScene("scenes/johndown_thanks1.vcd");
-	PrecacheInstancedScene("scenes/johndown_thanks2.vcd");
-	PrecacheInstancedScene("scenes/JohnTouch/1187_john_touch1.vcd");
-	PrecacheInstancedScene("scenes/JohnTouch/1187_john_touch2.vcd");
-	PrecacheInstancedScene("scenes/JohnTouch/1187_john_touch3.vcd");
-	PrecacheInstancedScene("scenes/JohnTouch/1187_john_touch4.vcd");
-	PrecacheInstancedScene("scenes/JohnTouch/1187_john_touch5.vcd");
-	PrecacheInstancedScene("scenes/JohnHit/john_damage_hit1.vcd");
-	PrecacheInstancedScene("scenes/JohnHit/john_damage_hit2.vcd");
-	PrecacheInstancedScene("scenes/JohnHit/john_damage_hit3.vcd");
-	PrecacheInstancedScene("scenes/JohnHit/john_damage_hit4.vcd");
-	PrecacheInstancedScene("scenes/JohnShot/john_damage_shot1.vcd");
-	PrecacheInstancedScene("scenes/JohnShot/john_damage_shot2.vcd");
-	PrecacheInstancedScene("scenes/JohnShot/john_damage_shot3.vcd");
-	PrecacheInstancedScene("scenes/JohnShot/john_damage_shot4.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledZombie/john_killed_zombie1.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledZombie/john_killed_zombie2.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledZombie/john_killed_zombie3.vcd");
-	PrecacheInstancedScene("scenes/JohnKillerArmoured/john_killed_armouredzombie1.vcd");
-	PrecacheInstancedScene("scenes/JohnKillerArmoured/john_killed_armouredzombie2.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledBurster/john_killed_bursterzombie1.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledBurster/john_killed_bursterzombie2.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledPoison/john_killed_poisonzombie1.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledHeadcrab/john_killed_headcrab1.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledHeadcrab/john_killed_headcrab2.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledMini/john_killed_miniheadcrab1.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledMini/john_killed_miniheadcrab2.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledMini/john_killed_miniheadcrab2.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledVort/john_killed_vort1.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledMarine/john_killed_marine1.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledMarine/john_killed_marine2.vcd");
-	PrecacheInstancedScene("scenes/JohnKilledPlayer/john_killed_player1.vcd");
-	PrecacheInstancedScene("scenes/JohnSpotCreatures/john_spot_creatures1.vcd");
-	PrecacheInstancedScene("scenes/JohnSpotCreatures/john_spot_creatures2.vcd");
-	PrecacheInstancedScene("scenes/JohnSpotZombies/john_spot_zombies1.vcd");
-	PrecacheInstancedScene("scenes/JohnSpotZombies/john_spot_zombies2.vcd");
-	PrecacheInstancedScene("scenes/JohnSpotVort/john_spot_vort1.vcd");
-	PrecacheInstancedScene("scenes/JohnSpotVort/john_spot_vort2.vcd");
-	PrecacheInstancedScene("scenes/JohnSpotMarine/john_spot_marine1.vcd");
-	PrecacheInstancedScene("scenes/JohnSpotMarine/john_spot_marine2.vcd");
-	PrecacheInstancedScene("scenes/JohnSpotMarine/john_spot_marine3.vcd");
-	PrecacheInstancedScene("scenes/JohnSeeKill/john_seeplayer_kill1.vcd");
-	PrecacheInstancedScene("scenes/JohnSeeKill/john_seeplayer_kill2.vcd");
-	PrecacheInstancedScene("scenes/JohnSeeKill/john_seeplayer_kill3.vcd");
-	PrecacheInstancedScene("scenes/JohnSeeHeadshot/john_seeplayer_headshot1.vcd");
-	PrecacheInstancedScene("scenes/JohnSeeHeadshot/john_seeplayer_headshot2.vcd");
-	PrecacheInstancedScene("scenes/JohnSeeOneshot/john_seeplayer_oneshot1.vcd");
-	PrecacheInstancedScene("scenes/JohnReload/john_reload1.vcd");
-	PrecacheInstancedScene("scenes/JohnReload/john_reload2.vcd");
-	PrecacheInstancedScene("scenes/JohnMelee/john_melee1.vcd");
-	PrecacheInstancedScene("scenes/JohnMelee/john_melee2.vcd");
-	PrecacheInstancedScene("scenes/JohnMelee/john_melee3.vcd");
+	int iJohnSceneNames = ARRAYSIZE(g_JohnScenesList);
+	int i;
 
+	for ( i = 0; i < iJohnSceneNames; ++i )
+	{
+		PrecacheInstancedScene(g_JohnScenesList[i]);
+	}
 }
 
 void CNPC_John::Spawn()
