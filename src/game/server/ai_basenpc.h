@@ -747,7 +747,7 @@ private:
 	int					SelectAlertSchedule();
 public:
 	// Made public as John's NPC calls for the CAI_BaseNPC's function
-	int					SelectCombatSchedule();
+	virtual int			SelectCombatSchedule();
 private:
 	virtual int			SelectDeadSchedule();
 	int					SelectScriptSchedule();

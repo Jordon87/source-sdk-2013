@@ -362,35 +362,33 @@ void CNPC_John::MeleeAttack()
 
 int CNPC_John::SelectCombatSchedule()
 {
-	if (!HasCondition(COND_ENEMY_DEAD) && HasCondition(COND_NEW_ENEMY))
+	if ( HasCondition( COND_ENEMY_DEAD ) )
 	{
-		CBaseEntity* pEnemy = GetEnemy();
-		if (pEnemy)
+		return BaseClass::SelectCombatSchedule();
+	}
+
+	if ( HasCondition( COND_NEW_ENEMY ) && ( GetEnemy() ) && HasCondition( COND_SEE_ENEMY ) )
+	{
+		if (FClassnameIs(GetEnemy(), "npc_zombie") || FClassnameIs(GetEnemy(), "npc_armouredzombie") || FClassnameIs(GetEnemy(), "npc_burstzombie") || FClassnameIs(GetEnemy(), "npc_poisonzombie"))
 		{
-			if (HasCondition(COND_SEE_ENEMY))
+			PlayAction(JOHN_SPOT_ZOMBIES, true);
+		}
+		else
+		{
+			if (FClassnameIs(GetEnemy(), "npc_headcrab") || FClassnameIs(GetEnemy(), "npc_headcrabfast") || FClassnameIs(GetEnemy(), "npc_headcrabblack") || FClassnameIs(GetEnemy(), "npc_burstheadcrab"))
 			{
-				if (FClassnameIs(pEnemy, "npc_zombie") || FClassnameIs(pEnemy, "npc_armouredzombie") || FClassnameIs(pEnemy, "npc_burstzombie") || FClassnameIs(pEnemy, "npc_poisonzombie"))
-				{
-					PlayAction(JOHN_SPOT_ZOMBIES, true);
-				}
-				else
-				{
-					if (FClassnameIs(pEnemy, "npc_headcrab") || FClassnameIs(pEnemy, "npc_headcrabfast") || FClassnameIs(pEnemy, "npc_headcrabblack") || FClassnameIs(pEnemy, "npc_burstheadcrab"))
-					{
-						PlayAction(JOHN_SPOT_CREATURES, true);
-						return BaseClass::SelectCombatSchedule();
-					}
-					if (FClassnameIs(pEnemy, "npc_vortigaunt"))
-					{
-						PlayAction(JOHN_SPOT_VORTIGAUNT, true);
-						return BaseClass::SelectCombatSchedule();
-					}
-					if (FClassnameIs(pEnemy, "npc_citizen"))
-					{
-						PlayAction(JOHN_SPOT_MARINE, true);
-						return BaseClass::SelectCombatSchedule();
-					}
-				}
+				PlayAction(JOHN_SPOT_CREATURES, true);
+				return BaseClass::SelectCombatSchedule();
+			}
+			if (FClassnameIs(GetEnemy(), "npc_vortigaunt"))
+			{
+				PlayAction(JOHN_SPOT_VORTIGAUNT, true);
+				return BaseClass::SelectCombatSchedule();
+			}
+			if (FClassnameIs(GetEnemy(), "npc_citizen"))
+			{
+				PlayAction(JOHN_SPOT_MARINE, true);
+				return BaseClass::SelectCombatSchedule();
 			}
 		}
 	}
