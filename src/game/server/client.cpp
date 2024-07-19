@@ -302,6 +302,8 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 
 void ClientPrecache( void )
 {
+	PrecacheParticleSystem( "1187_xenportal01" );
+
 	// Precache cable textures.
 	CBaseEntity::PrecacheModel( "cable/cable.vmt" );	
 	CBaseEntity::PrecacheModel( "cable/cable_lit.vmt" );	
