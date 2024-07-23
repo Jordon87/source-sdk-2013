@@ -184,17 +184,7 @@ void CHudSuitPower::Paint()
 	surface()->DrawSetTextFont(m_hTextFont);
 	surface()->DrawSetTextColor(m_AuxPowerColor);
 	surface()->DrawSetTextPos(text_xpos, text_ypos);
-
-	wchar_t *tempString = g_pVGuiLocalize->Find("#Valve_Hud_AUX_POWER");
-
-	if (tempString)
-	{
-		surface()->DrawPrintText(tempString, wcslen(tempString));
-	}
-	else
-	{
-		surface()->DrawPrintText(L"AUX POWER", wcslen(L"AUX POWER"));
-	}
+	surface()->DrawPrintText(L"FATIGUE", wcslen(L"FATIGUE"));
 
 	if ( m_iActiveSuitDevices )
 	{
@@ -203,52 +193,23 @@ void CHudSuitPower::Paint()
 
 		if (pPlayer->IsBreatherActive())
 		{
-			tempString = g_pVGuiLocalize->Find("#Valve_Hud_OXYGEN");
-
 			surface()->DrawSetTextPos(text2_xpos, ypos);
+			surface()->DrawPrintText(L"OXYGEN", wcslen(L"OXYGEN"));
 
-			if (tempString)
-			{
-				surface()->DrawPrintText(tempString, wcslen(tempString));
-			}
-			else
-			{
-				surface()->DrawPrintText(L"OXYGEN", wcslen(L"OXYGEN"));
-			}
 			ypos += text2_gap;
 		}
 
 		if (pPlayer->IsFlashlightActive())
 		{
-			tempString = g_pVGuiLocalize->Find("#Valve_Hud_FLASHLIGHT");
-
 			surface()->DrawSetTextPos(text2_xpos, ypos);
-
-			if (tempString)
-			{
-				surface()->DrawPrintText(tempString, wcslen(tempString));
-			}
-			else
-			{
-				surface()->DrawPrintText(L"FLASHLIGHT", wcslen(L"FLASHLIGHT"));
-			}
+			surface()->DrawPrintText(L"FLASHLIGHT", wcslen(L"FLASHLIGHT"));
 			ypos += text2_gap;
 		}
 
 		if (pPlayer->IsSprinting())
 		{
-			tempString = g_pVGuiLocalize->Find("#Valve_Hud_SPRINT");
-
 			surface()->DrawSetTextPos(text2_xpos, ypos);
-
-			if (tempString)
-			{
-				surface()->DrawPrintText(tempString, wcslen(tempString));
-			}
-			else
-			{
-				surface()->DrawPrintText(L"SPRINT", wcslen(L"SPRINT"));
-			}
+			surface()->DrawPrintText(L"SPRINT", wcslen(L"SPRINT"));
 			ypos += text2_gap;
 		}
 	}

@@ -2540,10 +2540,11 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 	if (!pPlayer)
 		return;
 
-	Vector vecSrc = pPlayer->Weapon_ShootPosition();
-	Vector forward;
+	Vector forward, up;
 
-	pPlayer->EyeVectors(&forward, NULL, NULL);
+	pPlayer->EyeVectors(&forward, NULL, &up);
+
+	Vector vecSrc = pPlayer->EyePosition();
 
 	Vector vecEnd = vecSrc + forward * 76.0f;
 
