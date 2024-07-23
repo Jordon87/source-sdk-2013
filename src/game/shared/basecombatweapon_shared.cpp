@@ -2569,7 +2569,7 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 
 #ifndef CLIENT_DLL
 		CTakeDamageInfo info(GetOwner(), GetOwner(), GetWpnData().m_flMeleeDamage, DMG_CLUB);
-		CalculateExplosiveDamageForce(&info, forward, tr.endpos);
+		CalculateMeleeDamageForce(&info, forward, tr.endpos);
 		tr.m_pEnt->DispatchTraceAttack(info, forward, &tr);
 		ApplyMultiDamage();
 		TraceAttackToTriggers(info, tr.startpos, tr.endpos, forward);
