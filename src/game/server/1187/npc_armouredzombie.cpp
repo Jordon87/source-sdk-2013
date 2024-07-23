@@ -159,7 +159,7 @@ void CNPC_ArmouredZombie::HandleAnimEvent(animevent_t *pEvent)
 		right = right * 100;
 		forward = forward * 200;
 
-		QAngle qa(-15, -20, -10);
+		QAngle qa(-25, -25, -20);
 		Vector vec = right + forward;
 		ClawAttack(GetClawAttackRange(), sk_armoured_zombie_dmg_one_slash.GetFloat(), qa, vec, ZOMBIE_BLOOD_RIGHT_HAND);
 		return;
