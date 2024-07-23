@@ -312,14 +312,14 @@ CMainMenuPanel::~CMainMenuPanel()
 // Class
 // Change CSMenu to CModMenu if you want. Salient is the name of the source mod, 
 // hence SMenu. If you change CSMenu, change ISMenu too where they all appear.
-class C1187Menu : public I1187Menu
+class CMainMenu : public I1187Menu
 {
 private:
 	CMainMenuPanel* MainMenu;
 	vgui::VPANEL m_hParent;
 
 public:
-	C1187Menu(void)
+	CMainMenu(void)
 	{
 		MainMenu = NULL;
 	}
@@ -341,5 +341,5 @@ public:
 
 };
 
-static C1187Menu g_SMenu;
+static CMainMenu g_SMenu;
 I1187Menu* SMenu = (I1187Menu*)&g_SMenu;
