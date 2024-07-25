@@ -9,6 +9,8 @@
 // IHTMLView.h
 #include <vgui_controls/Frame.h>
 #include <vgui_controls/HTML.h>
+// JT: OB
+#include <vgui_controls/EntHTML.h>
 
 using namespace vgui;
 
@@ -41,7 +43,7 @@ private:
 	vgui::Image  *m_img;
 
 public:
-	HTML   *m_HTML;
+	EntHTML   *m_HTML;
 };
 
 extern IHTMLView* htmlview;

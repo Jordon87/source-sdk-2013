@@ -37,6 +37,9 @@ using namespace vgui;
 #include <vgui_controls/HTML.h>
 #include <vgui_controls/TextEntry.h>
 
+// JT: OB
+#include <vgui_controls/EntHTML.h>
+
 #include <cdll_client_int.h>
 
 #define ALLOW_JAVASCRIPT	false
@@ -51,23 +54,17 @@ ConVar cl_htmltarget("cl_htmltarget", "manual/index.html", FCVAR_CLIENTDLL,
 
 // Constuctor: Initializes the Panel
 CHTMLView_Panel::CHTMLView_Panel(vgui::VPANEL parent)
-: BaseClass(NULL, "HTMLView")
+: BaseClass(NULL, "HTML_panel_dw")
 {
 	SetParent( parent );
 
 	SetKeyBoardInputEnabled( true );
 	SetMouseInputEnabled( true );
-	
-	SetProportional( true );
-	SetTitleBarVisible( true );
-	SetMinimizeButtonVisible( false );
-	SetMaximizeButtonVisible( false );
+	SetSizeable( false );
 	SetCloseButtonVisible( true );
-	SetSizeable( true );	// was false
-	SetMoveable( true );
-	SetVisible( true );
+	SetSmallCaption( true );
 
-	m_HTML = new HTML(this, "Manual_dw", ALLOW_JAVASCRIPT);
+	m_HTML = new EntHTML(this, "Manual_dw", ALLOW_JAVASCRIPT);
 	
 	SetScheme(vgui::scheme()->LoadSchemeFromFile("resource/SourceScheme.res", "SourceScheme"));
 
