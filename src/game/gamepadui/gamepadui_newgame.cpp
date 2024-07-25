@@ -30,17 +30,12 @@ struct chapter_t;
 // TODO - merge these into scheme config?
 bool GameHasCommentary()
 {
-    const char *pszGameDir = CommandLine()->ParmValue( "-game", CommandLine()->ParmValue( "-defaultgamedir", "hl2" ) );
-    return !V_strcmp( pszGameDir, "episodic" ) ||
-           !V_strcmp( pszGameDir, "ep2" ) ||
-           !V_strcmp( pszGameDir, "portal" ) ||
-           !V_strcmp( pszGameDir, "lostcoast" );
+    return true;
 }
 
 bool GameHasBonusMaps()
 {
-    const char *pszGameDir = CommandLine()->ParmValue( "-game", CommandLine()->ParmValue( "-defaultgamedir", "hl2" ) );
-    return !V_strcmp( pszGameDir, "portal" );
+    return true;
 }
 
 class GamepadUINewGamePanel : public GamepadUIFrame
@@ -480,4 +475,9 @@ void GamepadUINewGamePanel::StartGame( int nChapter )
 CON_COMMAND( gamepadui_opennewgamedialog, "" )
 {
     new GamepadUINewGamePanel( GamepadUI::GetInstance().GetBasePanel(), "" );
+}
+
+CON_COMMAND(gamepadui_openbonusmapsdialog, "")
+{
+    GamepadUI::GetInstance().GetEngineClient()->ClientCmd_Unrestricted( "gamemenucommand openbonusmapsdialog\n");
 }
