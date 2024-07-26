@@ -50,6 +50,7 @@
 // -------------------------------------
 #define CHOPPER_DRONE_NAME	"models/combine_helicopter/helicopter_bomb01.mdl"
 #define CHOPPER_MODEL_NAME	"models/combine_helicopter.mdl"
+#define CHOPPER_ANIM_MODEL_NAME	"models/helicoptor_anim.mdl"
 #define CHOPPER_MODEL_CORPSE_NAME	"models/combine_helicopter_broken.mdl"
 #define CHOPPER_RED_LIGHT_SPRITE	"sprites/redglow1.vmt"
 
@@ -143,7 +144,7 @@ ConVar sk_helicopter_num_bombs3("sk_helicopter_num_bombs3", "5");
 ConVar	sk_npc_dmg_helicopter_to_plr( "sk_npc_dmg_helicopter_to_plr","3", 0, "Damage helicopter shots deal to the player" );
 ConVar	sk_npc_dmg_helicopter( "sk_npc_dmg_helicopter","6", 0, "Damage helicopter shots deal to everything but the player" );
 
-ConVar	sk_helicopter_drone_speed( "sk_helicopter_drone_speed","450.0", 0, "How fast does the zapper drone move?" );
+ConVar	sk_helicopter_drone_speed( "sk_helicopter_drone_speed","1000.0", 0, "How fast does the zapper drone move?" );
 
 ConVar	g_helicopter_chargetime( "g_helicopter_chargetime","2.0", 0, "How much time we have to wait (on average) between the time we start hearing the charging sound + the chopper fires" );
 ConVar	g_helicopter_bullrush_distance("g_helicopter_bullrush_distance", "5000");
@@ -405,6 +406,7 @@ public:
 	void	InputDropBombDelay( inputdata_t &inputdata );
 	void	InputStartCarpetBombing( inputdata_t &inputdata );
 	void	InputStopCarpetBombing( inputdata_t &inputdata );
+	void	InputDropRagdoll( inputdata_t &inputdata );
 
 	virtual void SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways );
 	virtual const char *GetTracerType( void );
@@ -943,7 +945,7 @@ void CNPC_AttackHelicopter::Precache( void )
 	}
 	else
 	{
-		PrecacheModel( CHOPPER_DRONE_NAME );
+		PrecacheModel( CHOPPER_ANIM_MODEL_NAME );
 	}
 
 	PrecacheModel( CHOPPER_RED_LIGHT_SPRITE );
@@ -1485,6 +1487,20 @@ void CNPC_AttackHelicopter::InputStartCarpetBombing( inputdata_t &inputdata )
 void CNPC_AttackHelicopter::InputStopCarpetBombing( inputdata_t &inputdata )
 {
 	m_bIsCarpetBombing = false;
+}
+
+void CNPC_AttackHelicopter::InputDropRagdoll(inputdata_t& inputdata)
+{
+	m_flLastCorpseFall = gpGlobals->curtime + 3.0;
+
+	// Spawn a ragdoll combine guard
+	Vector vecForceVector = RandomVector(-1,1);
+
+	CBaseEntity *pGib = CreateRagGib( "models/combine_soldier.mdl", GetAbsOrigin(), GetAbsAngles(), vecForceVector );
+	if ( pGib )
+	{
+		pGib->SetOwnerEntity( this );
+	}
 }
 
 //------------------------------------------------------------------------------
