@@ -854,6 +854,7 @@ BEGIN_DATADESC( CNPC_AttackHelicopter )
 	DEFINE_INPUTFUNC( FIELD_VOID, "StartBullrushBehavior", InputStartBullrushBehavior ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "DropBomb", InputDropBomb ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "DropRagdoll", InputDropRagdoll ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "DropBombStraightDown", InputDropBombStraightDown ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "DropBombAtTargetAlways", InputDropBombAtTargetAlways ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "DropBombAtTarget", InputDropBombAtTarget ),
@@ -1487,20 +1488,6 @@ void CNPC_AttackHelicopter::InputStartCarpetBombing( inputdata_t &inputdata )
 void CNPC_AttackHelicopter::InputStopCarpetBombing( inputdata_t &inputdata )
 {
 	m_bIsCarpetBombing = false;
-}
-
-void CNPC_AttackHelicopter::InputDropRagdoll(inputdata_t& inputdata)
-{
-	m_flLastCorpseFall = gpGlobals->curtime + 3.0;
-
-	// Spawn a ragdoll combine guard
-	Vector vecForceVector = RandomVector(-1,1);
-
-	CBaseEntity *pGib = CreateRagGib( "models/combine_soldier.mdl", GetAbsOrigin(), GetAbsAngles(), vecForceVector );
-	if ( pGib )
-	{
-		pGib->SetOwnerEntity( this );
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -2885,6 +2872,19 @@ void CNPC_AttackHelicopter::InputDropBomb( inputdata_t &inputdata )
 	}
 }
 
+void CNPC_AttackHelicopter::InputDropRagdoll( inputdata_t& inputdata )
+{
+	m_flLastCorpseFall = gpGlobals->curtime + 3.0;
+
+	// Spawn a ragdoll combine guard
+	Vector vecForceVector = RandomVector(-1,1);
+
+	CBaseEntity *pGib = CreateRagGib( "models/combine_soldier.mdl", GetAbsOrigin(), GetAbsAngles(), vecForceVector );
+	if ( pGib )
+	{
+		pGib->SetOwnerEntity( this );
+	}
+}
 
 //------------------------------------------------------------------------------
 // Drops a bomb straight downwards
