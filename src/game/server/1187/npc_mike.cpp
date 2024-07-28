@@ -21,6 +21,7 @@ public:
 
 	virtual void Precache(void);
 	virtual void Spawn(void);
+	Class_T Classify(void);
 };
 
 LINK_ENTITY_TO_CLASS(npc_mike, CNPC_Mike);
@@ -31,7 +32,11 @@ AI_END_CUSTOM_NPC()
 
 void CNPC_Mike::SelectModel()
 {
-	SetModelName(AllocPooledString(MIKE_MODEL));
+	char *szModel = (char *)STRING(GetModelName());
+	if (!szModel || !*szModel)
+	{
+		SetModelName(AllocPooledString(MIKE_MODEL));
+	}
 }
 
 void CNPC_Mike::Precache(void)
@@ -61,4 +66,9 @@ void CNPC_Mike::Spawn(void)
 	m_iMaxHealth = 100;
 
 	NPCInit();
+}
+
+Class_T CNPC_Mike::Classify(void)
+{
+	return CLASS_PLAYER_ALLY_VITAL;
 }

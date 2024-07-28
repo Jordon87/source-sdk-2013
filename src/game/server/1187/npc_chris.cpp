@@ -24,6 +24,7 @@ public:
 
 	virtual void Precache(void);
 	virtual void Spawn(void);
+	Class_T Classify(void);
 	void TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator);
 	void PredictPlayerPush();
 	void PrescheduleThink();
@@ -41,7 +42,11 @@ AI_END_CUSTOM_NPC()
 
 void CNPC_Chris::SelectModel()
 {
-	SetModelName(AllocPooledString(CHRIS_MODEL));
+	char *szModel = (char *)STRING(GetModelName());
+	if (!szModel || !*szModel)
+	{
+		SetModelName(AllocPooledString(CHRIS_MODEL));
+	}
 }
 
 void CNPC_Chris::Precache(void)
@@ -79,6 +84,11 @@ void CNPC_Chris::Spawn()
 	m_iMaxHealth = m_iHealth;
 
 	NPCInit();
+}
+
+Class_T CNPC_Chris::Classify(void)
+{
+	return CLASS_PLAYER_ALLY_VITAL;
 }
 
 void CNPC_Chris::TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator)
