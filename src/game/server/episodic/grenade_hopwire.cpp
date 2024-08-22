@@ -157,8 +157,11 @@ bool CGravityVortexController::KillNPCInRange( CBaseEntity *pVictim, IPhysicsObj
 	// See if we can ragdoll
 	if ( pBCC != NULL && pBCC->CanBecomeRagdoll() )
 	{
-		// Don't bother with striders
-		if ( FClassnameIs( pBCC, "npc_strider" ) )
+		// Don't bother with John or Marines
+		if ( FClassnameIs( pBCC, "npc_john" ) )
+			return false;
+
+		if ( FClassnameIs( pBCC, "npc_citizen" ) )
 			return false;
 
 		// TODO: Make this an interaction between the NPC and the vortex

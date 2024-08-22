@@ -664,6 +664,10 @@ bool CNPC_Barnacle::CanPickup( CBaseCombatCharacter *pBCC )
 	if( FClassnameIs( pBCC, "npc_turret_floor" ) )
 		return false;
 
+	// Don't pickup John
+	if( FClassnameIs( pBCC, "npc_john" ) )
+		return false;
+
 	// Don't pick up a dead player or NPC
 	if( !pBCC->IsAlive() )
 		return false;

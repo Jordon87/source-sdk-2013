@@ -269,7 +269,14 @@ void CNPC_John::Spawn()
 
 Class_T CNPC_John::Classify(void)
 {
-	return (b_IsDown) != CLASS_NONE ? CLASS_NONE : CLASS_PLAYER_ALLY_VITAL;
+	if (b_IsDown)
+	{
+		return (CLASS_NONE);
+	}
+	else
+	{
+		return (CLASS_PLAYER_ALLY_VITAL);
+	}
 }
 
 void CNPC_John::TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator)
@@ -693,9 +700,7 @@ void CNPC_John::PlayAction(JohnScenes_t actionName, bool a3)
 		&& !IsEFlagSet(EFL_IS_BEING_LIFTED_BY_BARNACLE)
 		&& (actionName || random->RandomInt(0, 5) == 2)
 		&& IsOkToSpeak()
-		&& (a3
-			|| gpGlobals->curtime >= m_flSpeakAgain && gpGlobals->curtime >= unk_0x1430))
-
+		&& (a3 || gpGlobals->curtime >= m_flSpeakAgain && gpGlobals->curtime >= unk_0x1430))
 	{
 		if (ahhthanksman.GetInt())
 		{
@@ -777,99 +782,108 @@ void CNPC_John::PlayAction(JohnScenes_t actionName, bool a3)
 				}
 				break;
 			case JOHN_KILLED_ARMOURED_ZOMBIE:
-				if (random->RandomInt(1, 2) == 1)
+				switch (random->RandomInt(1, 2))
 				{
+				case 1:
 					SetExpression("scenes/JohnKillerArmoured/john_killed_armouredzombie1.vcd");
-				}
-				else if (random->RandomInt(1, 2) == 2)
-				{
+					break;
+				case 2:
 					SetExpression("scenes/JohnKillerArmoured/john_killed_armouredzombie2.vcd");
+					break;
 				}
 				break;
 			case JOHN_KILLED_BURST_ZOMBIE:
-				if (random->RandomInt(1, 2) == 1)
+				switch (random->RandomInt(1, 2))
 				{
+				case 1:
 					SetExpression("scenes/JohnKilledBurster/john_killed_bursterzombie1.vcd");
-				}
-				else if (random->RandomInt(1, 2) == 2)
-				{
+					break;
+				case 2:
 					SetExpression("scenes/JohnKilledBurster/john_killed_bursterzombie2.vcd");
+					break;
 				}
 				break;
 			case JOHN_KILLED_POISON_ZOMBIE:
 				SetExpression("scenes/JohnKilledPoison/john_killed_poisonzombie1.vcd");
 				break;
 			case JOHN_KILLED_HEADCRAB:
-				if (random->RandomInt(1, 2) == 1)
+				switch (random->RandomInt(1, 2))
 				{
+				case 1:
 					SetExpression("scenes/JohnKilledHeadcrab/john_killed_headcrab1.vcd");
-				}
-				else if (random->RandomInt(1, 2) == 2)
-				{
+					break;
+				case 2:
 					SetExpression("scenes/JohnKilledHeadcrab/john_killed_headcrab2.vcd");
+					break;
 				}
 				break;
 			case JOHN_KILLED_MINI_HEADCRAB:
-				if (random->RandomInt(1, 2) == 1)
+				switch (random->RandomInt(1, 2))
 				{
+				case 1:
 					SetExpression("scenes/JohnKilledMini/john_killed_miniheadcrab1.vcd");
-				}
-				else if (random->RandomInt(1, 2) == 2)
-				{
+					break;
+				case 2:
 					SetExpression("scenes/JohnKilledMini/john_killed_miniheadcrab2.vcd");
+					break;
 				}
 				break;
 			case JOHN_KILLED_VORTIGAUNT:
-				if (random->RandomInt(1, 2) == 1)
+				switch (random->RandomInt(1, 2))
 				{
+				case 1:
 					SetExpression("scenes/JohnKilledVort/john_killed_vort1.vcd");
-				}
-				else if (random->RandomInt(1, 2) == 2)
-				{
+					break;
+				case 2:
 					SetExpression("scenes/JohnKilledVort/john_killed_vort2.vcd");
+					break;
 				}
 				break;
 			case JOHN_KILLED_MARINE:
-				if (random->RandomInt(1, 2) == 1)
+				switch (random->RandomInt(1, 2))
 				{
+				case 1:
 					SetExpression("scenes/JohnKilledMarine/john_killed_marine1.vcd");
-				}
-				else if (random->RandomInt(1, 2) == 2)
-				{
+					break;
+				case 2:
 					SetExpression("scenes/JohnKilledMarine/john_killed_marine2.vcd");
+					break;
 				}
 				break;
 			case JOHN_KILLED_PLAYER:
 				SetExpression("scenes/JohnKilledPlayer/john_killed_player1.vcd");
 				break;
 			case JOHN_SPOT_ZOMBIES:
-				if (random->RandomInt(1, 2) == 1)
+				switch (random->RandomInt(1, 2))
 				{
+				case 1:
 					SetExpression("scenes/JohnSpotZombies/john_spot_zombies1.vcd");
-				}
-				else if (random->RandomInt(1, 2) == 2)
-				{
+					break;
+				case 2:
 					SetExpression("scenes/JohnSpotZombies/john_spot_zombies2.vcd");
+					break;
 				}
 				break;
 			case JOHN_SPOT_CREATURES:
-				if (random->RandomInt(1, 2) == 1)
+				switch (random->RandomInt(1, 2))
 				{
+				case 1:
 					SetExpression("scenes/JohnSpotCreatures/john_spot_creatures1.vcd");
-				}
-				else if (random->RandomInt(1, 2) == 2)
-				{
+					break;
+				case 2:
 					SetExpression("scenes/JohnSpotCreatures/john_spot_creatures2.vcd");
+					break;
 				}
 				break;
 			case JOHN_SPOT_VORTIGAUNT:
-				if (random->RandomInt(1, 2) == 1)
+				switch (random->RandomInt(1, 2))
 				{
+				case 1:
 					SetExpression("scenes/JohnSpotVort/john_spot_vort1.vcd");
-				}
-				else if (random->RandomInt(1, 2) == 2)
-				{
+					break;
+				case 2:
 					SetExpression("scenes/JohnSpotVort/john_spot_vort2.vcd");
+					break;
 				}
 				break;
 			case JOHN_SPOT_MARINE:
@@ -901,26 +915,28 @@ void CNPC_John::PlayAction(JohnScenes_t actionName, bool a3)
 				}
 				break;
 			case JOHN_SEEPLAYER_HEADSHOT:
-				if (random->RandomInt(1, 2) == 1)
+				switch (random->RandomInt(1, 2))
 				{
+				case 1:
 					SetExpression("scenes/JohnSeeHeadshot/john_seeplayer_headshot1.vcd");
-				}
-				else if (random->RandomInt(1, 2) == 2)
-				{
+					break;
+				case 2:
 					SetExpression("scenes/JohnSeeHeadshot/john_seeplayer_headshot2.vcd");
+					break;
 				}
 				break;
 			case JOHN_SEEPLAYER_ONESHOT:
 				SetExpression("scenes/JohnSeeOneshot/john_seeplayer_oneshot1.vcd");
 				break;
 			case JOHN_RELOAD:
-				if (random->RandomInt(1, 2) == 1)
+				switch (random->RandomInt(1, 2))
 				{
+				case 1:
 					SetExpression("scenes/JohnReload/john_reload1.vcd");
-				}
-				else if (random->RandomInt(1, 2) == 2)
-				{
+					break;
+				case 2:
 					SetExpression("scenes/JohnReload/john_reload2.vcd");
+					break;
 				}
 				break;
 			case JOHN_MELEE:
