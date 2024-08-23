@@ -72,89 +72,81 @@ void CWeaponDualPistol::FinishReload(void)
 
 void CWeaponDualPistol::PrimaryAttack(void)
 {
-	if (m_iClip1 > 0)
-	{
-		if (m_iUnk_0x544 < m_iClip1 / 2)
-		{
-			m_iUnk_0x544 = m_iUnk_0x544 + 1;
-			SendWeaponAnim(ACT_VM_SECONDARYATTACK);
-			DoesPrimary(true);
-			DoesSecondary(false);
-		}
-		else
-		{
-			SecondaryAttack();
-		}
-	}
-	else
+	if (m_iClip1 < 1)
 	{
 		Reload();
 	}
+
+	if (GetMaxClip1() / 2 <= m_iUnk_0x544)
+	{
+		SecondaryAttack();
+	}
+
+	m_iUnk_0x544 = m_iUnk_0x544 + 1;
+	SendWeaponAnim(ACT_VM_SECONDARYATTACK);
+	DoesPrimary(true);
+	DoesSecondary(false);
 }
 
 void CWeaponDualPistol::SecondaryAttack(void)
 {
-	if (m_iClip1 > 0)
-	{
-		if (m_iUnk_0x540 < m_iClip1 / 2)
-		{
-			m_iUnk_0x540 = m_iUnk_0x540 + 1;
-			SendWeaponAnim(ACT_VM_PRIMARYATTACK);
-			DoesPrimary(false);
-			DoesSecondary(true);
-		}
-		else
-		{
-			PrimaryAttack();
-		}
-	}
-	else
+	if (m_iClip1 < 1)
 	{
 		Reload();
 	}
+
+	if (GetMaxClip1() / 2 <= m_iUnk_0x540)
+	{
+		PrimaryAttack(); 
+	}
+
+	m_iUnk_0x540 = m_iUnk_0x540 + 1;
+	SendWeaponAnim(ACT_VM_PRIMARYATTACK);
+	DoesPrimary(false);
+	DoesSecondary(true);
 }
 
 void CWeaponDualPistol::DoesPrimary(bool a2)
 {
 	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
 
-	if (pOwner && pOwner->IsPlayer())
-	{
-		CEffectData data;
+	if (!pOwner && !pOwner->IsPlayer())
+		return;
 
-		data.m_nEntIndex = pOwner->GetViewModel()->entindex();
-		int iAttachment;
+	CEffectData data;
 
-		if (a2)
-			iAttachment = LookupAttachment("eject2");
-		else
-			iAttachment = LookupAttachment("eject3");
+	data.m_nEntIndex = pOwner->GetViewModel()->entindex();
+	int iAttachment;
 
-		Vector vecEject;
-		QAngle angEject;
+	if (!a2)
+		iAttachment = LookupAttachment("eject3");
+	else
+		iAttachment = LookupAttachment("eject2");
 
-		pOwner->GetViewModel()->GetAttachment(iAttachment, vecEject, angEject);
-		data.m_flScale = 1.0f;
-		data.m_vOrigin = vecEject;
-		data.m_vAngles = angEject;
+	Vector vecEject;
+	QAngle angEject;
 
-		DispatchEffect("ShellEject", data);
+	pOwner->GetViewModel()->GetAttachment(iAttachment, vecEject, angEject);
+	data.m_flScale = 1.0f;
+	data.m_vOrigin = vecEject;
+	data.m_vAngles = angEject;
 
-		int iMuzzleflash;
-		if (a2)
-			iMuzzleflash = LookupAttachment("muzzleleft");
-		else
-			iMuzzleflash = LookupAttachment("muzzleright");
+	DispatchEffect("ShellEject", data);
 
-		Vector vecFlash;
-		QAngle angFlash;
-		pOwner->GetViewModel()->GetAttachment(iMuzzleflash, vecFlash, angFlash);
+	int iMuzzleflash;
+	if (!a2)
+		iMuzzleflash = LookupAttachment("muzzleleft");
+	else
+		iMuzzleflash = LookupAttachment("muzzleright");
 
-		CRecipientFilter filter;
-		filter.AddRecipientsByPVS(vecFlash);
+	Vector vecFlash;
+	QAngle angFlash;
+	pOwner->GetViewModel()->GetAttachment(iMuzzleflash, vecFlash, angFlash);
 
-		te->MuzzleFlash(filter, 0.0f, vecFlash, angFlash, 1.0f, MUZZLEFLASH_TYPE_STRIDER);
-	}
+	CRecipientFilter filter;
+	filter.AddRecipientsByPVS(vecFlash);
+
+	te->MuzzleFlash(filter, 0.0f, vecFlash, angFlash, 1.0f, MUZZLEFLASH_TYPE_STRIDER);
 }
 
 void CWeaponDualPistol::DoesSecondary(bool a2)
@@ -166,29 +158,36 @@ void CWeaponDualPistol::DoesSecondary(bool a2)
 
 	WeaponSound(SINGLE);
 
-	if (m_iUnk_0x540 >= m_iClip1 / 2 || m_iUnk_0x544 >= m_iClip1 / 2)
+	if ((m_iUnk_0x540 < GetMaxClip1() / 2) && (m_iUnk_0x544 < GetMaxClip1() / 2))
 	{
-		m_flNextPrimaryAttack = gpGlobals->curtime + 0.15f;
-	}
-
-	if (a2)
-	{
+		if (!a2)
+		{
+			m_flNextPrimaryAttack = gpGlobals->curtime + 0.15f;
+		}
 		m_flNextPrimaryAttack = gpGlobals->curtime + 0.1f;
 	}
+	else
+	{
+		m_flNextPrimaryAttack = gpGlobals->curtime + 0.15f; 
+	}
 
+	m_flNextSecondaryAttack = gpGlobals->curtime + 0.15f;
+	m_iClip1 -= 1;
+	
 	float flaim;
 	if (IsIronsighted())
 		flaim = 0.13917311f;
 	else
 		flaim = 1.0f;
 
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.15f;
-	m_iClip1 -= 1;
-	
 	Vector vecSrc = pOwner->Weapon_ShootPosition();
 	Vector vecAiming = pOwner->GetAutoaimVector(flaim);
 
-	pOwner->FireBullets(1, vecSrc, vecAiming, GetBulletSpread(), MAX_COORD_RANGE, m_iPrimaryAmmoType);
+	FireBulletsInfo_t bulletInfo(1, vecSrc, vecAiming, GetBulletSpread(), MAX_COORD_RANGE, m_iPrimaryAmmoType);
+	bulletInfo.m_iTracerFreq = 0;
+	bulletInfo.m_pAttacker = pOwner;
+
+	pOwner->FireBullets(bulletInfo);
 
 	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 600.0f, 0.2, GetOwner());
 }
