@@ -144,6 +144,9 @@ public:
 	virtual bool IsDownDisabled(void);
 	virtual const char *CallingForHelp(void);
 
+	bool IsGameEndAlly(void) { return true; }
+	bool ShouldRegenerateHealth(void) { return false; }
+
 private:
 	void MeleeAttack();
 	int SelectCombatSchedule();
@@ -518,67 +521,72 @@ int CNPC_John::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 		m_iHealth = g_johnhealth.GetInt();
 		return BaseClass::OnTakeDamage_Alive(subInfo);
 	}
-	else if (m_iHealth > g_johnfallhealth.GetInt()
-		|| b_IsDown
-		|| b_CanMelee
-		|| IsInAScript()
-		|| IsInChoreo()
-		|| IsInLockedScene())
+
+	if (m_iHealth <= g_johnfallhealth.GetInt() && !b_IsDown && !b_CanMelee && !IsInAScript())
 	{
-		if (info.GetDamageType() & DMG_BULLET)
-			PlayAction(JOHN_DAMAGE_SHOT, true);
-		else
-			PlayAction(JOHN_DAMAGE_HIT, true);
-		return BaseClass::OnTakeDamage_Alive(subInfo);
+		if (!IsInChoreo())
+		{
+			if (!IsInLockedScene())
+			{
+				b_CanMelee = false;
+				m_flMeleeDelayTimer = gpGlobals->curtime + 90.0f;
+				b_WaitingToDie = false;
+				Classify();
+				SetCondition(COND_NPC_FREEZE);
+				SetMoveType(MOVETYPE_NONE);
+				ClearCondition(COND_PLAYER_PUSHING);
+				AddSpawnFlags(SF_NPC_NO_PLAYER_PUSHAWAY);
+
+				if (skill.GetInt() == 1)
+				{
+					if (random->RandomInt(1, 2) == 1)
+						CallingForHelpScene("scenes/johndown_help_easy1.vcd");
+					else
+						CallingForHelpScene("scenes/johndown_help_easy2.vcd");
+
+					m_iHealth = 9000;
+					m_flTimerToDie = gpGlobals->curtime + 40.0f;
+				}
+				else if (skill.GetInt() == 2)
+				{
+					if (random->RandomInt(1, 2) == 1)
+						CallingForHelpScene("scenes/johndown_help_medium1.vcd");
+					else
+						CallingForHelpScene("scenes/johndown_help_medium2.vcd");
+
+					m_iHealth = 100;
+					m_flTimerToDie = gpGlobals->curtime + 30.0f;
+				}
+				else
+				{
+					if (random->RandomInt(1, 2) == 1)
+						CallingForHelpScene("scenes/johndown_help_hard1.vcd");
+					else
+						CallingForHelpScene("scenes/johndown_help_hard2.vcd");
+
+					m_iHealth = 100;
+					m_flTimerToDie = gpGlobals->curtime + 20.0f;
+				}
+
+				SetExpression(CallingForHelp());
+				b_WaitingToDie = true;
+				b_IsDown = true;
+				m_flBleed = gpGlobals->curtime + 0.1f;
+				return 0;
+			}
+		}
+	}
+
+	if (info.GetDamageType() & DMG_BULLET)
+	{
+		PlayAction(JOHN_DAMAGE_SHOT, true);
 	}
 	else
 	{
-		b_CanMelee = false;
-		m_flMeleeDelayTimer = gpGlobals->curtime + 90.0f;
-		b_WaitingToDie = false;
-		Classify();
-		SetCondition(COND_NPC_FREEZE);
-		SetMoveType(MOVETYPE_NONE);
-		ClearCondition(COND_PLAYER_PUSHING);
-		AddSpawnFlags(SF_NPC_NO_PLAYER_PUSHAWAY);
-
-		if (skill.GetInt() == 1)
-		{
-			if (random->RandomInt(1, 2) == 1)
-				CallingForHelpScene("scenes/johndown_help_easy1.vcd");
-			else
-				CallingForHelpScene("scenes/johndown_help_easy2.vcd");
-
-			m_iHealth = 9000;
-			m_flTimerToDie = gpGlobals->curtime + 40.0f;
-		}
-		else if (skill.GetInt() == 2)
-		{
-			if (random->RandomInt(1, 2) == 1)
-				CallingForHelpScene("scenes/johndown_help_medium1.vcd");
-			else
-				CallingForHelpScene("scenes/johndown_help_medium2.vcd");
-
-			m_iHealth = 100;
-			m_flTimerToDie = gpGlobals->curtime + 30.0f;
-		}
-		else
-		{
-			if (random->RandomInt(1, 2) == 1)
-				CallingForHelpScene("scenes/johndown_help_hard1.vcd");
-			else
-				CallingForHelpScene("scenes/johndown_help_hard2.vcd");
-
-			m_iHealth = 100;
-			m_flTimerToDie = gpGlobals->curtime + 20.0f;
-		}
-
-		SetExpression(CallingForHelp());
-		b_WaitingToDie = true;
-		b_IsDown = true;
-		m_flBleed = gpGlobals->curtime + 0.1f;
+		PlayAction(JOHN_DAMAGE_HIT, true);
 	}
-	return 0;
+		
+	return BaseClass::OnTakeDamage_Alive(subInfo);
 }
 
 void CNPC_John::Touch(CBaseEntity* pOther)
