@@ -42,6 +42,9 @@ public:
 	void	PrimaryAttack(void);
 	void	SecondaryAttack(void);
 
+protected:
+	 bool	IgnoreSecondaryAmmoCount( void ) { return true; }
+
 private:
 	int m_nNumSecondaryShotsFired;
 	int m_nNumPrimaryShotsFired;
