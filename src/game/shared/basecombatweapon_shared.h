@@ -539,6 +539,22 @@ public:
 	virtual void			HideThink( void );
 	virtual bool			CanReload( void );
 
+protected:
+	//-----------------------------------------------------------------------------
+	// IgnoreSecondaryAmmoCount
+	// 
+	// Required to fix a bug from the original mod with weapon_dualpistol.
+	//
+	// Note: Dual pistol uses 'grenade' as secondary ammo.
+	//
+	// In the original mod, the SecondaryAttack() method only gets called when
+	// the player has at least one grenade. This is because the base code checks
+	// whether the player has secondary ammo before firing the method. In order
+	// to fix this behavior, we add a way to tell the base code to ignore secondary
+	// ammo check.
+	//-----------------------------------------------------------------------------
+	virtual bool			IgnoreSecondaryAmmoCount( void ) { return false; }
+
 private:
 	typedef CHandle< CBaseCombatCharacter > CBaseCombatCharacterHandle;
 	CNetworkVar( CBaseCombatCharacterHandle, m_hOwner );				// Player carrying this weapon

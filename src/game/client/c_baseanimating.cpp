@@ -3840,6 +3840,38 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 		}
 		break;
 
+	// Eject brass from specified attachment
+	case CL_EVENT_EJECTBRASSX:
+		if ( m_Attachments.Count() > 0 )
+		{
+			if ( MainViewOrigin().DistToSqr( GetAbsOrigin() ) < (256 * 256) )
+			{
+				char token[256];
+				const char* p = options;
+
+				// Get brass type token.
+				p = nexttoken(token, p, ' ');
+				if ( token && *token != '\0' )
+				{
+					int brasstype = atoi(token);
+					Assert(brasstype >= 0);
+
+					// Get brass attachment token.
+					p = nexttoken(token, p, ' ');
+					if ( token && *token != '\0' ) 
+					{
+						Vector attachOrigin;
+						QAngle attachAngles; 
+						if( GetAttachment( token, attachOrigin, attachAngles ) )
+						{
+							tempents->EjectBrass( attachOrigin, attachAngles, GetAbsAngles(), brasstype );
+						}
+					}
+				}
+			}
+		}
+		break;
+
 	case AE_MUZZLEFLASH:
 		{
 			// Send out the effect for a player

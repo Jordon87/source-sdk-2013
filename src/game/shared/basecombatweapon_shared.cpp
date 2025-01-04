@@ -1885,7 +1885,7 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 	// Secondary attack has priority
 	if ((pOwner->m_nButtons & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->curtime))
 	{
-		if (UsesSecondaryAmmo() && pOwner->GetAmmoCount(m_iSecondaryAmmoType)<=0 )
+		if (UsesSecondaryAmmo() && (!IgnoreSecondaryAmmoCount() && pOwner->GetAmmoCount(m_iSecondaryAmmoType)<=0) )
 		{
 			if (m_flNextEmptySoundTime < gpGlobals->curtime)
 			{

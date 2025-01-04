@@ -13,12 +13,13 @@
 #include "tier0/memdbgon.h"
 
 //-----------------------------------------------------------------------------
-// C1187WeaponMP5K
+// CWeaponDualPistol
 //-----------------------------------------------------------------------------
 class CWeaponDualPistol : public CBaseHLCombatWeapon
 {
 	DECLARE_CLASS(CWeaponDualPistol, CBaseHLCombatWeapon);
 public:
+	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
 	CWeaponDualPistol();
@@ -41,11 +42,13 @@ public:
 	void	PrimaryAttack(void);
 	void	SecondaryAttack(void);
 
-private:
-	int m_iUnk_0x540;
-	int m_iUnk_0x544;
+protected:
+	 bool	IgnoreSecondaryAmmoCount( void ) { return true; }
 
-	void	DoesPrimary(bool a2);
+private:
+	int m_nNumSecondaryShotsFired;
+	int m_nNumPrimaryShotsFired;
+
 	void	DoesSecondary(bool a2);
 };
 
@@ -55,19 +58,24 @@ END_SEND_TABLE()
 LINK_ENTITY_TO_CLASS(weapon_dualpistol, CWeaponDualPistol);
 PRECACHE_WEAPON_REGISTER(weapon_dualpistol);
 
+BEGIN_DATADESC( CWeaponDualPistol )
+	DEFINE_FIELD( m_nNumSecondaryShotsFired, FIELD_INTEGER ),
+	DEFINE_FIELD( m_nNumPrimaryShotsFired,	 FIELD_INTEGER ),
+END_DATADESC()
+
 CWeaponDualPistol::CWeaponDualPistol()
 {
 	m_bReloadsSingly = false;
 	m_bFiresUnderwater = false;
-	m_iUnk_0x540 = 0;
-	m_iUnk_0x544 = 0;
+	m_nNumSecondaryShotsFired = 0;
+	m_nNumPrimaryShotsFired = 0;
 }
 
 void CWeaponDualPistol::FinishReload(void)
 {
 	BaseClass::FinishReload();
-	m_iUnk_0x540 = 0;
-	m_iUnk_0x544 = 0;
+	m_nNumSecondaryShotsFired = 0;
+	m_nNumPrimaryShotsFired = 0;
 }
 
 void CWeaponDualPistol::PrimaryAttack(void)
@@ -75,16 +83,17 @@ void CWeaponDualPistol::PrimaryAttack(void)
 	if (m_iClip1 < 1)
 	{
 		Reload();
+		return;
 	}
 
-	if (GetMaxClip1() / 2 <= m_iUnk_0x544)
+	if (GetMaxClip1() / 2 <= m_nNumPrimaryShotsFired)
 	{
 		SecondaryAttack();
+		return;
 	}
 
-	m_iUnk_0x544 = m_iUnk_0x544 + 1;
+	m_nNumPrimaryShotsFired = m_nNumPrimaryShotsFired + 1;
 	SendWeaponAnim(ACT_VM_SECONDARYATTACK);
-	DoesPrimary(true);
 	DoesSecondary(false);
 }
 
@@ -93,60 +102,18 @@ void CWeaponDualPistol::SecondaryAttack(void)
 	if (m_iClip1 < 1)
 	{
 		Reload();
+		return;
 	}
 
-	if (GetMaxClip1() / 2 <= m_iUnk_0x540)
+	if (GetMaxClip1() / 2 <= m_nNumSecondaryShotsFired)
 	{
 		PrimaryAttack(); 
+		return;
 	}
 
-	m_iUnk_0x540 = m_iUnk_0x540 + 1;
+	m_nNumSecondaryShotsFired = m_nNumSecondaryShotsFired + 1;
 	SendWeaponAnim(ACT_VM_PRIMARYATTACK);
-	DoesPrimary(false);
 	DoesSecondary(true);
-}
-
-void CWeaponDualPistol::DoesPrimary(bool a2)
-{
-	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
-
-	if (!pOwner && !pOwner->IsPlayer())
-		return;
-
-	CEffectData data;
-
-	data.m_nEntIndex = pOwner->GetViewModel()->entindex();
-	int iAttachment;
-
-	if (!a2)
-		iAttachment = LookupAttachment("eject3");
-	else
-		iAttachment = LookupAttachment("eject2");
-
-	Vector vecEject;
-	QAngle angEject;
-
-	pOwner->GetViewModel()->GetAttachment(iAttachment, vecEject, angEject);
-	data.m_flScale = 1.0f;
-	data.m_vOrigin = vecEject;
-	data.m_vAngles = angEject;
-
-	DispatchEffect("ShellEject", data);
-
-	int iMuzzleflash;
-	if (!a2)
-		iMuzzleflash = LookupAttachment("muzzleleft");
-	else
-		iMuzzleflash = LookupAttachment("muzzleright");
-
-	Vector vecFlash;
-	QAngle angFlash;
-	pOwner->GetViewModel()->GetAttachment(iMuzzleflash, vecFlash, angFlash);
-
-	CRecipientFilter filter;
-	filter.AddRecipientsByPVS(vecFlash);
-
-	te->MuzzleFlash(filter, 0.0f, vecFlash, angFlash, 1.0f, MUZZLEFLASH_TYPE_STRIDER);
 }
 
 void CWeaponDualPistol::DoesSecondary(bool a2)
@@ -158,7 +125,7 @@ void CWeaponDualPistol::DoesSecondary(bool a2)
 
 	WeaponSound(SINGLE);
 
-	if ((m_iUnk_0x540 < GetMaxClip1() / 2) && (m_iUnk_0x544 < GetMaxClip1() / 2))
+	if ((m_nNumSecondaryShotsFired < GetMaxClip1() / 2) && (m_nNumPrimaryShotsFired < GetMaxClip1() / 2))
 	{
 		if (!a2)
 		{
