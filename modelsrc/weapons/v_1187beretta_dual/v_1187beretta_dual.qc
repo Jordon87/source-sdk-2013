@@ -229,7 +229,7 @@ $sequence "melee" {
 $sequence "melee_hack" {
 	"melee_hack.smd"
 	activity "ACT_VM_HAULBACK" 1
-	{ event AE_WPN_MELEEATTACK 6 "" }
+	{ event AE_WPN_FRAGATTACK 6 "" }
 	fadein 0.2
 	fadeout 0.2
 	node "MeleeHack"
