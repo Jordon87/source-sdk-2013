@@ -19,6 +19,7 @@ class CWeaponDualPistol : public CBaseHLCombatWeapon
 {
 	DECLARE_CLASS(CWeaponDualPistol, CBaseHLCombatWeapon);
 public:
+	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
 	CWeaponDualPistol();
@@ -54,6 +55,11 @@ END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS(weapon_dualpistol, CWeaponDualPistol);
 PRECACHE_WEAPON_REGISTER(weapon_dualpistol);
+
+BEGIN_DATADESC( CWeaponDualPistol )
+	DEFINE_FIELD( m_nNumSecondaryShotsFired, FIELD_INTEGER ),
+	DEFINE_FIELD( m_nNumPrimaryShotsFired,	 FIELD_INTEGER ),
+END_DATADESC()
 
 CWeaponDualPistol::CWeaponDualPistol()
 {
