@@ -13,7 +13,7 @@
 #include "tier0/memdbgon.h"
 
 //-----------------------------------------------------------------------------
-// C1187WeaponMP5K
+// CWeaponDualPistol
 //-----------------------------------------------------------------------------
 class CWeaponDualPistol : public CBaseHLCombatWeapon
 {
