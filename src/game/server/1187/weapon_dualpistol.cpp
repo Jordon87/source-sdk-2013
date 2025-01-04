@@ -46,7 +46,6 @@ private:
 	int m_nNumSecondaryShotsFired;
 	int m_nNumPrimaryShotsFired;
 
-	void	DoesPrimary(bool a2);
 	void	DoesSecondary(bool a2);
 };
 
@@ -92,7 +91,6 @@ void CWeaponDualPistol::PrimaryAttack(void)
 
 	m_nNumPrimaryShotsFired = m_nNumPrimaryShotsFired + 1;
 	SendWeaponAnim(ACT_VM_SECONDARYATTACK);
-	DoesPrimary(true);
 	DoesSecondary(false);
 }
 
@@ -112,51 +110,7 @@ void CWeaponDualPistol::SecondaryAttack(void)
 
 	m_nNumSecondaryShotsFired = m_nNumSecondaryShotsFired + 1;
 	SendWeaponAnim(ACT_VM_PRIMARYATTACK);
-	DoesPrimary(false);
 	DoesSecondary(true);
-}
-
-void CWeaponDualPistol::DoesPrimary(bool a2)
-{
-	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
-
-	if (!pOwner && !pOwner->IsPlayer())
-		return;
-
-	CEffectData data;
-
-	data.m_nEntIndex = pOwner->GetViewModel()->entindex();
-	int iAttachment;
-
-	if (!a2)
-		iAttachment = LookupAttachment("eject3");
-	else
-		iAttachment = LookupAttachment("eject2");
-
-	Vector vecEject;
-	QAngle angEject;
-
-	pOwner->GetViewModel()->GetAttachment(iAttachment, vecEject, angEject);
-	data.m_flScale = 1.0f;
-	data.m_vOrigin = vecEject;
-	data.m_vAngles = angEject;
-
-	DispatchEffect("ShellEject", data);
-
-	int iMuzzleflash;
-	if (!a2)
-		iMuzzleflash = LookupAttachment("muzzleleft");
-	else
-		iMuzzleflash = LookupAttachment("muzzleright");
-
-	Vector vecFlash;
-	QAngle angFlash;
-	pOwner->GetViewModel()->GetAttachment(iMuzzleflash, vecFlash, angFlash);
-
-	CRecipientFilter filter;
-	filter.AddRecipientsByPVS(vecFlash);
-
-	te->MuzzleFlash(filter, 0.0f, vecFlash, angFlash, 1.0f, MUZZLEFLASH_TYPE_STRIDER);
 }
 
 void CWeaponDualPistol::DoesSecondary(bool a2)

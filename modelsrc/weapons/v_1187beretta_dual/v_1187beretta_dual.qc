@@ -132,6 +132,8 @@ $sequence "idle01" {
 $sequence "fire_right" {
 	"fire_right.smd"
 	activity "ACT_VM_PRIMARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "PISTOL MUZZLERIGHT" }
+	{ event 10001 0 "0 EJECT3" }
 	fadein 0.2
 	fadeout 0.2
 	snap
@@ -141,6 +143,8 @@ $sequence "fire_right" {
 $sequence "fire_left" {
 	"fire_left.smd"
 	activity "ACT_VM_SECONDARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "PISTOL MUZZLELEFT" }
+	{ event 10001 0 "0 EJECT2" }
 	fadein 0.2
 	fadeout 0.2
 	snap
@@ -150,6 +154,10 @@ $sequence "fire_left" {
 $sequence "fire_both1" {
 	"fire_both1.smd"
 	activity "ACT_VM_RECOIL1" 1
+	{ event AE_MUZZLEFLASH 0 "PISTOL MUZZLERIGHT" }
+	{ event AE_MUZZLEFLASH 0 "PISTOL MUZZLELEFT" }
+	{ event 10001 0 "0 EJECT3" }
+	{ event 10001 0 "0 EJECT2" }
 	fadein 0.2
 	fadeout 0.2
 	snap
@@ -159,6 +167,10 @@ $sequence "fire_both1" {
 $sequence "fire_both2" {
 	"fire_both2.smd"
 	activity "ACT_VM_RECOIL1" 1
+	{ event AE_MUZZLEFLASH 0 "PISTOL MUZZLERIGHT" }
+	{ event AE_MUZZLEFLASH 0 "PISTOL MUZZLELEFT" }
+	{ event 10001 0 "0 EJECT3" }
+	{ event 10001 0 "0 EJECT2" }
 	fadein 0.2
 	fadeout 0.2
 	snap
