@@ -42,7 +42,7 @@ public:
 	void	SecondaryAttack(void);
 
 private:
-	int m_iUnk_0x540;
+	int m_nNumSecondaryShotsFired;
 	int m_nNumPrimaryShotsFired;
 
 	void	DoesPrimary(bool a2);
@@ -59,14 +59,14 @@ CWeaponDualPistol::CWeaponDualPistol()
 {
 	m_bReloadsSingly = false;
 	m_bFiresUnderwater = false;
-	m_iUnk_0x540 = 0;
+	m_nNumSecondaryShotsFired = 0;
 	m_nNumPrimaryShotsFired = 0;
 }
 
 void CWeaponDualPistol::FinishReload(void)
 {
 	BaseClass::FinishReload();
-	m_iUnk_0x540 = 0;
+	m_nNumSecondaryShotsFired = 0;
 	m_nNumPrimaryShotsFired = 0;
 }
 
@@ -95,12 +95,12 @@ void CWeaponDualPistol::SecondaryAttack(void)
 		Reload();
 	}
 
-	if (GetMaxClip1() / 2 <= m_iUnk_0x540)
+	if (GetMaxClip1() / 2 <= m_nNumSecondaryShotsFired)
 	{
 		PrimaryAttack(); 
 	}
 
-	m_iUnk_0x540 = m_iUnk_0x540 + 1;
+	m_nNumSecondaryShotsFired = m_nNumSecondaryShotsFired + 1;
 	SendWeaponAnim(ACT_VM_PRIMARYATTACK);
 	DoesPrimary(false);
 	DoesSecondary(true);
@@ -158,7 +158,7 @@ void CWeaponDualPistol::DoesSecondary(bool a2)
 
 	WeaponSound(SINGLE);
 
-	if ((m_iUnk_0x540 < GetMaxClip1() / 2) && (m_nNumPrimaryShotsFired < GetMaxClip1() / 2))
+	if ((m_nNumSecondaryShotsFired < GetMaxClip1() / 2) && (m_nNumPrimaryShotsFired < GetMaxClip1() / 2))
 	{
 		if (!a2)
 		{
