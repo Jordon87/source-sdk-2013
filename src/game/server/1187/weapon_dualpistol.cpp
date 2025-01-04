@@ -81,11 +81,13 @@ void CWeaponDualPistol::PrimaryAttack(void)
 	if (m_iClip1 < 1)
 	{
 		Reload();
+		return;
 	}
 
 	if (GetMaxClip1() / 2 <= m_nNumPrimaryShotsFired)
 	{
 		SecondaryAttack();
+		return;
 	}
 
 	m_nNumPrimaryShotsFired = m_nNumPrimaryShotsFired + 1;
@@ -99,11 +101,13 @@ void CWeaponDualPistol::SecondaryAttack(void)
 	if (m_iClip1 < 1)
 	{
 		Reload();
+		return;
 	}
 
 	if (GetMaxClip1() / 2 <= m_nNumSecondaryShotsFired)
 	{
 		PrimaryAttack(); 
+		return;
 	}
 
 	m_nNumSecondaryShotsFired = m_nNumSecondaryShotsFired + 1;
