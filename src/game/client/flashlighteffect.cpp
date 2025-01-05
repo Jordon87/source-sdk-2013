@@ -33,11 +33,11 @@ extern ConVar r_flashlightdepthtexture;
 void r_newflashlightCallback_f( IConVar *pConVar, const char *pOldString, float flOldValue );
 
 static ConVar r_newflashlight( "r_newflashlight", "1", FCVAR_CHEAT, "", r_newflashlightCallback_f );
-static ConVar r_swingflashlight( "r_swingflashlight", "1", FCVAR_CHEAT );
+static ConVar r_swingflashlight( "r_swingflashlight", "0", FCVAR_CHEAT );
 static ConVar r_flashlightlockposition( "r_flashlightlockposition", "0", FCVAR_CHEAT );
 static ConVar r_flashlightfov( "r_flashlightfov", "45.0", FCVAR_CHEAT );
 static ConVar r_flashlightoffsetx( "r_flashlightoffsetx", "10.0", FCVAR_CHEAT );
-static ConVar r_flashlightoffsety( "r_flashlightoffsety", "-20.0", FCVAR_CHEAT );
+static ConVar r_flashlightoffsety( "r_flashlightoffsety", "0.0", FCVAR_CHEAT );
 static ConVar r_flashlightoffsetz( "r_flashlightoffsetz", "24.0", FCVAR_CHEAT );
 static ConVar r_flashlightnear( "r_flashlightnear", "4.0", FCVAR_CHEAT );
 static ConVar r_flashlightfar( "r_flashlightfar", "950.0", FCVAR_CHEAT );
