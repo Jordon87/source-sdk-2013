@@ -120,31 +120,24 @@ void CFlashlightEffect::TurnOff()
 	}
 }
 
-// Custom trace filter that skips the player and the view model.
-// If we don't do this, we'll end up having the light right in front of us all
-// the time.
-class CTraceFilterSkipPlayerAndViewModel : public CTraceFilter
+bool CTraceFilterSkipPlayerAndViewModel::ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask )
 {
-public:
-	virtual bool ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask )
-	{
-		// Test against the vehicle too?
-		// FLASHLIGHTFIXME: how do you know that you are actually inside of the vehicle?
-		C_BaseEntity *pEntity = EntityFromEntityHandle( pServerEntity );
-		if ( !pEntity )
-			return true;
-
-		if ( ( dynamic_cast<C_BaseViewModel *>( pEntity ) != NULL ) ||
-			 ( dynamic_cast<C_BasePlayer *>( pEntity ) != NULL ) ||
-			 pEntity->GetCollisionGroup() == COLLISION_GROUP_DEBRIS ||
-			 pEntity->GetCollisionGroup() == COLLISION_GROUP_INTERACTIVE_DEBRIS )
-		{
-			return false;
-		}
-
+	// Test against the vehicle too?
+	// FLASHLIGHTFIXME: how do you know that you are actually inside of the vehicle?
+	C_BaseEntity *pEntity = EntityFromEntityHandle( pServerEntity );
+	if ( !pEntity )
 		return true;
+
+	if ( ( dynamic_cast<C_BaseViewModel *>( pEntity ) != NULL ) ||
+			( dynamic_cast<C_BasePlayer *>( pEntity ) != NULL ) ||
+			pEntity->GetCollisionGroup() == COLLISION_GROUP_DEBRIS ||
+			pEntity->GetCollisionGroup() == COLLISION_GROUP_INTERACTIVE_DEBRIS )
+	{
+		return false;
 	}
-};
+
+	return true;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Do the headlight

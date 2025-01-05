@@ -59,6 +59,15 @@ public:
 	virtual void UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance);
 };
 
+#include "engine/IEngineTrace.h"
 
+// Custom trace filter that skips the player and the view model.
+// If we don't do this, we'll end up having the light right in front of us all
+// the time.
+class CTraceFilterSkipPlayerAndViewModel : public CTraceFilter
+{
+public:
+	virtual bool ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask );
+};
 
 #endif // FLASHLIGHTEFFECT_H

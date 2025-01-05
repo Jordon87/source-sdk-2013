@@ -57,6 +57,9 @@
 // NVNT haptics system interface
 #include "haptics/ihaptics.h"
 
+#include "collisionutils.h"
+#include "engine/ivdebugoverlay.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -1211,6 +1214,11 @@ void C_BasePlayer::TeamChange( int iNewTeam )
 
 extern void FormatViewModelAttachment( Vector &vOrigin, bool bInverse );
 
+ConVar cl_1187_flashlight_fix("cl_1187_flashlight_fix", "1"); // Enable flashlight fix ?
+ConVar cl_1187_flashlight_fix_debug("cl_1187_flashlight_fix_debug", "0"); // Should we show debug overlays ?
+ConVar cl_1187_flashlight_fix_offset("cl_1187_flashlight_fix_offset", "35"); // Offset away from the muzzle flash attachment (backward direction)
+ConVar cl_1187_flashlight_fix_debug_viewoffset("cl_1187_flashlight_fix_debug_viewoffset", "5"); // Offset to apply to help view better plane position and intersection.
+
 //-----------------------------------------------------------------------------
 // Purpose: Creates, destroys, and updates the flashlight effect as needed.
 //-----------------------------------------------------------------------------
@@ -1245,7 +1253,71 @@ void C_BasePlayer::UpdateFlashlight()
 				::FormatViewModelAttachment(vecOrigin, true);
 				AngleVectors(angOrigin, &vecForward, &vecRight, &vecUp);
 			
-				vecOrigin += vecForward * -35.0f;
+				if (!cl_1187_flashlight_fix.GetBool())
+				{
+					// Vanilla behavior.
+					vecOrigin += vecForward * -35.0f;
+				}
+				else
+				{
+					Vector vecMuzzleOrigin = vecOrigin;
+
+					// Make a plane centered and aligned with the viewmodel.
+					// Find a point on the plane along the muzzle attachment's
+					// forward direction.
+					Vector vecPlanePos, vecPlaneNorm;
+					vecPlanePos = GetViewModel()->GetAbsOrigin();
+					AngleVectors(GetViewModel()->GetAbsAngles(), &vecPlaneNorm);
+					cplane_t plane;
+					plane.normal = vecPlaneNorm;
+					plane.dist = DotProduct(plane.normal, vecPlanePos);
+
+					float flHitDist = IntersectRayWithPlane(vecMuzzleOrigin, -vecForward, plane);
+					Vector vecPlanePoint = vecMuzzleOrigin - vecForward * flHitDist;
+
+					// Trace to see if we hit a wall at the muzzle's origin. Ignore players and viewmodels.
+					CTraceFilterSkipPlayerAndViewModel tracefilter;
+					trace_t tr;
+					UTIL_TraceLine(vecPlanePoint, vecMuzzleOrigin, MASK_SOLID & ~(CONTENTS_HITBOX), &tracefilter, &tr);
+					//DevMsg("VM fraction: %.2f\n", tr.fraction);
+
+					if (tr.DidHit())
+					{
+						// Position the flashlight origin at a fixed distance away from the hit location, 
+						// or the intersection if it goes beyond past it so it doesn't cast any
+						// player shadow.
+						float flDist = (tr.endpos - vecPlanePoint).Length();
+						vecOrigin = tr.endpos - vecForward * Min(cl_1187_flashlight_fix_offset.GetFloat(), flDist);
+					}
+					else
+					{
+						// Position the flashlight as in the original mod.
+						vecOrigin = vecMuzzleOrigin - vecForward * cl_1187_flashlight_fix_offset.GetFloat();
+					}
+
+					// Draw debug overlays if enabled.
+					if (cl_1187_flashlight_fix_debug.GetBool())
+					{
+						// Small offset to help visualize the plane origin and intersection point.
+						Vector vViewOffset = vecForward * cl_1187_flashlight_fix_debug_viewoffset.GetFloat();
+
+						//DevMsg("VM Plane hit dist: %.2f\n", flHitDist);
+						debugoverlay->AddTextOverlay(vecPlanePos + vViewOffset, 0.005, "VM plane position");
+						debugoverlay->AddBoxOverlay(vecPlanePos + vViewOffset, Vector(-4, -4, -4), Vector(4, 4, 4), GetViewModel()->GetAbsAngles(), 255, 0, 255, 64, 0.005);
+						
+						debugoverlay->AddTextOverlay(vecMuzzleOrigin, 0.005, "VM muzzle position");
+						debugoverlay->AddBoxOverlay(vecMuzzleOrigin, Vector(-2, -2, -2), Vector(2, 2, 2), GetViewModel()->GetAbsAngles(), 255, 255, 255, 64, 0.005);
+
+						debugoverlay->AddTextOverlay(vecPlanePoint + vViewOffset, 0.005, "VM plane intersection");
+						debugoverlay->AddBoxOverlay(vecPlanePoint + vViewOffset, Vector(-4, -4, -4), Vector(4, 4, 4), GetViewModel()->GetAbsAngles(), 255, 0, 0, 64, 0.005);
+						debugoverlay->AddLineOverlay(vecPlanePoint + vViewOffset, vecMuzzleOrigin, 255, 0, 0, true, 0.005);
+						
+						debugoverlay->AddTriangleOverlay(vecPlanePos + vViewOffset, vecPlanePoint + vViewOffset, vecMuzzleOrigin, 255, 255, 0, 64, true, 0.005);
+
+						debugoverlay->AddTextOverlay(vecOrigin, 0.005, "VM new flashlight origin");
+						debugoverlay->AddBoxOverlay(vecOrigin, Vector(-2, -2, -2), Vector(2, 2, 2), GetViewModel()->GetAbsAngles(), 0, 255, 0, 64, 0.005);
+					}
+				}
 			}
 			else
 				EyeVectors( &vecForward, &vecRight, &vecUp );
