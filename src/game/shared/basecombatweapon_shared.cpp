@@ -2625,7 +2625,7 @@ LAB_100c91a6:
 							fVar2 = local_134.y - pPlayer->EyePosition().y;
 							fVar3 = local_134.z - pPlayer->EyePosition().z;
 							fVar14 = fVar14 * local_118.x + fVar2 * local_118.y + fVar3 * local_118.z;
-							if (fVar14 < 0.90721f == fVar14)
+							if (fVar14 < 0.90721f)
 							{
 								if (tr.DidHitNonWorldEntity()) break;
 							}
