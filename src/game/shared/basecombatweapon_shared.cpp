@@ -2539,7 +2539,9 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 	float fVar3;
 	float fVar14;
 	Vector local_134;
+#ifndef CLIENT_DLL
 	int local_128;
+#endif
 	Vector local_118;
 	Vector local_10c;
 	Vector local_100;
@@ -2566,7 +2568,9 @@ void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 	
 if (tr.fraction < 1.0f)
 	{
+#ifndef CLIENT_DLL
 LAB_100c91a6:
+#endif
 		if (FClassnameIs(this, "weapon_357"))
 		{
 			SendWeaponAnim(ACT_VM_SWINGHIT);
@@ -2581,20 +2585,20 @@ LAB_100c91a6:
 			WeaponSound(MELEE_HIT);
 		}
 		pPlayer->EyeVectors(&local_134);
-
+#ifndef CLIENT_DLL
 		CTakeDamageInfo info( GetOwner(), GetOwner(), GetWpnData().m_flMeleeDamage, DMG_CLUB);
 		CalculateMeleeDamageForce(&info, local_134, tr.endpos);
-
 		if (GetOwner() != NULL)
 		{
 			GetOwner()->DispatchTraceAttack(info, local_134, &tr);
 		}
 
 		UTIL_ScreenShake(pPlayer->GetAbsOrigin(), 15.0f, 15.0f, 0.5f, 256.0f, SHAKE_START);
-	
+#endif	
 		if (!FClassnameIs(this, "weapon_pistol")) goto LAB_100c93d2;
 		AVar19 = ACT_VM_SWINGHIT;
 	}
+#ifndef CLIENT_DLL
 	else
 	{
 		if (tr.allsolid == false && tr.startsolid == false)
@@ -2647,6 +2651,7 @@ LAB_100c91a6:
 		AVar19 = ACT_VM_SWINGMISS;
 	}
 	SendWeaponAnim(AVar19);
+#endif
 LAB_100c93d2:
 	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
 	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
