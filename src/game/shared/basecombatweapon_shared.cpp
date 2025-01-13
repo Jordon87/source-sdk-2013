@@ -2588,9 +2588,9 @@ LAB_100c91a6:
 #ifndef CLIENT_DLL
 		CTakeDamageInfo info( GetOwner(), GetOwner(), GetWpnData().m_flMeleeDamage, DMG_CLUB);
 		CalculateMeleeDamageForce(&info, local_134, tr.endpos);
-		if (GetOwner() != NULL)
+		if (tr.m_pEnt != NULL)
 		{
-			GetOwner()->DispatchTraceAttack(info, local_134, &tr);
+			tr.m_pEnt->DispatchTraceAttack(info, local_134, &tr);
 		}
 
 		UTIL_ScreenShake(pPlayer->GetAbsOrigin(), 15.0f, 15.0f, 0.5f, 256.0f, SHAKE_START);
