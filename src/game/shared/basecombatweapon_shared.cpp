@@ -2535,63 +2535,119 @@ void CBaseCombatWeapon::PrimaryAttack( void )
 
 void CBaseCombatWeapon::PrimaryMeleeAttack(void)
 {
+	float fVar2;
+	float fVar3;
+	float fVar14;
+	Vector local_134;
+	int local_128;
+	Vector local_118;
+	Vector local_10c;
+	Vector local_100;
+	Vector local_e8;
+	CGameTrace tr;
+	Vector local_c;
+	Activity AVar19;
+
 	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
 
 	if (!pPlayer)
 		return;
 
-	Vector forward, up;
+	pPlayer->EyeVectors(&local_118, NULL, &local_c);
+	fVar14 = local_118.x * 76.0f;
+	fVar2 = local_118.y * 76.0f;
+	fVar3 = local_118.z * 76.0f;
 
-	pPlayer->EyeVectors(&forward, NULL, &up);
+	local_134.x = pPlayer->EyePosition().x + fVar14;
+	local_134.y = pPlayer->EyePosition().y + fVar2;
+	local_134.z = pPlayer->EyePosition().z + fVar3;
 
-	Vector vecSrc = pPlayer->EyePosition();
-
-	Vector vecEnd = vecSrc + forward * 76.0f;
-
-	trace_t tr;
-	UTIL_TraceLine(vecSrc, vecEnd, MASK_SHOT_HULL, pPlayer, COLLISION_GROUP_NONE, &tr);
-
-	if (tr.fraction < 1.0f || tr.allsolid || tr.startsolid)
+	UTIL_TraceLine(pPlayer->EyePosition(), local_134, MASK_SHOT, pPlayer, COLLISION_GROUP_NONE, &tr);										
+	
+if (tr.fraction < 1.0f)
 	{
+LAB_100c91a6:
 		if (FClassnameIs(this, "weapon_357"))
 		{
 			SendWeaponAnim(ACT_VM_SWINGHIT);
 		}
 
-		if (tr.m_pEnt)
+		if (tr.m_pEnt == NULL)
 		{
-			WeaponSound(MELEE_HIT);
+			WeaponSound(MELEE_HIT_WORLD);
 		}
 		else
 		{
-			WeaponSound(MELEE_HIT_WORLD);
-			UTIL_ImpactTrace(&tr, DMG_CLUB);
+			WeaponSound(MELEE_HIT);
 		}
+		pPlayer->EyeVectors(&local_134);
 
-#ifndef CLIENT_DLL
-		CTakeDamageInfo info(GetOwner(), GetOwner(), GetWpnData().m_flMeleeDamage, DMG_CLUB);
-		CalculateMeleeDamageForce(&info, forward, tr.endpos);
-		tr.m_pEnt->DispatchTraceAttack(info, forward, &tr);
-		ApplyMultiDamage();
-		TraceAttackToTriggers(info, tr.startpos, tr.endpos, forward);
-		UTIL_ScreenShake(pPlayer->GetAbsOrigin(), 15.0f, 15.0f, 0.5f, 256.0f, SHAKE_START, 0);
-#endif
+		CTakeDamageInfo info( GetOwner(), GetOwner(), GetWpnData().m_flMeleeDamage, DMG_CLUB);
+		CalculateMeleeDamageForce(&info, local_134, tr.endpos);
 
-		if (FClassnameIs(this, "weapon_pistol") && tr.m_pEnt->IsNPC() && !tr.m_pEnt->IsAlive())
+		if (GetOwner() != NULL)
 		{
-			SendWeaponAnim(ACT_VM_SWINGHIT);
+			GetOwner()->DispatchTraceAttack(info, local_134, &tr);
 		}
+
+		UTIL_ScreenShake(pPlayer->GetAbsOrigin(), 15.0f, 15.0f, 0.5f, 256.0f, SHAKE_START);
+	
+		if (!FClassnameIs(this, "weapon_pistol")) goto LAB_100c93d2;
+		AVar19 = ACT_VM_SWINGHIT;
 	}
 	else
 	{
-		WeaponSound(MELEE_MISS);
-
-		if (FClassnameIs(this, "weapon_357"))
+		if (tr.allsolid == false && tr.startsolid == false)
 		{
-			SendWeaponAnim(ACT_VM_SWINGMISS);
+			CBaseEntity* pEntities[20];
+			int iNumEntities = UTIL_EntitiesInSphere(pEntities, 20, pPlayer->GetAbsOrigin(), 176.0f, FL_NPC);
+			local_128 = 0;
+			if (0 < iNumEntities)
+			{
+				do
+				{
+					if (pEntities[local_128]->Classify() == CLASS_HEADCRAB && pEntities[local_128]->Classify() == CLASS_ZOMBIE)
+					{
+						if (pEntities[local_128]->Classify() == CLASS_ZOMBIE)
+						{
+							pPlayer->EyePosition() = local_e8;
+						}
+						else
+						{
+							pPlayer->EyePosition() = local_100 + Vector(0,0,4);
+						}
+						local_10c = pPlayer->EyePosition() + pEntities[local_128]->GetAbsOrigin();
+						UTIL_TraceLine(pPlayer->EyePosition(), local_10c, MASK_SHOT, pPlayer, COLLISION_GROUP_NONE, &tr);
+						if (tr.DidHitNonWorldEntity())
+						{
+							local_134 = pEntities[local_128]->GetAbsOrigin() + Vector(0, 0, 4);
+							fVar14 = local_134.x - pPlayer->EyePosition().x;
+							fVar2 = local_134.y - pPlayer->EyePosition().y;
+							fVar3 = local_134.z - pPlayer->EyePosition().z;
+							fVar14 = fVar14 * local_118.x + fVar2 * local_118.y + fVar3 * local_118.z;
+							if (fVar14 < 0.90721f == fVar14)
+							{
+								if (tr.DidHitNonWorldEntity()) break;
+							}
+							else
+							{
+								tr.fraction = 1.0f;
+							}
+						}
+					}
+					local_128++;
+				} while (local_128 < iNumEntities);
+			}
 		}
+		if (tr.fraction < 1.0f || tr.allsolid != false || tr.startsolid != false)
+		goto LAB_100c91a6;
+		WeaponSound(MELEE_MISS);
+		if (!FClassnameIs(this, "weapon_357"))
+		goto LAB_100c93d2;
+		AVar19 = ACT_VM_SWINGMISS;
 	}
-
+	SendWeaponAnim(AVar19);
+LAB_100c93d2:
 	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
 	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
 

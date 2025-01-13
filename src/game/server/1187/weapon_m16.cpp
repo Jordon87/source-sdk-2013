@@ -40,16 +40,16 @@ public:
 	virtual float WeaponAutoAimScale() { return 0.6f; };
 	virtual const Vector& GetBulletSpread(void)
 	{
-		static Vector Cone = vec3_origin;
-		static Vector Cone2 = VECTOR_CONE_2DEGREES;
+		static Vector ironSightCone = vec3_origin;
+		static Vector cone = VECTOR_CONE_2DEGREES;
 
-		if (!m_bIsIronsighted)
+		if (IsIronsighted())
 		{
-			return Cone2;
+			return ironSightCone;
 		}
 		else
 		{
-			return Cone;
+			return cone;
 		}
 	}
 

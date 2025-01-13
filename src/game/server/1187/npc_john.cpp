@@ -697,286 +697,312 @@ const char* CNPC_John::CallingForHelp(void)
 
 void CNPC_John::PlayAction(JohnScenes_t actionName, bool a3)
 {
-	if (AI_GetSinglePlayer()
-		&& !b_IsDown
-		&& AI_IsSinglePlayer()
-		&& !IsInAScript()
-		&& !IsInChoreo()
-		&& !IsInLockedScene()
-		&& IsAlive()
-		&& GetState() != NPC_STATE_SCRIPT
-		&& !IsEFlagSet(EFL_IS_BEING_LIFTED_BY_BARNACLE)
-		&& (actionName || random->RandomInt(0, 5) == 2)
-		&& IsOkToSpeak()
-		&& (a3 || gpGlobals->curtime >= m_flSpeakAgain && gpGlobals->curtime >= unk_0x1430))
+	if (AI_GetSinglePlayer())
+		return;
+
+	if (!b_IsDown)
+		return;
+
+	if (AI_IsSinglePlayer())
+		return;
+
+	if (!IsInAScript())
+		return;
+
+	if (IsInChoreo())
+		return;
+
+	if (IsInLockedScene())
+		return;
+
+	if (!IsAlive())
+		return;
+
+	if (GetState() == NPC_STATE_SCRIPT)
+		return;
+
+	if (!IsEFlagSet(EFL_IS_BEING_LIFTED_BY_BARNACLE))
+		return;
+
+	if ((actionName == 0) && (random->RandomInt(0, 5) == 2))
+		return;
+
+	if (!IsOkToSpeak())
+		return;
+
+	if (!a3)
 	{
-		if (ahhthanksman.GetInt())
-		{
-			SetExpression("scenes/johndown_thanks1.vcd");
-			m_flDelayIdle = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
-			b_CanIdle = true;
-			m_flSpeakAgain = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
-		}
-		else
-		{
-			switch (actionName)
-			{
-			case JOHN_TOUCH:
-				switch (random->RandomInt(1, 5))
-				{
-				case 1:
-					SetExpression("scenes/JohnTouch/1187_john_touch1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnTouch/1187_john_touch2.vcd");
-					break;
-				case 3:
-					SetExpression("scenes/JohnTouch/1187_john_touch3.vcd");
-					break;
-				case 4:
-					SetExpression("scenes/JohnTouch/1187_john_touch4.vcd");
-					break;
-				case 5:
-					SetExpression("scenes/JohnTouch/1187_john_touch5.vcd");
-					break;
-				}
-				break;
-			case JOHN_DAMAGE_HIT:
-				switch (random->RandomInt(1, 4))
-				{
-				case 1:
-					SetExpression("scenes/JohnHit/john_damage_hit1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnHit/john_damage_hit2.vcd");
-					break;
-				case 3:
-					SetExpression("scenes/JohnHit/john_damage_hit3.vcd");
-					break;
-				case 4:
-					SetExpression("scenes/JohnHit/john_damage_hit4.vcd");
-					break;
-				}
-				break;
-			case JOHN_DAMAGE_SHOT:
-				switch (random->RandomInt(1, 4))
-				{
-				case 1:
-					SetExpression("scenes/JohnShot/john_damage_shot1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnShot/john_damage_shot2.vcd");
-					break;
-				case 3:
-					SetExpression("scenes/JohnShot/john_damage_shot3.vcd");
-					break;
-				case 4:
-					SetExpression("scenes/JohnShot/john_damage_shot4.vcd");
-					break;
-				}
-				break;
-			case JOHN_KILLED_ZOMBIE:
-				switch (random->RandomInt(1, 3))
-				{
-				case 1:
-					SetExpression("scenes/JohnKilledZombie/john_killed_zombie1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnKilledZombie/john_killed_zombie2.vcd");
-					break;
-				case 3:
-					SetExpression("scenes/JohnKilledZombie/john_killed_zombie3.vcd");
-					break;
-				}
-				break;
-			case JOHN_KILLED_ARMOURED_ZOMBIE:
-				switch (random->RandomInt(1, 2))
-				{
-				case 1:
-					SetExpression("scenes/JohnKillerArmoured/john_killed_armouredzombie1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnKillerArmoured/john_killed_armouredzombie2.vcd");
-					break;
-				}
-				break;
-			case JOHN_KILLED_BURST_ZOMBIE:
-				switch (random->RandomInt(1, 2))
-				{
-				case 1:
-					SetExpression("scenes/JohnKilledBurster/john_killed_bursterzombie1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnKilledBurster/john_killed_bursterzombie2.vcd");
-					break;
-				}
-				break;
-			case JOHN_KILLED_POISON_ZOMBIE:
-				SetExpression("scenes/JohnKilledPoison/john_killed_poisonzombie1.vcd");
-				break;
-			case JOHN_KILLED_HEADCRAB:
-				switch (random->RandomInt(1, 2))
-				{
-				case 1:
-					SetExpression("scenes/JohnKilledHeadcrab/john_killed_headcrab1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnKilledHeadcrab/john_killed_headcrab2.vcd");
-					break;
-				}
-				break;
-			case JOHN_KILLED_MINI_HEADCRAB:
-				switch (random->RandomInt(1, 2))
-				{
-				case 1:
-					SetExpression("scenes/JohnKilledMini/john_killed_miniheadcrab1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnKilledMini/john_killed_miniheadcrab2.vcd");
-					break;
-				}
-				break;
-			case JOHN_KILLED_VORTIGAUNT:
-				switch (random->RandomInt(1, 2))
-				{
-				case 1:
-					SetExpression("scenes/JohnKilledVort/john_killed_vort1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnKilledVort/john_killed_vort2.vcd");
-					break;
-				}
-				break;
-			case JOHN_KILLED_MARINE:
-				switch (random->RandomInt(1, 2))
-				{
-				case 1:
-					SetExpression("scenes/JohnKilledMarine/john_killed_marine1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnKilledMarine/john_killed_marine2.vcd");
-					break;
-				}
-				break;
-			case JOHN_KILLED_PLAYER:
-				SetExpression("scenes/JohnKilledPlayer/john_killed_player1.vcd");
-				break;
-			case JOHN_SPOT_ZOMBIES:
-				switch (random->RandomInt(1, 2))
-				{
-				case 1:
-					SetExpression("scenes/JohnSpotZombies/john_spot_zombies1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnSpotZombies/john_spot_zombies2.vcd");
-					break;
-				}
-				break;
-			case JOHN_SPOT_CREATURES:
-				switch (random->RandomInt(1, 2))
-				{
-				case 1:
-					SetExpression("scenes/JohnSpotCreatures/john_spot_creatures1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnSpotCreatures/john_spot_creatures2.vcd");
-					break;
-				}
-				break;
-			case JOHN_SPOT_VORTIGAUNT:
-				switch (random->RandomInt(1, 2))
-				{
-				case 1:
-					SetExpression("scenes/JohnSpotVort/john_spot_vort1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnSpotVort/john_spot_vort2.vcd");
-					break;
-				}
-				break;
-			case JOHN_SPOT_MARINE:
-				switch (random->RandomInt(1, 3))
-				{
-				case 1:
-					SetExpression("scenes/JohnSpotMarine/john_spot_marine1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnSpotMarine/john_spot_marine2.vcd");
-					break;
-				case 3:
-					SetExpression("scenes/JohnSpotMarine/john_spot_marine3.vcd");
-					break;
-				}
-				break;
-			case JOHN_SEEPLAYER_KILL:
-				switch (random->RandomInt(1, 3))
-				{
-				case 1:
-					SetExpression("scenes/JohnSeeKill/john_seeplayer_kill1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnSeeKill/john_seeplayer_kill2.vcd");
-					break;
-				case 3:
-					SetExpression("scenes/JohnSeeKill/john_seeplayer_kill3.vcd");
-					break;
-				}
-				break;
-			case JOHN_SEEPLAYER_HEADSHOT:
-				switch (random->RandomInt(1, 2))
-				{
-				case 1:
-					SetExpression("scenes/JohnSeeHeadshot/john_seeplayer_headshot1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnSeeHeadshot/john_seeplayer_headshot2.vcd");
-					break;
-				}
-				break;
-			case JOHN_SEEPLAYER_ONESHOT:
-				SetExpression("scenes/JohnSeeOneshot/john_seeplayer_oneshot1.vcd");
-				break;
-			case JOHN_RELOAD:
-				switch (random->RandomInt(1, 2))
-				{
-				case 1:
-					SetExpression("scenes/JohnReload/john_reload1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnReload/john_reload2.vcd");
-					break;
-				}
-				break;
-			case JOHN_MELEE:
-				switch (random->RandomInt(1, 3))
-				{
-				case 1:
-					SetExpression("scenes/JohnMelee/john_melee1.vcd");
-					break;
-				case 2:
-					SetExpression("scenes/JohnMelee/john_melee2.vcd");
-					break;
-				case 3:
-					SetExpression("scenes/JohnMelee/john_melee3.vcd");
-					break;
-				}
-				break;
-			default:
-				SetExpression("scenes/johndown_thanks2.vcd");
-				break;
-			}
+		if (gpGlobals->curtime < m_flSpeakAgain)
+			return;
 
-			m_flDelayIdle = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
-			m_flSpeakAgain = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
-
-			if (a3)
-			{
-				b_CanIdle = true;
-				unk_0x1430 = gpGlobals->curtime;
-			}
-			
-			b_CanIdle = true;
-			unk_0x1430 = GetSceneDuration(GetExpression()) + gpGlobals->curtime + g_johnspeaklimit.GetFloat();
-		}
+		if (gpGlobals->curtime < unk_0x1430)
+			return;
 	}
+
+	if (ahhthanksman.GetInt())
+	{
+		SetExpression("scenes/johndown_thanks1.vcd");
+		m_flDelayIdle = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
+		b_CanIdle = true;
+		m_flSpeakAgain = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
+	}
+
+	switch (actionName)
+	{
+	case JOHN_TOUCH:
+		switch (random->RandomInt(1, 5))
+		{
+		case 1:
+			SetExpression("scenes/JohnTouch/1187_john_touch1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnTouch/1187_john_touch2.vcd");
+			break;
+		case 3:
+			SetExpression("scenes/JohnTouch/1187_john_touch3.vcd");
+			break;
+		case 4:
+			SetExpression("scenes/JohnTouch/1187_john_touch4.vcd");
+			break;
+		case 5:
+			SetExpression("scenes/JohnTouch/1187_john_touch5.vcd");
+			break;
+		}
+		break;
+	case JOHN_DAMAGE_HIT:
+		switch (random->RandomInt(1, 4))
+		{
+		case 1:
+			SetExpression("scenes/JohnHit/john_damage_hit1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnHit/john_damage_hit2.vcd");
+			break;
+		case 3:
+			SetExpression("scenes/JohnHit/john_damage_hit3.vcd");
+			break;
+		case 4:
+			SetExpression("scenes/JohnHit/john_damage_hit4.vcd");
+			break;
+		}
+		break;
+	case JOHN_DAMAGE_SHOT:
+		switch (random->RandomInt(1, 4))
+		{
+		case 1:
+			SetExpression("scenes/JohnShot/john_damage_shot1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnShot/john_damage_shot2.vcd");
+			break;
+		case 3:
+			SetExpression("scenes/JohnShot/john_damage_shot3.vcd");
+			break;
+		case 4:
+			SetExpression("scenes/JohnShot/john_damage_shot4.vcd");
+			break;
+		}
+		break;
+	case JOHN_KILLED_ZOMBIE:
+		switch (random->RandomInt(1, 3))
+		{
+		case 1:
+			SetExpression("scenes/JohnKilledZombie/john_killed_zombie1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnKilledZombie/john_killed_zombie2.vcd");
+			break;
+		case 3:
+			SetExpression("scenes/JohnKilledZombie/john_killed_zombie3.vcd");
+			break;
+		}
+		break;
+	case JOHN_KILLED_ARMOURED_ZOMBIE:
+		switch (random->RandomInt(1, 2))
+		{
+		case 1:
+			SetExpression("scenes/JohnKillerArmoured/john_killed_armouredzombie1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnKillerArmoured/john_killed_armouredzombie2.vcd");
+			break;
+		}
+		break;
+	case JOHN_KILLED_BURST_ZOMBIE:
+		switch (random->RandomInt(1, 2))
+		{
+		case 1:
+			SetExpression("scenes/JohnKilledBurster/john_killed_bursterzombie1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnKilledBurster/john_killed_bursterzombie2.vcd");
+			break;
+		}
+		break;
+	case JOHN_KILLED_POISON_ZOMBIE:
+		SetExpression("scenes/JohnKilledPoison/john_killed_poisonzombie1.vcd");
+		break;
+	case JOHN_KILLED_HEADCRAB:
+		switch (random->RandomInt(1, 2))
+		{
+		case 1:
+			SetExpression("scenes/JohnKilledHeadcrab/john_killed_headcrab1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnKilledHeadcrab/john_killed_headcrab2.vcd");
+			break;
+		}
+		break;
+	case JOHN_KILLED_MINI_HEADCRAB:
+		switch (random->RandomInt(1, 2))
+		{
+		case 1:
+			SetExpression("scenes/JohnKilledMini/john_killed_miniheadcrab1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnKilledMini/john_killed_miniheadcrab2.vcd");
+			break;
+		}
+		break;
+	case JOHN_KILLED_VORTIGAUNT:
+		switch (random->RandomInt(1, 2))
+		{
+		case 1:
+			SetExpression("scenes/JohnKilledVort/john_killed_vort1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnKilledVort/john_killed_vort2.vcd");
+			break;
+		}
+		break;
+	case JOHN_KILLED_MARINE:
+		switch (random->RandomInt(1, 2))
+		{
+		case 1:
+			SetExpression("scenes/JohnKilledMarine/john_killed_marine1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnKilledMarine/john_killed_marine2.vcd");
+			break;
+		}
+		break;
+	case JOHN_KILLED_PLAYER:
+		SetExpression("scenes/JohnKilledPlayer/john_killed_player1.vcd");
+		break;
+	case JOHN_SPOT_ZOMBIES:
+		switch (random->RandomInt(1, 2))
+		{
+		case 1:
+			SetExpression("scenes/JohnSpotZombies/john_spot_zombies1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnSpotZombies/john_spot_zombies2.vcd");
+			break;
+		}
+		break;
+	case JOHN_SPOT_CREATURES:
+		switch (random->RandomInt(1, 2))
+		{
+		case 1:
+			SetExpression("scenes/JohnSpotCreatures/john_spot_creatures1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnSpotCreatures/john_spot_creatures2.vcd");
+			break;
+		}
+		break;
+	case JOHN_SPOT_VORTIGAUNT:
+		switch (random->RandomInt(1, 2))
+		{
+		case 1:
+			SetExpression("scenes/JohnSpotVort/john_spot_vort1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnSpotVort/john_spot_vort2.vcd");
+			break;
+		}
+		break;
+	case JOHN_SPOT_MARINE:
+		switch (random->RandomInt(1, 3))
+		{
+		case 1:
+			SetExpression("scenes/JohnSpotMarine/john_spot_marine1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnSpotMarine/john_spot_marine2.vcd");
+			break;
+		case 3:
+			SetExpression("scenes/JohnSpotMarine/john_spot_marine3.vcd");
+			break;
+		}
+		break;
+	case JOHN_SEEPLAYER_KILL:
+		switch (random->RandomInt(1, 3))
+		{
+		case 1:
+			SetExpression("scenes/JohnSeeKill/john_seeplayer_kill1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnSeeKill/john_seeplayer_kill2.vcd");
+			break;
+		case 3:
+			SetExpression("scenes/JohnSeeKill/john_seeplayer_kill3.vcd");
+			break;
+		}
+		break;
+	case JOHN_SEEPLAYER_HEADSHOT:
+		switch (random->RandomInt(1, 2))
+		{
+		case 1:
+			SetExpression("scenes/JohnSeeHeadshot/john_seeplayer_headshot1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnSeeHeadshot/john_seeplayer_headshot2.vcd");
+			break;
+		}
+		break;
+	case JOHN_SEEPLAYER_ONESHOT:
+		SetExpression("scenes/JohnSeeOneshot/john_seeplayer_oneshot1.vcd");
+		break;
+	case JOHN_RELOAD:
+		switch (random->RandomInt(1, 2))
+		{
+		case 1:
+			SetExpression("scenes/JohnReload/john_reload1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnReload/john_reload2.vcd");
+			break;
+		}
+		break;
+	case JOHN_MELEE:
+		switch (random->RandomInt(1, 3))
+		{
+		case 1:
+			SetExpression("scenes/JohnMelee/john_melee1.vcd");
+			break;
+		case 2:
+			SetExpression("scenes/JohnMelee/john_melee2.vcd");
+			break;
+		case 3:
+			SetExpression("scenes/JohnMelee/john_melee3.vcd");
+			break;
+		}
+		break;
+	default:
+		SetExpression("scenes/johndown_thanks2.vcd");
+		break;
+	}
+
+	m_flDelayIdle = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
+	m_flSpeakAgain = GetSceneDuration(GetExpression()) + gpGlobals->curtime;
+
+	if (a3)
+	{
+		b_CanIdle = true;
+		unk_0x1430 = gpGlobals->curtime;
+	}
+
+	b_CanIdle = true;
+	unk_0x1430 = GetSceneDuration(GetExpression()) + gpGlobals->curtime + g_johnspeaklimit.GetFloat();
 }

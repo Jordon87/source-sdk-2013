@@ -40,7 +40,7 @@ public:
 	{
 		static Vector Cone = VECTOR_CONE_7DEGREES;
 		static Vector Cone2 = VECTOR_CONE_1DEGREES;
-		static Vector Cone3 = VECTOR_CONE_1DEGREES;
+		static Vector Cone3 = VECTOR_CONE_4DEGREES;
 
 		if (!m_bIsIronsighted)
 		{

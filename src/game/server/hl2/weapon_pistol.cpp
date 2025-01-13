@@ -78,12 +78,27 @@ public:
 											1.0f ); 
 
 			// We lerp from very accurate to inaccurate over time
-			VectorLerp( VECTOR_CONE_1DEGREES, VECTOR_CONE_6DEGREES, ramp, cone );
+			if (m_bIsIronsighted == false)
+			{
+				VectorLerp(VECTOR_CONE_1DEGREES, VECTOR_CONE_6DEGREES, ramp, cone);
+			}
+			else
+			{
+				VectorLerp(VECTOR_CONE_1DEGREES, VECTOR_CONE_5DEGREES, ramp, cone);
+			}
 		}
 		else
 		{
 			// Old value
-			cone = VECTOR_CONE_4DEGREES;
+
+			if (m_bIsIronsighted == false)
+			{
+				cone = VECTOR_CONE_4DEGREES;
+			}
+			else
+			{
+				cone = VECTOR_CONE_1DEGREES;
+			}
 		}
 
 		return cone;
