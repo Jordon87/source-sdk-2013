@@ -29,6 +29,7 @@ class CRechargeDW : public CBaseToggle
 public:
 	DECLARE_CLASS( CRechargeDW, CBaseToggle );
 
+	void Precache();
 	void Spawn( );
 	bool CreateVPhysics();
 	int DrawDebugTextOverlays(void);
@@ -107,6 +108,13 @@ bool CRechargeDW::KeyValue( const char *szKeyName, const char *szValue )
 	}
 
 	return true;
+}
+
+void CRechargeDW::Precache()
+{
+	PrecacheScriptSound("SuitRecharge.Start");
+	PrecacheScriptSound("SuitRecharge.ChargingLoop");
+	PrecacheScriptSound("SuitRecharge.Deny");
 }
 
 void CRechargeDW::Spawn()
