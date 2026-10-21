@@ -14,7 +14,7 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2;.\hl2"
-		$PreprocessorDefinitions		"$BASE;HL2_DLL;USES_SAVERESTORE;COMBINE_DESTINY_NEW_FEATURES"
+		$PreprocessorDefinitions		"$BASE;HL2_DLL;USES_SAVERESTORE;COMBINE_DESTINY_NEW_FEATURES;COMBINEDESTINY_DLL"
 	}
 }
 
@@ -248,6 +248,8 @@ $Project "Server (Combine Destiny)"
 			$File	"hl2\weapon_smg1.cpp"
 			$File	"hl2\weapon_stunstick.cpp"
 			$File	"hl2\weapon_stunstick.h"
+			$File	"combinedestiny\npc_combines_ally.cpp"
+			$File	"combinedestiny\npc_combines_ally.h"
 
 			$Folder	"Unused"
 			{
