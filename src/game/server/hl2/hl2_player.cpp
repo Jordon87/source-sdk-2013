@@ -164,15 +164,15 @@ bool Flashlight_UseLegacyVersion( void )
 	return true;
 #else
 	// If this is the first run through, cache off what the answer should be (cannot change during a session)
-	if ( g_bCacheLegacyFlashlightStatus )
+	if (g_bCacheLegacyFlashlightStatus)
 	{
 		char modDir[MAX_PATH];
-		if ( UTIL_GetModDir( modDir, sizeof(modDir) ) == false )
+		if (UTIL_GetModDir(modDir, sizeof(modDir)) == false)
 			return false;
 
-		g_bUseLegacyFlashlight = ( !Q_strcmp( modDir, "hl2" ) ||
-					   !Q_strcmp( modDir, "episodic" ) ||
-					   !Q_strcmp( modDir, "lostcoast" ) || !Q_strcmp( modDir, "hl1" ));
+		g_bUseLegacyFlashlight = (!Q_strcmp(modDir, "hl2") ||
+			!Q_strcmp(modDir, "episodic") ||
+			!Q_strcmp(modDir, "lostcoast") || !Q_strcmp(modDir, "hl1"));
 
 		g_bCacheLegacyFlashlightStatus = false;
 	}
@@ -429,6 +429,11 @@ END_SEND_TABLE()
 void CHL2_Player::Precache( void )
 {
 	BaseClass::Precache();
+
+
+#if defined ( COMBINEDESTINY_DLL )
+	PrecacheModel("sprites/glow01.vmt");
+#endif
 
 	PrecacheScriptSound( "HL2Player.SprintNoPower" );
 	PrecacheScriptSound( "HL2Player.SprintStart" );
@@ -1594,7 +1599,7 @@ bool CHL2_Player::CommanderExecuteOne( CAI_BaseNPC *pNpc, const commandgoal_t &g
 	{
 		pNpc->MoveOrder( goal.m_vecGoalLocation, Allies, numAllies );
 	}
-
+	
 	return true;
 }
 
@@ -1617,13 +1622,9 @@ void CHL2_Player::CommanderExecute( CommanderCommand_t command )
 	if ( command == CC_TOGGLE )
 	{
 		if ( pPlayerSquadLeader->GetCommandGoal() != vec3_invalid )
-		{
 			command = CC_FOLLOW;
-		}
 		else
-		{
 			command = CC_SEND;
-		}
 	}
 	else
 	{
@@ -2637,6 +2638,15 @@ int CHL2_Player::GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound)
 //-----------------------------------------------------------------------------
 bool CHL2_Player::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 {
+#if defined ( HL2MP ) && !defined ( COMBINEDESTINY_DLL )	
+	if ( pWeapon->ClassMatches( "weapon_stunstick" ) )
+	{
+		if ( ApplyBattery( 0.5 ) )
+			UTIL_Remove( pWeapon );
+		return false;
+	}
+#endif
+
 	return BaseClass::Weapon_CanUse( pWeapon );
 }
 
