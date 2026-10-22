@@ -332,6 +332,8 @@ void CNPC_CombineCamera::Spawn()
 	SetPoseParameter(COMBINE_CAMERA_BC_YAW, 0);
 	SetPoseParameter(COMBINE_CAMERA_BC_PITCH, 0);
 
+	CapabilitiesAdd(bits_CAP_FRIENDLY_DMG_IMMUNE | bits_CAP_NO_HIT_SQUADMATES);
+
 	m_iAmmoType = GetAmmoDef()->Index("Pistol");
 
 	// Create our eye sprite

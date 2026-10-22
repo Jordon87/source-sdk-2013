@@ -155,7 +155,7 @@
 		"tall"	"26"
 		
 		"AuxPowerLowColor" "255 0 0 220"
-		"AuxPowerHighColor" "255 220 0 220"
+		"AuxPowerHighColor" "0 88 207 255"
 		"AuxPowerDisabledAlpha" "70"
 
 		"BarInsetX" "8"
@@ -184,7 +184,7 @@
 		"tall"	"26"
 		
 		"AuxPowerLowColor" "255 100 0 220"
-		"AuxPowerHighColor" "255 220 0 220"
+		"AuxPowerHighColor" "0 88 207 255"
 		"AuxPowerDisabledAlpha" "70"
 
 		"BarInsetX" "8"
@@ -537,7 +537,7 @@
 		"tall"	"46"
 		"text_xpos"	"8"
 		"text_ypos"	"34"
-		"SquadIconColor"	"255 220 0 160"
+		"SquadIconColor"	"0 88 207 255"
 		"IconInsetX"	"8"
 		"IconInsetY"	"0"
 		"IconGap"		"24"

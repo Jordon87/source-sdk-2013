@@ -1014,6 +1014,8 @@ void CNPC_CombineDropship::Spawn( void )
 
 	SetLandingState( LANDING_NO );
 
+	CapabilitiesAdd(bits_CAP_FRIENDLY_DMG_IMMUNE | bits_CAP_NO_HIT_SQUADMATES);
+
 	if ( HasSpawnFlags( SF_DROPSHIP_WAIT_FOR_DROPOFF_INPUT ) )
 	{
 		m_bWaitForDropoffInput = true;

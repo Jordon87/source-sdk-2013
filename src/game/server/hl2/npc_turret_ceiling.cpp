@@ -323,6 +323,8 @@ void CNPC_CeilingTurret::Spawn( void )
 		SetEyeState( TURRET_EYE_DISABLED );
 	}
 
+	CapabilitiesAdd(bits_CAP_FRIENDLY_DMG_IMMUNE | bits_CAP_NO_HIT_SQUADMATES);
+
 	//Stagger our starting times
 	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.1f, 0.3f ) );
 
